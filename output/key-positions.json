@@ -1,0 +1,552 @@
+{
+  "name": "Hamrah Arc 58",
+  "units": "mm",
+  "switch": {
+    "type": "Kailh Choc v1 (PG1350)",
+    "plateCutout": 14,
+    "pitchX": 19.05,
+    "pitchY": 19.05,
+    "keycapWidth": 17.5,
+    "keycapHeight": 16.5
+  },
+  "encoder": {
+    "enabled": true,
+    "type": "Alps Alpine EC11E15244G1 clickable rotary encoder",
+    "manufacturer": "Alps Alpine",
+    "partNumber": "EC11E15244G1",
+    "sofleFootprint": "SofleKeyboard-footprint:RotaryEncoder_Alps_EC11E-Switch_Vertical_H20mm-keebio_modified",
+    "columnOffset": 1,
+    "alignWithColumn": 5,
+    "row": 3,
+    "bodyWidth": 12,
+    "bodyHeight": 11.6,
+    "shaftDiameter": 6,
+    "shaftLength": 20,
+    "detents": 30,
+    "pulses": 15,
+    "pushTravel": 0.5,
+    "knobDiameter": 18,
+    "plateHoleDiameter": 7.2,
+    "click": true
+  },
+  "notes": [
+    "Coordinates are component centers.",
+    "The right half is a geometric mirror of the left half.",
+    "Each half has 28 Choc v1 switches and one clickable rotary encoder.",
+    "This is layout and prototype plate geometry, not a routed PCB."
+  ],
+  "left": [
+    {
+      "id": "c1r1",
+      "group": "matrix",
+      "column": 0,
+      "row": 0,
+      "x": 0,
+      "y": 7.4,
+      "rotation": 0
+    },
+    {
+      "id": "c1r2",
+      "group": "matrix",
+      "column": 0,
+      "row": 1,
+      "x": 0,
+      "y": 26.45,
+      "rotation": 0
+    },
+    {
+      "id": "c1r3",
+      "group": "matrix",
+      "column": 0,
+      "row": 2,
+      "x": 0,
+      "y": 45.5,
+      "rotation": 0
+    },
+    {
+      "id": "c1r4",
+      "group": "matrix",
+      "column": 0,
+      "row": 3,
+      "x": 0,
+      "y": 64.55,
+      "rotation": 0
+    },
+    {
+      "id": "c2r1",
+      "group": "matrix",
+      "column": 1,
+      "row": 0,
+      "x": 19.05,
+      "y": 7.4,
+      "rotation": 0
+    },
+    {
+      "id": "c2r2",
+      "group": "matrix",
+      "column": 1,
+      "row": 1,
+      "x": 19.05,
+      "y": 26.45,
+      "rotation": 0
+    },
+    {
+      "id": "c2r3",
+      "group": "matrix",
+      "column": 1,
+      "row": 2,
+      "x": 19.05,
+      "y": 45.5,
+      "rotation": 0
+    },
+    {
+      "id": "c2r4",
+      "group": "matrix",
+      "column": 1,
+      "row": 3,
+      "x": 19.05,
+      "y": 64.55,
+      "rotation": 0
+    },
+    {
+      "id": "c3r1",
+      "group": "matrix",
+      "column": 2,
+      "row": 0,
+      "x": 38.1,
+      "y": 2.5,
+      "rotation": 0
+    },
+    {
+      "id": "c3r2",
+      "group": "matrix",
+      "column": 2,
+      "row": 1,
+      "x": 38.1,
+      "y": 21.55,
+      "rotation": 0
+    },
+    {
+      "id": "c3r3",
+      "group": "matrix",
+      "column": 2,
+      "row": 2,
+      "x": 38.1,
+      "y": 40.6,
+      "rotation": 0
+    },
+    {
+      "id": "c3r4",
+      "group": "matrix",
+      "column": 2,
+      "row": 3,
+      "x": 38.1,
+      "y": 59.65,
+      "rotation": 0
+    },
+    {
+      "id": "c4r1",
+      "group": "matrix",
+      "column": 3,
+      "row": 0,
+      "x": 57.15,
+      "y": 0,
+      "rotation": 0
+    },
+    {
+      "id": "c4r2",
+      "group": "matrix",
+      "column": 3,
+      "row": 1,
+      "x": 57.15,
+      "y": 19.05,
+      "rotation": 0
+    },
+    {
+      "id": "c4r3",
+      "group": "matrix",
+      "column": 3,
+      "row": 2,
+      "x": 57.15,
+      "y": 38.1,
+      "rotation": 0
+    },
+    {
+      "id": "c4r4",
+      "group": "matrix",
+      "column": 3,
+      "row": 3,
+      "x": 57.15,
+      "y": 57.15,
+      "rotation": 0
+    },
+    {
+      "id": "c5r1",
+      "group": "matrix",
+      "column": 4,
+      "row": 0,
+      "x": 76.2,
+      "y": 2.5,
+      "rotation": 0
+    },
+    {
+      "id": "c5r2",
+      "group": "matrix",
+      "column": 4,
+      "row": 1,
+      "x": 76.2,
+      "y": 21.55,
+      "rotation": 0
+    },
+    {
+      "id": "c5r3",
+      "group": "matrix",
+      "column": 4,
+      "row": 2,
+      "x": 76.2,
+      "y": 40.6,
+      "rotation": 0
+    },
+    {
+      "id": "c5r4",
+      "group": "matrix",
+      "column": 4,
+      "row": 3,
+      "x": 76.2,
+      "y": 59.65,
+      "rotation": 0
+    },
+    {
+      "id": "c6r1",
+      "group": "matrix",
+      "column": 5,
+      "row": 0,
+      "x": 95.25,
+      "y": 5,
+      "rotation": 0
+    },
+    {
+      "id": "c6r2",
+      "group": "matrix",
+      "column": 5,
+      "row": 1,
+      "x": 95.25,
+      "y": 24.05,
+      "rotation": 0
+    },
+    {
+      "id": "c6r3",
+      "group": "matrix",
+      "column": 5,
+      "row": 2,
+      "x": 95.25,
+      "y": 43.1,
+      "rotation": 0
+    },
+    {
+      "id": "c6r4",
+      "group": "matrix",
+      "column": 5,
+      "row": 3,
+      "x": 95.25,
+      "y": 62.15,
+      "rotation": 0
+    },
+    {
+      "id": "encoder",
+      "group": "encoder",
+      "x": 114.3,
+      "y": 62.15,
+      "rotation": 0
+    },
+    {
+      "id": "thumb1",
+      "group": "thumb",
+      "index": 0,
+      "x": 85.725,
+      "y": 81.15,
+      "rotation": 10
+    },
+    {
+      "id": "thumb2",
+      "group": "thumb",
+      "index": 1,
+      "x": 105.431,
+      "y": 86.801,
+      "rotation": 30
+    },
+    {
+      "id": "thumb3",
+      "group": "thumb",
+      "index": 2,
+      "x": 122.016,
+      "y": 98.85,
+      "rotation": 50
+    },
+    {
+      "id": "thumb4",
+      "group": "thumb",
+      "index": 3,
+      "x": 133.479,
+      "y": 115.845,
+      "rotation": 70
+    }
+  ],
+  "right": [
+    {
+      "id": "c1r1",
+      "group": "matrix",
+      "column": 0,
+      "row": 0,
+      "x": 136.601,
+      "y": 7.4,
+      "rotation": 0
+    },
+    {
+      "id": "c1r2",
+      "group": "matrix",
+      "column": 0,
+      "row": 1,
+      "x": 136.601,
+      "y": 26.45,
+      "rotation": 0
+    },
+    {
+      "id": "c1r3",
+      "group": "matrix",
+      "column": 0,
+      "row": 2,
+      "x": 136.601,
+      "y": 45.5,
+      "rotation": 0
+    },
+    {
+      "id": "c1r4",
+      "group": "matrix",
+      "column": 0,
+      "row": 3,
+      "x": 136.601,
+      "y": 64.55,
+      "rotation": 0
+    },
+    {
+      "id": "c2r1",
+      "group": "matrix",
+      "column": 1,
+      "row": 0,
+      "x": 117.551,
+      "y": 7.4,
+      "rotation": 0
+    },
+    {
+      "id": "c2r2",
+      "group": "matrix",
+      "column": 1,
+      "row": 1,
+      "x": 117.551,
+      "y": 26.45,
+      "rotation": 0
+    },
+    {
+      "id": "c2r3",
+      "group": "matrix",
+      "column": 1,
+      "row": 2,
+      "x": 117.551,
+      "y": 45.5,
+      "rotation": 0
+    },
+    {
+      "id": "c2r4",
+      "group": "matrix",
+      "column": 1,
+      "row": 3,
+      "x": 117.551,
+      "y": 64.55,
+      "rotation": 0
+    },
+    {
+      "id": "c3r1",
+      "group": "matrix",
+      "column": 2,
+      "row": 0,
+      "x": 98.501,
+      "y": 2.5,
+      "rotation": 0
+    },
+    {
+      "id": "c3r2",
+      "group": "matrix",
+      "column": 2,
+      "row": 1,
+      "x": 98.501,
+      "y": 21.55,
+      "rotation": 0
+    },
+    {
+      "id": "c3r3",
+      "group": "matrix",
+      "column": 2,
+      "row": 2,
+      "x": 98.501,
+      "y": 40.6,
+      "rotation": 0
+    },
+    {
+      "id": "c3r4",
+      "group": "matrix",
+      "column": 2,
+      "row": 3,
+      "x": 98.501,
+      "y": 59.65,
+      "rotation": 0
+    },
+    {
+      "id": "c4r1",
+      "group": "matrix",
+      "column": 3,
+      "row": 0,
+      "x": 79.451,
+      "y": 0,
+      "rotation": 0
+    },
+    {
+      "id": "c4r2",
+      "group": "matrix",
+      "column": 3,
+      "row": 1,
+      "x": 79.451,
+      "y": 19.05,
+      "rotation": 0
+    },
+    {
+      "id": "c4r3",
+      "group": "matrix",
+      "column": 3,
+      "row": 2,
+      "x": 79.451,
+      "y": 38.1,
+      "rotation": 0
+    },
+    {
+      "id": "c4r4",
+      "group": "matrix",
+      "column": 3,
+      "row": 3,
+      "x": 79.451,
+      "y": 57.15,
+      "rotation": 0
+    },
+    {
+      "id": "c5r1",
+      "group": "matrix",
+      "column": 4,
+      "row": 0,
+      "x": 60.401,
+      "y": 2.5,
+      "rotation": 0
+    },
+    {
+      "id": "c5r2",
+      "group": "matrix",
+      "column": 4,
+      "row": 1,
+      "x": 60.401,
+      "y": 21.55,
+      "rotation": 0
+    },
+    {
+      "id": "c5r3",
+      "group": "matrix",
+      "column": 4,
+      "row": 2,
+      "x": 60.401,
+      "y": 40.6,
+      "rotation": 0
+    },
+    {
+      "id": "c5r4",
+      "group": "matrix",
+      "column": 4,
+      "row": 3,
+      "x": 60.401,
+      "y": 59.65,
+      "rotation": 0
+    },
+    {
+      "id": "c6r1",
+      "group": "matrix",
+      "column": 5,
+      "row": 0,
+      "x": 41.351,
+      "y": 5,
+      "rotation": 0
+    },
+    {
+      "id": "c6r2",
+      "group": "matrix",
+      "column": 5,
+      "row": 1,
+      "x": 41.351,
+      "y": 24.05,
+      "rotation": 0
+    },
+    {
+      "id": "c6r3",
+      "group": "matrix",
+      "column": 5,
+      "row": 2,
+      "x": 41.351,
+      "y": 43.1,
+      "rotation": 0
+    },
+    {
+      "id": "c6r4",
+      "group": "matrix",
+      "column": 5,
+      "row": 3,
+      "x": 41.351,
+      "y": 62.15,
+      "rotation": 0
+    },
+    {
+      "id": "encoder",
+      "group": "encoder",
+      "x": 22.301,
+      "y": 62.15,
+      "rotation": 0
+    },
+    {
+      "id": "thumb1",
+      "group": "thumb",
+      "index": 0,
+      "x": 50.876,
+      "y": 81.15,
+      "rotation": -10
+    },
+    {
+      "id": "thumb2",
+      "group": "thumb",
+      "index": 1,
+      "x": 31.17,
+      "y": 86.801,
+      "rotation": -30
+    },
+    {
+      "id": "thumb3",
+      "group": "thumb",
+      "index": 2,
+      "x": 14.585,
+      "y": 98.85,
+      "rotation": -50
+    },
+    {
+      "id": "thumb4",
+      "group": "thumb",
+      "index": 3,
+      "x": 3.122,
+      "y": 115.845,
+      "rotation": -70
+    }
+  ]
+}

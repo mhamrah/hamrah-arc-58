@@ -1,0 +1,378 @@
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import {
+  boundsForPoints,
+  buildHalf,
+  mirrorKey,
+  plateOutline,
+  readConfig,
+  rectangleCorners
+} from "./layout-model.mjs";
+
+const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
+const rootDirectory = path.resolve(scriptDirectory, "..");
+const outputDirectory = path.join(rootDirectory, "output");
+const config = readConfig();
+const leftKeys = buildHalf(config);
+const leftOutline = plateOutline(leftKeys, config);
+const halfBounds = boundsForPoints(leftOutline);
+const halfWidth = halfBounds.maxX - halfBounds.minX;
+const halfHeight = halfBounds.maxY - halfBounds.minY;
+
+fs.mkdirSync(outputDirectory, { recursive: true });
+
+function format(value) {
+  return Number(value.toFixed(3));
+}
+
+function pointsAttribute(points) {
+  return points.map((point) => `${format(point.x)},${format(point.y)}`).join(" ");
+}
+
+function svgComponent(key, side, offsetX, mirrorAxis = null) {
+  const displayKey = mirrorAxis === null ? key : mirrorKey(key, mirrorAxis);
+  const x = displayKey.x + offsetX;
+  const y = displayKey.y;
+  const className = `key key--${key.group}`;
+  const label =
+    key.group === "thumb"
+      ? `T${key.index + 1}`
+      : key.group === "encoder"
+        ? "ENC"
+        : key.id.toUpperCase();
+  if (key.group === "encoder") {
+    return `
+    <g class="${className}" transform="translate(${format(x)} ${format(y)})">
+      <circle class="encoder-knob" r="${format(config.encoder.knobDiameter / 2)}" />
+      <rect class="encoder-body" x="${format(-config.encoder.bodyWidth / 2)}" y="${format(-config.encoder.bodyHeight / 2)}" width="${config.encoder.bodyWidth}" height="${config.encoder.bodyHeight}" rx="1" />
+      <circle class="cutout" r="${format(config.encoder.plateHoleDiameter / 2)}" />
+      <circle class="center" r="0.6" />
+      <text y="0.9">${side}${label}</text>
+    </g>`;
+  }
+  return `
+    <g class="${className}" transform="translate(${format(x)} ${format(y)}) rotate(${format(displayKey.rotation)})">
+      <rect class="keycap" x="${format(-config.switch.keycapWidth / 2)}" y="${format(-config.switch.keycapHeight / 2)}" width="${config.switch.keycapWidth}" height="${config.switch.keycapHeight}" rx="1.6" />
+      <rect class="cutout" x="${format(-config.switch.plateCutout / 2)}" y="${format(-config.switch.plateCutout / 2)}" width="${config.switch.plateCutout}" height="${config.switch.plateCutout}" />
+      <circle class="center" r="0.6" />
+      <text transform="rotate(${format(-displayKey.rotation)})" y="0.9">${side}${label}</text>
+    </g>`;
+}
+
+function makeFullSvg() {
+  const pageMargin = 12;
+  const gap = config.preview.splitGap;
+  const leftOffsetX = pageMargin - halfBounds.minX;
+  const rightStart = pageMargin + halfWidth + gap;
+  const rightMirrorAxis = halfBounds.minX + halfBounds.maxX;
+  const rightOffsetX = rightStart - halfBounds.minX;
+  const offsetY = pageMargin - halfBounds.minY + 11;
+  const pageWidth = halfWidth * 2 + gap + pageMargin * 2;
+  const pageHeight = halfHeight + pageMargin * 2 + 21;
+
+  const shiftedLeftOutline = leftOutline.map((point) => ({
+    x: point.x + leftOffsetX,
+    y: point.y + offsetY
+  }));
+  const shiftedRightOutline = leftOutline.map((point) => ({
+    x: rightMirrorAxis - point.x + rightOffsetX,
+    y: point.y + offsetY
+  }));
+  const leftKeyMarkup = leftKeys
+    .map((key) => svgComponent({ ...key, y: key.y + offsetY }, "L·", leftOffsetX))
+    .join("");
+  const rightKeyMarkup = leftKeys
+    .map((key) =>
+      svgComponent(
+        { ...key, y: key.y + offsetY },
+        "R·",
+        rightOffsetX,
+        rightMirrorAxis
+      )
+    )
+    .join("");
+
+  const [columnA, columnB] = config.thumbArc.startBetweenColumns;
+  const guideX =
+    ((columnA + columnB) / 2) * config.switch.pitchX + leftOffsetX;
+  const guideTop =
+    Math.max(
+      config.matrix.columnStagger[columnA] +
+        (config.matrix.rows - 1) * config.switch.pitchY,
+      config.matrix.columnStagger[columnB] +
+        (config.matrix.rows - 1) * config.switch.pitchY
+    ) + offsetY;
+  const thumbOne = leftKeys.find((key) => key.id === "thumb1");
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="${format(pageWidth)}mm" height="${format(pageHeight)}mm" viewBox="0 0 ${format(pageWidth)} ${format(pageHeight)}">
+  <title>${config.name} physical layout</title>
+  <desc>Mirrored split layout with 56 ${config.switch.type} switches and two clickable encoders. All dimensions are millimetres.</desc>
+  <style>
+    :root { color-scheme: light; }
+    .page { fill: #f4f1eb; }
+    .plate { fill: #27313a; stroke: #13191e; stroke-width: 0.8; }
+    .keycap { fill: #fbfaf7; stroke: #b8b3a9; stroke-width: 0.5; }
+    .key--thumb .keycap { fill: #dc795c; stroke: #a7432f; }
+    .encoder-knob { fill: #e8dfcd; stroke: #8b806d; stroke-width: 0.5; }
+    .encoder-body { fill: none; stroke: #9e9078; stroke-width: 0.35; }
+    .cutout { fill: none; stroke: #65727d; stroke-width: 0.35; stroke-dasharray: 1.2 0.8; }
+    .center { fill: #65727d; }
+    text { fill: #253039; font: 2.5px ui-monospace, SFMono-Regular, Menlo, monospace; text-anchor: middle; dominant-baseline: middle; }
+    .title { fill: #20282f; font: 700 7px ui-sans-serif, system-ui, sans-serif; }
+    .subtitle { fill: #59636b; font: 3.1px ui-sans-serif, system-ui, sans-serif; }
+    .guide { stroke: #dfb43a; stroke-width: 0.7; stroke-dasharray: 2 1.5; fill: none; }
+    .guide-label { fill: #795e10; font: 2.8px ui-sans-serif, system-ui, sans-serif; text-anchor: start; }
+  </style>
+  <rect class="page" width="100%" height="100%" />
+  <text class="title" x="${pageMargin}" y="9">${config.name}</text>
+  <text class="subtitle" x="${pageMargin}" y="15">6×4 + clickable encoder + four-key descending thumb arc · Choc v1 · ${config.switch.pitchX} × ${config.switch.pitchY} mm Sofle pitch</text>
+  <polygon class="plate" points="${pointsAttribute(shiftedLeftOutline)}" />
+  <polygon class="plate" points="${pointsAttribute(shiftedRightOutline)}" />
+  ${leftKeyMarkup}
+  ${rightKeyMarkup}
+  <path class="guide" d="M ${format(guideX)} ${format(guideTop)} L ${format(guideX)} ${format(thumbOne.y + offsetY)}" />
+  <text class="guide-label" x="${format(guideX + 2)}" y="${format((guideTop + thumbOne.y + offsetY) / 2)}">T1 starts between C5 / C6</text>
+</svg>
+`;
+}
+
+function makePlateSvg() {
+  const margin = 3;
+  const offsetX = margin - halfBounds.minX;
+  const offsetY = margin - halfBounds.minY;
+  const width = halfWidth + margin * 2;
+  const height = halfHeight + margin * 2;
+  const outline = leftOutline.map((point) => ({
+    x: point.x + offsetX,
+    y: point.y + offsetY
+  }));
+
+  const cutouts = leftKeys
+    .map((key) => {
+      if (key.group === "encoder") {
+        return `  <circle class="cut" data-key="${key.id}" cx="${format(key.x + offsetX)}" cy="${format(key.y + offsetY)}" r="${format(config.encoder.plateHoleDiameter / 2)}" />`;
+      }
+      const points = rectangleCorners(
+        key,
+        config.switch.plateCutout,
+        config.switch.plateCutout
+      ).map((point) => ({ x: point.x + offsetX, y: point.y + offsetY }));
+      return `  <polygon class="cut" data-key="${key.id}" points="${pointsAttribute(points)}" />`;
+    })
+    .join("\n");
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="${format(width)}mm" height="${format(height)}mm" viewBox="0 0 ${format(width)} ${format(height)}">
+  <title>${config.name} left switch plate</title>
+  <desc>One-to-one millimetre switch plate geometry. Prototype and measure before manufacturing.</desc>
+  <style>
+    .outline, .cut { fill: none; stroke: #000; stroke-width: 0.2; vector-effect: non-scaling-stroke; }
+  </style>
+  <polygon class="outline" points="${pointsAttribute(outline)}" />
+${cutouts}
+</svg>
+`;
+}
+
+function makePaperTestSvg() {
+  const pageWidth = 215.9;
+  const pageHeight = 279.4;
+  const templateTop = 32;
+  const offsetX = (pageWidth - halfWidth) / 2 - halfBounds.minX;
+  const offsetY = templateTop - halfBounds.minY;
+  const outline = leftOutline.map((point) => ({
+    x: point.x + offsetX,
+    y: point.y + offsetY
+  }));
+
+  const keys = leftKeys
+    .map((key) => {
+      const x = key.x + offsetX;
+      const y = key.y + offsetY;
+      const label =
+        key.group === "thumb"
+          ? `T${key.index + 1}`
+          : key.group === "encoder"
+            ? "ENC"
+            : `C${key.column + 1}R${key.row + 1}`;
+      if (key.group === "encoder") {
+        return `
+    <g transform="translate(${format(x)} ${format(y)})">
+      <circle class="encoder" r="${format(config.encoder.knobDiameter / 2)}" />
+      <rect class="encoder-body" x="${format(-config.encoder.bodyWidth / 2)}" y="${format(-config.encoder.bodyHeight / 2)}" width="${config.encoder.bodyWidth}" height="${config.encoder.bodyHeight}" rx="1" />
+      <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
+      <text class="key-label" y="0.9">${label}</text>
+    </g>`;
+      }
+      return `
+    <g transform="translate(${format(x)} ${format(y)}) rotate(${format(key.rotation)})">
+      <rect class="keycap ${key.group}" x="${format(-config.switch.keycapWidth / 2)}" y="${format(-config.switch.keycapHeight / 2)}" width="${config.switch.keycapWidth}" height="${config.switch.keycapHeight}" rx="1.2" />
+      <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
+      <text class="key-label" transform="rotate(${format(-key.rotation)})" y="0.9">${label}</text>
+    </g>`;
+    })
+    .join("");
+
+  const calibrationX = (pageWidth - 50) / 2;
+  const calibrationY = templateTop + halfHeight + 20;
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="${pageWidth}mm" height="${pageHeight}mm" viewBox="0 0 ${pageWidth} ${pageHeight}">
+  <title>${config.name} left-half paper fit test</title>
+  <desc>US Letter paper prototype. Print at actual size and verify the 50 mm calibration bar.</desc>
+  <style>
+    @page { size: Letter portrait; margin: 0; }
+    .page { fill: #fff; }
+    .outline { fill: #f7f7f7; stroke: #888; stroke-width: 0.35; }
+    .keycap { fill: #fff; stroke: #111; stroke-width: 0.4; }
+    .keycap.thumb { fill: #f4d5cc; }
+    .encoder { fill: #eee8dc; stroke: #111; stroke-width: 0.4; }
+    .encoder-body { fill: none; stroke: #777; stroke-width: 0.25; stroke-dasharray: 1 0.7; }
+    .center { fill: none; stroke: #777; stroke-width: 0.25; }
+    .key-label { fill: #222; font: 2.4px ui-monospace, SFMono-Regular, Menlo, monospace; text-anchor: middle; dominant-baseline: middle; }
+    .title { fill: #111; font: 700 5px ui-sans-serif, system-ui, sans-serif; }
+    .note { fill: #333; font: 3px ui-sans-serif, system-ui, sans-serif; }
+    .calibration { fill: none; stroke: #111; stroke-width: 0.45; }
+  </style>
+  <rect class="page" width="100%" height="100%" />
+  <text class="title" x="${format(pageWidth / 2)}" y="12" text-anchor="middle">${config.name} · left-half paper fit test</text>
+  <text class="note" x="${format(pageWidth / 2)}" y="19" text-anchor="middle">Print at Actual Size / 100% · disable Fit to Page</text>
+  <polygon class="outline" points="${pointsAttribute(outline)}" />
+  ${keys}
+  <path class="calibration" d="M ${format(calibrationX)} ${format(calibrationY - 3)} V ${format(calibrationY + 3)} M ${format(calibrationX)} ${format(calibrationY)} H ${format(calibrationX + 50)} M ${format(calibrationX + 50)} ${format(calibrationY - 3)} V ${format(calibrationY + 3)}" />
+  <text class="note" x="${format(pageWidth / 2)}" y="${format(calibrationY + 8)}" text-anchor="middle">This line must measure exactly 50 mm</text>
+  <text class="note" x="${format(pageWidth / 2)}" y="${format(calibrationY + 17)}" text-anchor="middle">Rest your hand on the outline and test the T1–T4 thumb sweep.</text>
+</svg>
+`;
+}
+
+function dxfPolyline(points, layer, closed = true) {
+  const header = ["0", "POLYLINE", "8", layer, "66", "1", "70", closed ? "1" : "0"];
+  const vertices = points.flatMap((point) => [
+    "0",
+    "VERTEX",
+    "8",
+    layer,
+    "10",
+    String(format(point.x)),
+    "20",
+    String(format(-point.y)),
+    "30",
+    "0"
+  ]);
+  return [...header, ...vertices, "0", "SEQEND"].join("\n");
+}
+
+function dxfCircle(center, radius, layer) {
+  return [
+    "0",
+    "CIRCLE",
+    "8",
+    layer,
+    "10",
+    String(format(center.x)),
+    "20",
+    String(format(-center.y)),
+    "30",
+    "0",
+    "40",
+    String(format(radius))
+  ].join("\n");
+}
+
+function makeDxf() {
+  const entities = [dxfPolyline(leftOutline, "PLATE_OUTLINE")];
+  for (const key of leftKeys) {
+    if (key.group === "encoder") {
+      entities.push(
+        dxfCircle(key, config.encoder.plateHoleDiameter / 2, "ENCODER_CUTOUTS")
+      );
+      continue;
+    }
+    entities.push(
+      dxfPolyline(
+        rectangleCorners(
+          key,
+          config.switch.plateCutout,
+          config.switch.plateCutout
+        ),
+        "SWITCH_CUTOUTS"
+      )
+    );
+  }
+  return [
+    "0",
+    "SECTION",
+    "2",
+    "HEADER",
+    "9",
+    "$INSUNITS",
+    "70",
+    "4",
+    "0",
+    "ENDSEC",
+    "0",
+    "SECTION",
+    "2",
+    "ENTITIES",
+    ...entities,
+    "0",
+    "ENDSEC",
+    "0",
+    "EOF",
+    ""
+  ].join("\n");
+}
+
+function makePositionsJson() {
+  const mirrorAxis = halfBounds.minX + halfBounds.maxX;
+  return JSON.stringify(
+    {
+      name: config.name,
+      units: config.units,
+      switch: config.switch,
+      encoder: config.encoder,
+      notes: [
+        "Coordinates are component centers.",
+        "The right half is a geometric mirror of the left half.",
+        "Each half has 28 Choc v1 switches and one clickable rotary encoder.",
+        "This is layout and prototype plate geometry, not a routed PCB."
+      ],
+      left: leftKeys.map((key) => ({
+        ...key,
+        x: format(key.x),
+        y: format(key.y),
+        rotation: format(key.rotation)
+      })),
+      right: leftKeys.map((key) => {
+        const mirrored = mirrorKey(key, mirrorAxis);
+        return {
+          ...mirrored,
+          x: format(mirrored.x),
+          y: format(mirrored.y),
+          rotation: format(mirrored.rotation)
+        };
+      })
+    },
+    null,
+    2
+  );
+}
+
+const artifacts = {
+  "keyboard-layout.svg": makeFullSvg(),
+  "left-half-paper-test-letter.svg": makePaperTestSvg(),
+  "left-half-plate.svg": makePlateSvg(),
+  "left-half-plate.dxf": makeDxf(),
+  "key-positions.json": `${makePositionsJson()}\n`
+};
+
+for (const [fileName, contents] of Object.entries(artifacts)) {
+  fs.writeFileSync(path.join(outputDirectory, fileName), contents);
+}
+
+console.log(
+  `Generated ${Object.keys(artifacts).length} files for ${leftKeys.length * 2} press inputs in ${path.relative(process.cwd(), outputDirectory) || outputDirectory}`
+);

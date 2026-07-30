@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="215.9mm" height="279.4mm" viewBox="0 0 215.9 279.4">
+  <title>Hamrah Arc 58 left-half paper fit test</title>
+  <desc>US Letter paper prototype. Print at actual size and verify the 50 mm calibration bar.</desc>
+  <style>
+    @page { size: Letter portrait; margin: 0; }
+    .page { fill: #fff; }
+    .outline { fill: #f7f7f7; stroke: #888; stroke-width: 0.35; }
+    .keycap { fill: #fff; stroke: #111; stroke-width: 0.4; }
+    .keycap.thumb { fill: #f4d5cc; }
+    .encoder { fill: #eee8dc; stroke: #111; stroke-width: 0.4; }
+    .encoder-body { fill: none; stroke: #777; stroke-width: 0.25; stroke-dasharray: 1 0.7; }
+    .center { fill: none; stroke: #777; stroke-width: 0.25; }
+    .key-label { fill: #222; font: 2.4px ui-monospace, SFMono-Regular, Menlo, monospace; text-anchor: middle; dominant-baseline: middle; }
+    .title { fill: #111; font: 700 5px ui-sans-serif, system-ui, sans-serif; }
+    .note { fill: #333; font: 3px ui-sans-serif, system-ui, sans-serif; }
+    .calibration { fill: none; stroke: #111; stroke-width: 0.45; }
+  </style>
+  <rect class="page" width="100%" height="100%" />
+  <text class="title" x="107.95" y="12" text-anchor="middle">Hamrah Arc 58 · left-half paper fit test</text>
+  <text class="note" x="107.95" y="19" text-anchor="middle">Print at Actual Size / 100% · disable Fit to Page</text>
+  <polygon class="outline" points="26.899,39.4 84.049,32 109.549,32 147.649,37 166.949,93.4 189.001,167.887 165.978,176.266 26.899,121.05" />
+  
+    <g transform="translate(39.649 51.65) rotate(0)">
+      <rect class="keycap matrix" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.2" />
+      <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
+      <text class="key-label" transform="rotate(0)" y="0.9">C1R1</text>
+    </g>
+    <g transform="translate(39.649 70.7) rotate(0)">
+      <rect class="keycap matrix" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.2" />
+      <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
+      <text class="key-label" transform="rotate(0)" y="0.9">C1R2</text>
+    </g>
+    <g transform="translate(39.649 89.75) rotate(0)">
+      <rect class="keycap matrix" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.2" />
+      <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
+      <text class="key-label" transform="rotate(0)" y="0.9">C1R3</text>
+    </g>
+    <g transform="translate(39.649 108.8) rotate(0)">
+      <rect class="keycap matrix" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.2" />
+      <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
+      <text class="key-label" transform="rotate(0)" y="0.9">C1R4</text>
+    </g>
+    <g transform="translate(58.699 51.65) rotate(0)">
+      <rect class="keycap matrix" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.2" />
+      <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
+      <text class="key-label" transform="rotate(0)" y="0.9">C2R1</text>
+    </g>
+    <g transform="translate(58.699 70.7) rotate(0)">
+      <rect class="keycap matrix" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.2" />
+      <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
+      <text class="key-label" transform="rotate(0)" y="0.9">C2R2</text>
+    </g>
+    <g transform="translate(58.699 89.75) rotate(0)">
+      <rect class="keycap matrix" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.2" />
+      <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
+      <text class="key-label" transform="rotate(0)" y="0.9">C2R3</text>
+    </g>
+    <g transform="translate(58.699 108.8) rotate(0)">
+      <rect class="keycap matrix" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.2" />
+      <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
+      <text class="key-label" transform="rotate(0)" y="0.9">C2R4</text>
+    </g>
+    <g transform="translate(77.749 46.75) rotate(0)">
+      <rect class="keycap matrix" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.2" />
+      <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
+      <text class="key-label" transform="rotate(0)" y="0.9">C3R1</text>
+    </g>
+    <g transform="translate(77.749 65.8) rotate(0)">
+      <rect class="keycap matrix" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.2" />
+      <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
+      <text class="key-label" transform="rotate(0)" y="0.9">C3R2</text>
+    </g>
+    <g transform="translate(77.749 84.85) rotate(0)">
+      <rect class="keycap matrix" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.2" />
+      <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
+      <text class="key-label" transform="rotate(0)" y="0.9">C3R3</text>
+    </g>
+    <g transform="translate(77.749 103.9) rotate(0)">
+      <rect class="keycap matrix" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.2" />
+      <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
+      <text class="key-label" transform="rotate(0)" y="0.9">C3R4</text>
+    </g>
+    <g transform="translate(96.799 44.25) rotate(0)">
+      <rect class="keycap matrix" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.2" />
+      <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
+      <text class="key-label" transform="rotate(0)" y="0.9">C4R1</text>
+    </g>
+    <g transform="translate(96.799 63.3) rotate(0)">
+      <rect class="keycap matrix" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.2" />
+      <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
+      <text class="key-label" transform="rotate(0)" y="0.9">C4R2</text>
+    </g>
+    <g transform="translate(96.799 82.35) rotate(0)">
+      <rect class="keycap matrix" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.2" />
+      <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
+      <text class="key-label" transform="rotate(0)" y="0.9">C4R3</text>
+    </g>
+    <g transform="translate(96.799 101.4) rotate(0)">
+      <rect class="keycap matrix" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.2" />
+      <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
+      <text class="key-label" transform="rotate(0)" y="0.9">C4R4</text>
+    </g>
+    <g transform="translate(115.849 46.75) rotate(0)">
+      <rect class="keycap matrix" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.2" />
+      <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
+      <text class="key-label" transform="rotate(0)" y="0.9">C5R1</text>
+    </g>
+    <g transform="translate(115.849 65.8) rotate(0)">
+      <rect class="keycap matrix" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.2" />
+      <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
+      <text class="key-label" transform="rotate(0)" y="0.9">C5R2</text>
+    </g>
+    <g transform="translate(115.849 84.85) rotate(0)">
+      <rect class="keycap matrix" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.2" />
+      <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
+      <text class="key-label" transform="rotate(0)" y="0.9">C5R3</text>
+    </g>
+    <g transform="translate(115.849 103.9) rotate(0)">
+      <rect class="keycap matrix" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.2" />
+      <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
+      <text class="key-label" transform="rotate(0)" y="0.9">C5R4</text>
+    </g>
+    <g transform="translate(134.899 49.25) rotate(0)">
+      <rect class="keycap matrix" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.2" />
+      <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
+      <text class="key-label" transform="rotate(0)" y="0.9">C6R1</text>
+    </g>
+    <g transform="translate(134.899 68.3) rotate(0)">
+      <rect class="keycap matrix" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.2" />
+      <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
+      <text class="key-label" transform="rotate(0)" y="0.9">C6R2</text>
+    </g>
+    <g transform="translate(134.899 87.35) rotate(0)">
+      <rect class="keycap matrix" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.2" />
+      <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
+      <text class="key-label" transform="rotate(0)" y="0.9">C6R3</text>
+    </g>
+    <g transform="translate(134.899 106.4) rotate(0)">
+      <rect class="keycap matrix" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.2" />
+      <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
+      <text class="key-label" transform="rotate(0)" y="0.9">C6R4</text>
+    </g>
+    <g transform="translate(153.949 106.4)">
+      <circle class="encoder" r="9" />
+      <rect class="encoder-body" x="-6" y="-5.8" width="12" height="11.6" rx="1" />
+      <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
+      <text class="key-label" y="0.9">ENC</text>
+    </g>
+    <g transform="translate(125.374 125.4) rotate(10)">
+      <rect class="keycap thumb" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.2" />
+      <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
+      <text class="key-label" transform="rotate(-10)" y="0.9">T1</text>
+    </g>
+    <g transform="translate(145.08 131.051) rotate(30)">
+      <rect class="keycap thumb" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.2" />
+      <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
+      <text class="key-label" transform="rotate(-30)" y="0.9">T2</text>
+    </g>
+    <g transform="translate(161.665 143.1) rotate(50)">
+      <rect class="keycap thumb" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.2" />
+      <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
+      <text class="key-label" transform="rotate(-50)" y="0.9">T3</text>
+    </g>
+    <g transform="translate(173.129 160.095) rotate(70)">
+      <rect class="keycap thumb" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.2" />
+      <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
+      <text class="key-label" transform="rotate(-70)" y="0.9">T4</text>
+    </g>
+  <path class="calibration" d="M 82.95 193.266 V 199.266 M 82.95 196.266 H 132.95 M 132.95 193.266 V 199.266" />
+  <text class="note" x="107.95" y="204.266" text-anchor="middle">This line must measure exactly 50 mm</text>
+  <text class="note" x="107.95" y="213.266" text-anchor="middle">Rest your hand on the outline and test the T1–T4 thumb sweep.</text>
+</svg>

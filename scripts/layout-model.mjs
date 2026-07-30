@@ -1,0 +1,187 @@
+import fs from "node:fs";
+
+export function readConfig(configUrl = new URL("../layout.config.json", import.meta.url)) {
+  return JSON.parse(fs.readFileSync(configUrl, "utf8"));
+}
+
+export function rotatePoint(point, center, angleDeg) {
+  const angle = (angleDeg * Math.PI) / 180;
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+  const dx = point.x - center.x;
+  const dy = point.y - center.y;
+  return {
+    x: center.x + dx * cos - dy * sin,
+    y: center.y + dx * sin + dy * cos
+  };
+}
+
+export function rectangleCorners(key, width, height) {
+  const halfWidth = width / 2;
+  const halfHeight = height / 2;
+  const corners = [
+    { x: key.x - halfWidth, y: key.y - halfHeight },
+    { x: key.x + halfWidth, y: key.y - halfHeight },
+    { x: key.x + halfWidth, y: key.y + halfHeight },
+    { x: key.x - halfWidth, y: key.y + halfHeight }
+  ];
+  return corners.map((point) => rotatePoint(point, key, key.rotation));
+}
+
+export function componentEnvelope(component, config) {
+  if (component.group === "encoder") {
+    return rectangleCorners(
+      component,
+      config.encoder.knobDiameter,
+      config.encoder.knobDiameter
+    );
+  }
+  return rectangleCorners(
+    component,
+    config.switch.keycapWidth,
+    config.switch.keycapHeight
+  );
+}
+
+export function buildHalf(config) {
+  const { matrix, switch: switchConfig, encoder, thumbArc } = config;
+  const keys = [];
+
+  for (let column = 0; column < matrix.columns; column += 1) {
+    for (let row = 0; row < matrix.rows; row += 1) {
+      keys.push({
+        id: `c${column + 1}r${row + 1}`,
+        group: "matrix",
+        column,
+        row,
+        x: column * switchConfig.pitchX,
+        y: matrix.columnStagger[column] + row * switchConfig.pitchY,
+        rotation: 0
+      });
+    }
+  }
+
+  if (encoder.enabled) {
+    const alignedColumn = encoder.alignWithColumn;
+    keys.push({
+      id: "encoder",
+      group: "encoder",
+      x: (matrix.columns - 1 + encoder.columnOffset) * switchConfig.pitchX,
+      y:
+        matrix.columnStagger[alignedColumn] +
+        encoder.row * switchConfig.pitchY,
+      rotation: 0
+    });
+  }
+
+  const [startColumnA, startColumnB] = thumbArc.startBetweenColumns;
+  const startX =
+    ((startColumnA + startColumnB) / 2) * switchConfig.pitchX;
+  const startY =
+    Math.max(
+      matrix.columnStagger[startColumnA] +
+        (matrix.rows - 1) * switchConfig.pitchY,
+      matrix.columnStagger[startColumnB] +
+        (matrix.rows - 1) * switchConfig.pitchY
+    ) + thumbArc.dropFromLowerColumnKey;
+
+  let thumbX = startX;
+  let thumbY = startY;
+  for (let index = 0; index < thumbArc.count; index += 1) {
+    keys.push({
+      id: `thumb${index + 1}`,
+      group: "thumb",
+      index,
+      x: thumbX,
+      y: thumbY,
+      rotation: thumbArc.keyRotations[index]
+    });
+
+    const angle = thumbArc.segmentAngles[index];
+    if (angle !== undefined) {
+      const radians = (angle * Math.PI) / 180;
+      thumbX += thumbArc.step * Math.cos(radians);
+      thumbY += thumbArc.step * Math.sin(radians);
+    }
+  }
+
+  return keys;
+}
+
+function cross(origin, a, b) {
+  return (
+    (a.x - origin.x) * (b.y - origin.y) -
+    (a.y - origin.y) * (b.x - origin.x)
+  );
+}
+
+export function convexHull(points) {
+  const sorted = [...points].sort((a, b) => a.x - b.x || a.y - b.y);
+  if (sorted.length <= 1) return sorted;
+
+  const lower = [];
+  for (const point of sorted) {
+    while (
+      lower.length >= 2 &&
+      cross(lower.at(-2), lower.at(-1), point) <= 0
+    ) {
+      lower.pop();
+    }
+    lower.push(point);
+  }
+
+  const upper = [];
+  for (const point of sorted.reverse()) {
+    while (
+      upper.length >= 2 &&
+      cross(upper.at(-2), upper.at(-1), point) <= 0
+    ) {
+      upper.pop();
+    }
+    upper.push(point);
+  }
+
+  lower.pop();
+  upper.pop();
+  return lower.concat(upper);
+}
+
+export function plateOutline(keys, config) {
+  return convexHull(
+    keys.flatMap((key) =>
+      rectangleCorners(
+        key,
+        (key.group === "encoder"
+          ? config.encoder.knobDiameter
+          : config.switch.keycapWidth) + config.preview.plateMargin * 2,
+        (key.group === "encoder"
+          ? config.encoder.knobDiameter
+          : config.switch.keycapHeight) + config.preview.plateMargin * 2
+      )
+    )
+  );
+}
+
+export function boundsForPoints(points) {
+  return points.reduce(
+    (bounds, point) => ({
+      minX: Math.min(bounds.minX, point.x),
+      minY: Math.min(bounds.minY, point.y),
+      maxX: Math.max(bounds.maxX, point.x),
+      maxY: Math.max(bounds.maxY, point.y)
+    }),
+    { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity }
+  );
+}
+
+export function mirrorKey(key, axisX) {
+  return {
+    ...key,
+    x: axisX - key.x,
+    rotation: -key.rotation
+  };
+}
+
+export function distance(a, b) {
+  return Math.hypot(a.x - b.x, a.y - b.y);
+}

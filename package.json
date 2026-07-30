@@ -1,0 +1,11 @@
+{
+  "name": "hamrah-arc-58",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Parametric Sofle-spaced Choc v1 split keyboard layout",
+  "scripts": {
+    "generate": "node scripts/generate-layout.mjs",
+    "test": "node --test test/layout.test.mjs"
+  }
+}
