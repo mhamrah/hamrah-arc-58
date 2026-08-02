@@ -137,9 +137,14 @@ for index, hole_config in enumerate(layout["mechanical"]["mountingHoles"], 1):
         fail(f"H{index}: mounting-hole placement does not match the plate geometry")
 
 outline = layout["mechanical"]["boardOutline"]
-tension = layout["mechanical"]["outlineCurveTension"]
-if not 0 < tension <= 1:
-    fail("outline curve tension must be greater than zero and at most one")
+outline_mode = layout["mechanical"].get("outlineCurveMode", "catmull-rom")
+if outline_mode == "explicit-bezier":
+    if not all("controlIn" in point and "controlOut" in point for point in outline):
+        fail("every explicit Bezier outline anchor needs incoming and outgoing handles")
+else:
+    tension = layout["mechanical"]["outlineCurveTension"]
+    if not 0 < tension <= 1:
+        fail("outline curve tension must be greater than zero and at most one")
 
 
 def curve_point(point):
@@ -149,17 +154,33 @@ def curve_point(point):
 
 expected_outline_segments = set()
 for index, start in enumerate(outline):
-    previous = outline[(index - 1) % len(outline)]
     end = outline[(index + 1) % len(outline)]
-    following = outline[(index + 2) % len(outline)]
-    control_1 = {
-        "x": start["x"] + (end["x"] - previous["x"]) * tension / 6,
-        "y": start["y"] + (end["y"] - previous["y"]) * tension / 6,
-    }
-    control_2 = {
-        "x": end["x"] - (following["x"] - start["x"]) * tension / 6,
-        "y": end["y"] - (following["y"] - start["y"]) * tension / 6,
-    }
+    if outline_mode == "explicit-bezier":
+        control_1 = start["controlOut"]
+        control_2 = end["controlIn"]
+        incoming = (
+            end["x"] - control_2["x"],
+            end["y"] - control_2["y"],
+        )
+        outgoing = (
+            end["controlOut"]["x"] - end["x"],
+            end["controlOut"]["y"] - end["y"],
+        )
+        cross = incoming[0] * outgoing[1] - incoming[1] * outgoing[0]
+        dot = incoming[0] * outgoing[0] + incoming[1] * outgoing[1]
+        if abs(cross) >= 0.01 or dot <= 0:
+            fail(f"board outline join {index + 1} is not tangent-continuous")
+    else:
+        previous = outline[(index - 1) % len(outline)]
+        following = outline[(index + 2) % len(outline)]
+        control_1 = {
+            "x": start["x"] + (end["x"] - previous["x"]) * tension / 6,
+            "y": start["y"] + (end["y"] - previous["y"]) * tension / 6,
+        }
+        control_2 = {
+            "x": end["x"] - (following["x"] - start["x"]) * tension / 6,
+            "y": end["y"] - (following["y"] - start["y"]) * tension / 6,
+        }
     expected_outline_segments.add(
         (*curve_point(start), *curve_point(control_1),
          *curve_point(control_2), *curve_point(end))

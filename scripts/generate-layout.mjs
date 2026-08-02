@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import {
   boundsForPoints,
   buildHalf,
-  closedCatmullRomSegments,
+  closedOutlineSegments,
   mirrorKey,
   readConfig,
   rectangleCorners,
@@ -16,10 +16,7 @@ const rootDirectory = path.resolve(scriptDirectory, "..");
 const outputDirectory = path.join(rootDirectory, "output");
 const config = readConfig();
 const leftKeys = buildHalf(config);
-const outlineSegments = closedCatmullRomSegments(
-  config.mechanical.boardOutline,
-  config.mechanical.outlineCurveTension
-);
+const outlineSegments = closedOutlineSegments(config.mechanical);
 const leftOutline = sampleClosedCurve(outlineSegments);
 const halfBounds = boundsForPoints(leftOutline);
 const halfWidth = halfBounds.maxX - halfBounds.minX;
@@ -174,13 +171,9 @@ function mirroredPoint(point) {
 
 function halfMechanical(side) {
   const mirror = side === "right";
-  const anchors = mirror
-    ? config.mechanical.boardOutline.map(mirroredPoint)
-    : config.mechanical.boardOutline;
-  const segments = closedCatmullRomSegments(
-    anchors,
-    config.mechanical.outlineCurveTension
-  );
+  const segments = mirror
+    ? transformCurve(outlineSegments, mirroredPoint)
+    : outlineSegments;
   return {
     label: mirror ? "right" : "left",
     keys: mirror

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   buildHalf,
-  closedCatmullRomSegments,
+  closedOutlineSegments,
   componentEnvelope,
   distance,
   mirrorKey,
@@ -156,16 +156,31 @@ test("Choc v1 plate cutout remains 14 mm square", () => {
 test("the shared mechanical design has a smooth outline and six clear M2 fasteners", () => {
   assert.equal(config.mechanical.mountingHoleDiameter, 2.2);
   assert.equal(config.mechanical.mountingHoles.length, 6);
-  assert.ok(config.mechanical.boardOutline.length >= 20);
-  assert.ok(config.mechanical.outlineCurveTension > 0);
-  const segments = closedCatmullRomSegments(
-    config.mechanical.boardOutline,
-    config.mechanical.outlineCurveTension
+  assert.ok(config.mechanical.boardOutline.length >= 12);
+  assert.equal(config.mechanical.outlineCurveMode, "explicit-bezier");
+  assert.ok(
+    config.mechanical.boardOutline.every(
+      (point) => point.controlIn !== undefined && point.controlOut !== undefined
+    )
   );
+  const segments = closedOutlineSegments(config.mechanical);
   assert.equal(segments.length, config.mechanical.boardOutline.length);
   assert.equal(sampleClosedCurve(segments).length, segments.length * 24);
   for (let index = 0; index < segments.length; index += 1) {
-    assert.deepEqual(segments[index].end, segments[(index + 1) % segments.length].start);
+    const next = segments[(index + 1) % segments.length];
+    assert.deepEqual(segments[index].end, next.start);
+    const incoming = {
+      x: segments[index].end.x - segments[index].control2.x,
+      y: segments[index].end.y - segments[index].control2.y
+    };
+    const outgoing = {
+      x: next.control1.x - next.start.x,
+      y: next.control1.y - next.start.y
+    };
+    const cross = incoming.x * outgoing.y - incoming.y * outgoing.x;
+    const dot = incoming.x * outgoing.x + incoming.y * outgoing.y;
+    assert.ok(Math.abs(cross) < 0.01, `outline join ${index + 1} is not tangent-continuous`);
+    assert.ok(dot > 0, `outline join ${index + 1} reverses direction`);
   }
   for (const hole of config.mechanical.mountingHoles) {
     const nearest = Math.min(...keys.map((key) => distance(hole, key)));

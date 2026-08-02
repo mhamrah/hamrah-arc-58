@@ -7,6 +7,7 @@ output/
 *.uf2
 *.kicad_prl
 *.kicad_pcb.zip
+*.kicad_pcb/
 *.kicad_pcb-bak
 *.kicad_sch-bak
 *.kicad_pro-bak

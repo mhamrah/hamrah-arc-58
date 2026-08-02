@@ -185,6 +185,28 @@ export function closedCatmullRomSegments(points, tension = 1) {
   });
 }
 
+export function closedOutlineSegments(mechanical) {
+  const points = mechanical.boardOutline;
+  if (mechanical.outlineCurveMode !== "explicit-bezier") {
+    return closedCatmullRomSegments(points, mechanical.outlineCurveTension);
+  }
+  if (
+    points.length < 3 ||
+    points.some((point) => point.controlIn === undefined || point.controlOut === undefined)
+  ) {
+    throw new Error("An explicit Bezier outline needs at least three anchors with control handles");
+  }
+  return points.map((start, index) => {
+    const end = points[(index + 1) % points.length];
+    return {
+      start: { x: start.x, y: start.y },
+      control1: { x: start.controlOut.x, y: start.controlOut.y },
+      control2: { x: end.controlIn.x, y: end.controlIn.y },
+      end: { x: end.x, y: end.y }
+    };
+  });
+}
+
 export function sampleCubicBezier(segment, steps = 24) {
   const points = [];
   for (let index = 0; index < steps; index += 1) {
