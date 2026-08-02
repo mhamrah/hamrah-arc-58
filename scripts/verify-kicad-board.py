@@ -190,6 +190,16 @@ if len(actual_outline_segments) != len(outline):
 if actual_outline_segments != expected_outline_segments:
     fail("board rounded Edge.Cuts does not match approved plate outline")
 
+# Board-level comments graphics were inherited from the Sofle reference and
+# looked like copper touching the finished edge.  Footprint-local comments
+# (for example, mounting-hole documentation) are still allowed.
+comment_drawings = [
+    drawing for drawing in board.GetDrawings()
+    if drawing.GetLayerName() == "User.Comments"
+]
+if comment_drawings:
+    fail(f"obsolete User.Comments board guides remain: {len(comment_drawings)}")
+
 revision_mark = f"REV {layout['revision'].upper()} • REVERSIBLE LEFT / RIGHT"
 revision_layers = {
     drawing.GetLayerName()
