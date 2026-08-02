@@ -33,6 +33,26 @@ function pointsAttribute(points) {
   return points.map((point) => `${format(point.x)},${format(point.y)}`).join(" ");
 }
 
+function roundedRectanglePoints(center, width, height, radius, stepsPerCorner = 8) {
+  const halfWidth = width / 2;
+  const halfHeight = height / 2;
+  const corners = [
+    { x: center.x + halfWidth - radius, y: center.y - halfHeight + radius, start: -90 },
+    { x: center.x + halfWidth - radius, y: center.y + halfHeight - radius, start: 0 },
+    { x: center.x - halfWidth + radius, y: center.y + halfHeight - radius, start: 90 },
+    { x: center.x - halfWidth + radius, y: center.y - halfHeight + radius, start: 180 }
+  ];
+  return corners.flatMap((corner) =>
+    Array.from({ length: stepsPerCorner + 1 }, (_, index) => {
+      const angle = ((corner.start + (90 * index) / stepsPerCorner) * Math.PI) / 180;
+      return {
+        x: corner.x + radius * Math.cos(angle),
+        y: corner.y + radius * Math.sin(angle)
+      };
+    })
+  );
+}
+
 function transformCurve(segments, transform) {
   const point = (value) => transform(value);
   return segments.map((segment) => ({
@@ -184,7 +204,13 @@ function halfMechanical(side) {
     holes: mirror
       ? config.mechanical.mountingHoles.map(mirroredPoint)
       : config.mechanical.mountingHoles,
-    reset: mirror ? mirroredPoint(config.mechanical.resetAccess) : config.mechanical.resetAccess
+    reset: mirror ? mirroredPoint(config.mechanical.resetAccess) : config.mechanical.resetAccess,
+    electronicsWindow: {
+      ...config.mechanical.acrylic.electronicsWindow,
+      ...(mirror
+        ? { centerX: mirroredPoint({ x: config.mechanical.acrylic.electronicsWindow.centerX, y: 0 }).x }
+        : {})
+    }
   };
 }
 
@@ -215,19 +241,21 @@ function makePlateSvg(side = "left") {
     })
     .join("\n");
   const holes = half.holes
-    .map((hole, index) => `  <circle class="cut" data-hole="H${index + 1}" cx="${format(hole.x + offsetX)}" cy="${format(hole.y + offsetY)}" r="${format(config.mechanical.mountingHoleDiameter / 2)}" />`)
+    .map((hole, index) => `  <circle class="cut" data-hole="H${index + 1}" cx="${format(hole.x + offsetX)}" cy="${format(hole.y + offsetY)}" r="${format(config.mechanical.acrylic.mountingHoleDiameter / 2)}" />`)
     .join("\n");
+  const electronics = half.electronicsWindow;
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${format(width)}mm" height="${format(height)}mm" viewBox="0 0 ${format(width)} ${format(height)}">
-  <title>${config.name} ${half.label} top plate</title>
-  <desc>One-to-one millimetre top-plate geometry aligned to the Rev ${config.revision} reversible PCB.</desc>
+  <title>${config.name} ${half.label} acrylic top plate</title>
+  <desc>One-to-one millimetre ${config.mechanical.acrylic.topThickness} mm cast-acrylic plate with electronics access, aligned to the Rev ${config.revision} reversible PCB.</desc>
   <style>
     .outline, .cut { fill: none; stroke: #000; stroke-width: 0.2; vector-effect: non-scaling-stroke; }
   </style>
   <path class="outline" d="${curvePath(outline)}" />
 ${cutouts}
 ${holes}
+  <rect class="cut" data-cutout="controller-oled-trrs" x="${format(electronics.centerX - electronics.width / 2 + offsetX)}" y="${format(electronics.centerY - electronics.height / 2 + offsetY)}" width="${format(electronics.width)}" height="${format(electronics.height)}" rx="${format(electronics.cornerRadius)}" />
 </svg>
 `;
 }
@@ -245,17 +273,17 @@ function makeBottomPlateSvg(side = "left") {
     y: point.y + offsetY
   }));
   const holes = half.holes
-    .map((hole, index) => `  <circle class="cut" data-hole="H${index + 1}" cx="${format(hole.x + offsetX)}" cy="${format(hole.y + offsetY)}" r="${format(config.mechanical.mountingHoleDiameter / 2)}" />`)
+    .map((hole, index) => `  <circle class="cut" data-hole="H${index + 1}" cx="${format(hole.x + offsetX)}" cy="${format(hole.y + offsetY)}" r="${format(config.mechanical.acrylic.mountingHoleDiameter / 2)}" />`)
     .join("\n");
   const reset = half.reset;
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${format(width)}mm" height="${format(height)}mm" viewBox="0 0 ${format(width)} ${format(height)}">
-  <title>${config.name} ${half.label} bottom plate</title>
-  <desc>One-to-one millimetre bottom-plate geometry with reset access, aligned to the Rev ${config.revision} reversible PCB.</desc>
+  <title>${config.name} ${half.label} acrylic bottom plate</title>
+  <desc>One-to-one millimetre ${config.mechanical.acrylic.bottomThickness} mm cast-acrylic bottom plate with reset access, aligned to the Rev ${config.revision} reversible PCB.</desc>
   <style>.outline, .cut { fill: none; stroke: #000; stroke-width: 0.2; vector-effect: non-scaling-stroke; }</style>
   <path class="outline" d="${curvePath(outline)}" />
 ${holes}
-  <circle class="cut" data-cutout="reset" cx="${format(reset.x + offsetX)}" cy="${format(reset.y + offsetY)}" r="${format(reset.diameter / 2)}" />
+  <circle class="cut" data-cutout="reset" cx="${format(reset.x + offsetX)}" cy="${format(reset.y + offsetY)}" r="${format(config.mechanical.acrylic.resetAccessDiameter / 2)}" />
 </svg>
 `;
 }
@@ -388,8 +416,20 @@ function makeDxf(side = "left") {
     );
   }
   for (const hole of half.holes) {
-    entities.push(dxfCircle(hole, config.mechanical.mountingHoleDiameter / 2, "MOUNTING_HOLES"));
+    entities.push(dxfCircle(hole, config.mechanical.acrylic.mountingHoleDiameter / 2, "MOUNTING_HOLES"));
   }
+  const electronics = half.electronicsWindow;
+  entities.push(
+    dxfPolyline(
+      roundedRectanglePoints(
+        { x: electronics.centerX, y: electronics.centerY },
+        electronics.width,
+        electronics.height,
+        electronics.cornerRadius
+      ),
+      "ELECTRONICS_WINDOW"
+    )
+  );
   return [
     "0",
     "SECTION",
@@ -418,9 +458,46 @@ function makeBottomDxf(side = "left") {
   const half = halfMechanical(side);
   const entities = [dxfPolyline(half.outline, "PLATE_OUTLINE")];
   for (const hole of half.holes) {
-    entities.push(dxfCircle(hole, config.mechanical.mountingHoleDiameter / 2, "MOUNTING_HOLES"));
+    entities.push(dxfCircle(hole, config.mechanical.acrylic.mountingHoleDiameter / 2, "MOUNTING_HOLES"));
   }
-  entities.push(dxfCircle(half.reset, half.reset.diameter / 2, "RESET_ACCESS"));
+  entities.push(dxfCircle(half.reset, config.mechanical.acrylic.resetAccessDiameter / 2, "RESET_ACCESS"));
+  return ["0", "SECTION", "2", "HEADER", "9", "$INSUNITS", "70", "4", "0", "ENDSEC", "0", "SECTION", "2", "ENTITIES", ...entities, "0", "ENDSEC", "0", "EOF", ""].join("\n");
+}
+
+function makeAcrylicFitCouponSvg() {
+  const sizes = config.mechanical.acrylic.fitCouponCutouts;
+  const width = 72;
+  const height = 28;
+  const centers = sizes.map((_, index) => ({ x: 14 + index * 22, y: 13 }));
+  const cutouts = sizes.map((size, index) => {
+    const center = centers[index];
+    return `  <rect class="cut" x="${format(center.x - size / 2)}" y="${format(center.y - size / 2)}" width="${format(size)}" height="${format(size)}" />\n  <text x="${format(center.x)}" y="25.5">${format(size)} mm</text>`;
+  }).join("\n");
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="${width}mm" height="${height}mm" viewBox="0 0 ${width} ${height}">
+  <title>${config.name} Choc v1 acrylic fit coupon</title>
+  <desc>Cut in the exact acrylic stock and process intended for the top plate, then choose the best switch fit.</desc>
+  <style>.outline,.cut{fill:none;stroke:#000;stroke-width:.2;vector-effect:non-scaling-stroke} text{font:2px sans-serif;text-anchor:middle}</style>
+  <rect class="outline" x="0.5" y="0.5" width="71" height="27" rx="2" />
+${cutouts}
+</svg>
+`;
+}
+
+function makeAcrylicFitCouponDxf() {
+  const sizes = config.mechanical.acrylic.fitCouponCutouts;
+  const entities = [
+    dxfPolyline(roundedRectanglePoints({ x: 36, y: 14 }, 71, 27, 2), "COUPON_OUTLINE")
+  ];
+  for (let index = 0; index < sizes.length; index += 1) {
+    const size = sizes[index];
+    entities.push(
+      dxfPolyline(
+        rectangleCorners({ x: 14 + index * 22, y: 13, rotation: 0 }, size, size),
+        `CUTOUT_${String(size).replace(".", "_")}_MM`
+      )
+    );
+  }
   return ["0", "SECTION", "2", "HEADER", "9", "$INSUNITS", "70", "4", "0", "ENDSEC", "0", "SECTION", "2", "ENTITIES", ...entities, "0", "ENDSEC", "0", "EOF", ""].join("\n");
 }
 
@@ -470,6 +547,8 @@ const artifacts = {
   "right-half-plate.dxf": makeDxf("right"),
   "right-half-bottom-plate.svg": makeBottomPlateSvg("right"),
   "right-half-bottom-plate.dxf": makeBottomDxf("right"),
+  "choc-v1-acrylic-fit-coupon.svg": makeAcrylicFitCouponSvg(),
+  "choc-v1-acrylic-fit-coupon.dxf": makeAcrylicFitCouponDxf(),
   "key-positions.json": `${makePositionsJson()}\n`
 };
 

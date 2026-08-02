@@ -187,3 +187,54 @@ test("the shared mechanical design has a smooth outline and six clear M2 fastene
     assert.ok(nearest > 13, `mounting hole at ${hole.x}, ${hole.y} is too near a key`);
   }
 });
+
+test("acrylic plates use prototype-safe dimensions and preserve the electronics bay", () => {
+  const acrylic = config.mechanical.acrylic;
+  assert.equal(acrylic.material, "cast acrylic");
+  assert.equal(acrylic.topThickness, 1.5);
+  assert.equal(acrylic.bottomThickness, 3);
+  assert.equal(acrylic.mountingHoleDiameter, 2.4);
+  assert.equal(acrylic.resetAccessDiameter, 4.5);
+  assert.ok(acrylic.fitCouponCutouts.includes(config.switch.plateCutout));
+
+  const window = acrylic.electronicsWindow;
+  const left = window.centerX - window.width / 2;
+  const right = window.centerX + window.width / 2;
+  const top = window.centerY - window.height / 2;
+  const bottom = window.centerY + window.height / 2;
+  let nearestSwitchGap = Infinity;
+  for (const key of keys.filter((candidate) => candidate.group !== "encoder")) {
+    const corners = rectangleCorners(key, config.switch.plateCutout, config.switch.plateCutout);
+    const keyLeft = Math.min(...corners.map((point) => point.x));
+    const keyRight = Math.max(...corners.map((point) => point.x));
+    const keyTop = Math.min(...corners.map((point) => point.y));
+    const keyBottom = Math.max(...corners.map((point) => point.y));
+    const gapX = Math.max(left - keyRight, keyLeft - right, 0);
+    const gapY = Math.max(top - keyBottom, keyTop - bottom, 0);
+    nearestSwitchGap = Math.min(nearestSwitchGap, Math.hypot(gapX, gapY));
+  }
+  assert.ok(nearestSwitchGap >= 2, `electronics window ligament is only ${nearestSwitchGap} mm`);
+
+  for (const hole of config.mechanical.mountingHoles) {
+    const gapX = Math.max(left - hole.x, hole.x - right, 0);
+    const gapY = Math.max(top - hole.y, hole.y - bottom, 0);
+    assert.ok(
+      Math.hypot(gapX, gapY) > acrylic.mountingHoleDiameter / 2 + 1.5,
+      `electronics window is too close to mounting hole at ${hole.x}, ${hole.y}`
+    );
+  }
+});
+
+test("CNC case dimensions satisfy the conservative machining envelope", () => {
+  const enclosure = config.mechanical.cncCase;
+  assert.equal(enclosure.material, "6061-T6 aluminum");
+  assert.ok(enclosure.outerWall - enclosure.pcbPerimeterClearance >= 2);
+  assert.ok(enclosure.floorThickness >= 2.5);
+  assert.ok(enclosure.pcbUndersideHeight - enclosure.floorThickness >= 3.2);
+  assert.ok(enclosure.bossDiameter >= 6);
+  assert.equal(enclosure.tapDrillDiameter, 1.6);
+  assert.equal(enclosure.thread, "M2 x 0.4");
+  assert.ok(enclosure.threadDepth >= 3);
+  assert.equal(enclosure.topPlateThickness, 1.5);
+  assert.ok(enclosure.pcbToPlateGap >= 2);
+});

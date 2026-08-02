@@ -15,6 +15,7 @@ C2,2,47 uF 10 V X5R or X7R capacitor,1206,Local RGB rail bulk capacitance; verif
 J1,2,MJ-4PP-9 compatible 3.5 mm TRRS jack,Reversible horizontal SMD,Mount on the face toward keycaps; use the exact jack matching the embedded reversible footprint
 J2,2,0.91 inch SSD1306 128x32 OLED module,4-pin I2C 3.3 V,Mount facing keycaps; bridge front JP1-JP4 for left or back JP5-JP8 for right
 RST1,2,Low-profile tactile reset switch,TVBP06-compatible SMD,Shorts Helios RESET to GND
-PLATE_TOP,2,Hamrah Arc 58 top plate,1.2 mm FR4 recommended,Use the generated left/right DXF files and confirm Choc retention with the actual switch batch
-PLATE_BOTTOM,2,Hamrah Arc 58 bottom plate,1.6 mm FR4 recommended,Use the generated left/right DXF files
-M2_HARDWARE,12,M2 standoff plus screws,5-7 mm spacer,Six mounting points per half; confirm stack height with sockets and OLED
+PLATE_TOP,2,Hamrah Arc 58 top plate,1.5 mm cast acrylic or CNC aluminum,Order one left and one right; test the acrylic fit coupon against the actual Choc switch batch
+PLATE_BOTTOM,2,Hamrah Arc 58 bottom plate,3.0 mm cast acrylic,Order one left and one right; includes reset access
+CASE_CNC,2,Hamrah Arc 58 machined bottom chassis,6061-T6 aluminum optional alternative to acrylic bottom,Order one left and one right STEP model; six M2 x 0.4 tapped bosses per half
+M2_HARDWARE,12,M2 screws and optional spacers,Stack-dependent,Six mounting points per half; select length after measuring the fabricated PCB and chosen enclosure stack

@@ -39,12 +39,20 @@ Node.js 18 or newer and KiCad 9 are required.
 ```sh
 npm run generate
 npm run verify
+npm run generate:enclosures
 ```
 
 Generation creates the mirrored layout, a US Letter 1:1 paper test, exact key
 positions, and left/right top and bottom plate SVG/DXF files under `output/`.
 Print the paper test at Actual Size / 100% and confirm its calibration bar is
 exactly 50 mm before ordering plates.
+
+`generate:enclosures` additionally creates vendor ZIP packages for 1.5 mm
+acrylic top plates, 3 mm acrylic bottom plates, and a 6061-T6 machined aluminum
+case under `output/manufacturing/`. It uses `uv` with Python 3.12 to run the
+CadQuery solid-model generator. Material, tolerances, fit-coupon instructions,
+and the nominal hardware stack are documented in
+[`hardware/ENCLOSURES.md`](hardware/ENCLOSURES.md).
 
 The single native PCB project is:
 

@@ -84,6 +84,37 @@
       { "x": 143, "y": 127 },
       { "x": -8, "y": 77 }
     ],
-    "resetAccess": { "x": 129.3, "y": 32.5, "diameter": 4 }
+    "resetAccess": { "x": 129.3, "y": 32.5, "diameter": 4 },
+    "acrylic": {
+      "material": "cast acrylic",
+      "topThickness": 1.5,
+      "bottomThickness": 3,
+      "mountingHoleDiameter": 2.4,
+      "resetAccessDiameter": 4.5,
+      "electronicsWindow": {
+        "centerX": 116.75,
+        "centerY": 21.5,
+        "width": 25,
+        "height": 61,
+        "cornerRadius": 3
+      },
+      "fitCouponCutouts": [13.8, 14, 14.2]
+    },
+    "cncCase": {
+      "material": "6061-T6 aluminum",
+      "outerWall": 2.5,
+      "pcbPerimeterClearance": 0.35,
+      "overallHeight": 6.5,
+      "floorThickness": 2.5,
+      "pcbUndersideHeight": 5.7,
+      "bossDiameter": 6.5,
+      "tapDrillDiameter": 1.6,
+      "thread": "M2 x 0.4",
+      "threadDepth": 4,
+      "topPlateThickness": 1.5,
+      "pcbToPlateGap": 2.2,
+      "resetAccessDiameter": 4.5,
+      "edgeBreak": 0.5
+    }
   }
 }
