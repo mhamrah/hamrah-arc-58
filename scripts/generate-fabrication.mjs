@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** Generate and sanity-check the one reversible Rev B PCB fabrication ZIP. */
+/** Generate and sanity-check the one reversible Rev Alpha PCB fabrication ZIP. */
 
 import { execFileSync } from 'node:child_process';
 import {
@@ -16,7 +16,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const board = join(root, 'hardware', 'kicad', 'arc58-reversible.kicad_pcb');
-const packageName = 'arc58-reversible-pcb-rev-b';
+const packageName = 'arc58-reversible-pcb-rev-alpha';
 const tempRoot = mkdtempSync(join(tmpdir(), 'arc58-fab-'));
 const staging = join(tempRoot, packageName);
 const output = join(root, 'output', 'fabrication', `${packageName}.zip`);

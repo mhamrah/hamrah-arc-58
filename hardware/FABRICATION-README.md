@@ -1,6 +1,6 @@
-# Arc 58 Rev B fabrication notes
+# Arc 58 Rev Alpha fabrication notes
 
-`arc58-reversible-pcb-rev-b.zip` contains one two-layer reversible PCB. Order
+`arc58-reversible-pcb-rev-alpha.zip` contains one two-layer reversible PCB. Order
 quantity two; do not mirror the Gerbers at the fabricator. In the assembled
 keyboard, B.Cu faces the keycaps on the left half and F.Cu faces the keycaps on
 the right half. Follow `hardware/README.md` for the component-side table.

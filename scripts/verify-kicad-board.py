@@ -136,27 +136,68 @@ for index, hole_config in enumerate(layout["mechanical"]["mountingHoles"], 1):
     if not (close(actual_x, expected_x) and close(actual_y, expected_y)):
         fail(f"H{index}: mounting-hole placement does not match the plate geometry")
 
-expected_outline_points = {
-    (round(pcb_location(point["x"], point["y"])[0], 3),
-     round(pcb_location(point["x"], point["y"])[1], 3))
-    for point in layout["mechanical"]["boardOutline"]
-}
-actual_outline_points = set()
-edge_count = 0
+outline = layout["mechanical"]["boardOutline"]
+tension = layout["mechanical"]["outlineCurveTension"]
+if not 0 < tension <= 1:
+    fail("outline curve tension must be greater than zero and at most one")
+
+
+def curve_point(point):
+    x, y, _ = pcb_location(point["x"], point["y"])
+    return round(x, 3), round(y, 3)
+
+
+expected_outline_segments = set()
+for index, start in enumerate(outline):
+    previous = outline[(index - 1) % len(outline)]
+    end = outline[(index + 1) % len(outline)]
+    following = outline[(index + 2) % len(outline)]
+    control_1 = {
+        "x": start["x"] + (end["x"] - previous["x"]) * tension / 6,
+        "y": start["y"] + (end["y"] - previous["y"]) * tension / 6,
+    }
+    control_2 = {
+        "x": end["x"] - (following["x"] - start["x"]) * tension / 6,
+        "y": end["y"] - (following["y"] - start["y"]) * tension / 6,
+    }
+    expected_outline_segments.add(
+        (*curve_point(start), *curve_point(control_1),
+         *curve_point(control_2), *curve_point(end))
+    )
+
+actual_outline_segments = set()
 for drawing in board.GetDrawings():
     if drawing.GetLayer() != pcbnew.Edge_Cuts:
         continue
-    if drawing.GetShapeStr() != "Line":
-        fail("board outline must contain straight line segments only")
-    edge_count += 1
-    for point in (drawing.GetStart(), drawing.GetEnd()):
-        actual_outline_points.add(
-            (round(pcbnew.ToMM(point.x), 3), round(pcbnew.ToMM(point.y), 3))
+    if drawing.GetShapeStr() != "Bezier Curve":
+        fail("board outline must contain smooth Bezier curves only")
+    points = (
+        drawing.GetStart(), drawing.GetBezierC1(), drawing.GetBezierC2(),
+        drawing.GetEnd(),
+    )
+    actual_outline_segments.add(
+        tuple(
+            coordinate
+            for point in points
+            for coordinate in (
+                round(pcbnew.ToMM(point.x), 3),
+                round(pcbnew.ToMM(point.y), 3),
+            )
         )
-if edge_count != len(layout["mechanical"]["boardOutline"]):
+    )
+if len(actual_outline_segments) != len(outline):
     fail("board outline segment count does not match approved geometry")
-if actual_outline_points != expected_outline_points:
-    fail("board Edge.Cuts does not match approved plate outline")
+if actual_outline_segments != expected_outline_segments:
+    fail("board rounded Edge.Cuts does not match approved plate outline")
+
+revision_mark = f"REV {layout['revision'].upper()} • REVERSIBLE LEFT / RIGHT"
+revision_layers = {
+    drawing.GetLayerName()
+    for drawing in board.GetDrawings()
+    if isinstance(drawing, pcbnew.PCB_TEXT) and drawing.GetText() == revision_mark
+}
+if revision_layers != {"F.Silkscreen", "B.Silkscreen"}:
+    fail("Rev Alpha reversible marking must appear on both silkscreen faces")
 
 for index in range(1, 7):
     hole = pad(footprints[f"H{index}"], "")
@@ -279,6 +320,32 @@ if net(encoder, "S1") != "COL5" or net(encoder, "S2") != "KEY_ENC":
 if net(footprints["D25"], "1") != "ROW4" or net(footprints["D25"], "2") != "KEY_ENC":
     fail("D25: encoder switch diode is wrong")
 
+# Keep the SW19-to-SW26 reversible contact route inside the rounded thumb
+# sweep.  The previous route continued vertically to y=162.864 mm and looked
+# like a blue tail leaving the intended enclosure.
+switch_route = [
+    track for track in board.GetTracks()
+    if track.GetNetname() == "Net-(SW19-Pad2)"
+]
+if any(
+    track.GetLayer() == pcbnew.B_Cu
+    and close(pcbnew.ToMM(track.GetStart().x), 118.063)
+    and close(pcbnew.ToMM(track.GetEnd().x), 118.063)
+    and max(
+        pcbnew.ToMM(track.GetStart().y),
+        pcbnew.ToMM(track.GetEnd().y),
+    ) > 150.001
+    for track in switch_route
+):
+    fail("SW19-to-SW26 B.Cu route extends below the approved thumb sweep")
+if not any(
+    isinstance(track, pcbnew.PCB_VIA)
+    and close(pcbnew.ToMM(track.GetPosition().x), 106.0)
+    and close(pcbnew.ToMM(track.GetPosition().y), 162.864)
+    for track in switch_route
+):
+    fail("SW19-to-SW26 route is missing its inboard layer-change via")
+
 board.BuildConnectivity()
 unconnected = board.GetConnectivity().GetUnconnectedCount(False)
 if unconnected:
@@ -289,6 +356,7 @@ if not list(board.GetTracks()):
 print(
     f"PASS: {BOARD.name} — {len(footprints)} footprints, "
     f"{len(list(board.GetTracks()))} copper items, 28-key RGB chain, "
-    "geometry and Helios QMK mapping matched, matrix/controller/OLED/TRRS "
+    "rounded Rev Alpha geometry and Helios QMK mapping matched, "
+    "matrix/controller/OLED/TRRS "
     "nets present, zero unrouted connections"
 )

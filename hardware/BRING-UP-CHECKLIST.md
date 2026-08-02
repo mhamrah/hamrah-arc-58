@@ -1,4 +1,4 @@
-# Arc 58 Rev B bring-up checklist
+# Arc 58 Rev Alpha bring-up checklist
 
 Do not connect the two halves together or connect a computer until the first
 three inspections pass. This checklist is the acceptance gate for calling the

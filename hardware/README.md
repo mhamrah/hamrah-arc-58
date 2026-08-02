@@ -1,10 +1,11 @@
-# Hamrah Arc 58 Rev B hardware
+# Hamrah Arc 58 Rev Alpha hardware
 
-Rev B is one fully reversible, two-layer PCB derived from the Sofle Choc
+Rev Alpha is one fully reversible, two-layer PCB derived from the Sofle Choc
 electrical and mechanical approach. Order two identical boards. The F.Cu view
 is the right-hand outline; turning the board over to its B.Cu view produces the
 left-hand outline. The approved 6x4 column-staggered field and four-key Arc
-thumb geometry are unchanged.
+thumb geometry are unchanged. Its continuous rounded perimeter follows the
+key field and thumb arc with practical space for routing and six M2 fasteners.
 
 The canonical KiCad project is:
 
@@ -85,4 +86,4 @@ npm run verify
 The board is design-checked, not hardware-proven. Order a small prototype
 quantity, follow `hardware/BRING-UP-CHECKLIST.md`, and do not call the revision
 production-ready until an assembled pair passes the physical and electrical
-bring-up tests. The complete pair BOM is `hardware/BOM-REV-B.csv`.
+bring-up tests. The complete pair BOM is `hardware/BOM-REV-ALPHA.csv`.
