@@ -149,3 +149,13 @@ test("T1 has the requested extra millimetre of matrix clearance", () => {
 test("Choc v1 plate cutout remains 14 mm square", () => {
   assert.equal(config.switch.plateCutout, 14);
 });
+
+test("the shared mechanical design has six M2 fasteners clear of the key field", () => {
+  assert.equal(config.mechanical.mountingHoleDiameter, 2.2);
+  assert.equal(config.mechanical.mountingHoles.length, 6);
+  assert.equal(config.mechanical.boardOutline.length, 10);
+  for (const hole of config.mechanical.mountingHoles) {
+    const nearest = Math.min(...keys.map((key) => distance(hole, key)));
+    assert.ok(nearest > 13, `mounting hole at ${hole.x}, ${hole.y} is too near a key`);
+  }
+});

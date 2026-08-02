@@ -45,5 +45,37 @@
   "preview": {
     "splitGap": 58,
     "plateMargin": 4
+  },
+  "manufacturing": {
+    "pcbTransform": {
+      "mirrorX": true,
+      "originX": 215.8,
+      "originY": 45,
+      "rotationBase": 180
+    }
+  },
+  "mechanical": {
+    "mountingHoleDiameter": 2.2,
+    "boardOutline": [
+      { "x": -15, "y": -15 },
+      { "x": 60, "y": -18 },
+      { "x": 108, "y": -12 },
+      { "x": 110, "y": -6 },
+      { "x": 130, "y": -6 },
+      { "x": 165, "y": 52 },
+      { "x": 165, "y": 92 },
+      { "x": 151, "y": 130 },
+      { "x": 132, "y": 142 },
+      { "x": -15, "y": 104 }
+    ],
+    "mountingHoles": [
+      { "x": -8, "y": -8 },
+      { "x": 78, "y": -11 },
+      { "x": 120, "y": -6 },
+      { "x": 158, "y": 57 },
+      { "x": 148, "y": 126 },
+      { "x": -8, "y": 100 }
+    ],
+    "resetAccess": { "x": 23, "y": 93, "diameter": 4 }
   }
 }
