@@ -162,6 +162,54 @@ export function plateOutline(keys, config) {
   );
 }
 
+export function closedCatmullRomSegments(points, tension = 1) {
+  if (points.length < 3) {
+    throw new Error("A closed curve needs at least three anchors");
+  }
+  return points.map((start, index) => {
+    const previous = points[(index - 1 + points.length) % points.length];
+    const end = points[(index + 1) % points.length];
+    const following = points[(index + 2) % points.length];
+    return {
+      start,
+      control1: {
+        x: start.x + ((end.x - previous.x) * tension) / 6,
+        y: start.y + ((end.y - previous.y) * tension) / 6
+      },
+      control2: {
+        x: end.x - ((following.x - start.x) * tension) / 6,
+        y: end.y - ((following.y - start.y) * tension) / 6
+      },
+      end
+    };
+  });
+}
+
+export function sampleCubicBezier(segment, steps = 24) {
+  const points = [];
+  for (let index = 0; index < steps; index += 1) {
+    const t = index / steps;
+    const u = 1 - t;
+    points.push({
+      x:
+        u ** 3 * segment.start.x +
+        3 * u ** 2 * t * segment.control1.x +
+        3 * u * t ** 2 * segment.control2.x +
+        t ** 3 * segment.end.x,
+      y:
+        u ** 3 * segment.start.y +
+        3 * u ** 2 * t * segment.control1.y +
+        3 * u * t ** 2 * segment.control2.y +
+        t ** 3 * segment.end.y
+    });
+  }
+  return points;
+}
+
+export function sampleClosedCurve(segments, steps = 24) {
+  return segments.flatMap((segment) => sampleCubicBezier(segment, steps));
+}
+
 export function boundsForPoints(points) {
   return points.reduce(
     (bounds, point) => ({

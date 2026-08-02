@@ -6,6 +6,10 @@
   "description": "Parametric Sofle-spaced Choc v1 split keyboard layout",
   "scripts": {
     "generate": "node scripts/generate-layout.mjs",
-    "test": "node --test test/layout.test.mjs"
+    "generate:fab": "node scripts/generate-fabrication.mjs",
+    "test": "node --test test/layout.test.mjs",
+    "verify:pcb": "/Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/3.9/bin/python3 scripts/verify-kicad-board.py",
+    "verify:drc": "node scripts/verify-drc.mjs",
+    "verify": "npm test && npm run verify:pcb && npm run verify:drc"
   }
 }

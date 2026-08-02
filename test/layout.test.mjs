@@ -2,11 +2,13 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   buildHalf,
+  closedCatmullRomSegments,
   componentEnvelope,
   distance,
   mirrorKey,
   readConfig,
-  rectangleCorners
+  rectangleCorners,
+  sampleClosedCurve
 } from "../scripts/layout-model.mjs";
 
 const config = readConfig();
@@ -16,6 +18,7 @@ const thumbKeys = keys.filter((key) => key.group === "thumb");
 
 test("design is named for its 58 press inputs", () => {
   assert.equal(config.name, "Hamrah Arc 58");
+  assert.equal(config.revision, "Alpha");
   assert.equal(keys.length * 2, 58);
 });
 
@@ -148,4 +151,24 @@ test("T1 has the requested extra millimetre of matrix clearance", () => {
 
 test("Choc v1 plate cutout remains 14 mm square", () => {
   assert.equal(config.switch.plateCutout, 14);
+});
+
+test("the shared mechanical design has a smooth outline and six clear M2 fasteners", () => {
+  assert.equal(config.mechanical.mountingHoleDiameter, 2.2);
+  assert.equal(config.mechanical.mountingHoles.length, 6);
+  assert.ok(config.mechanical.boardOutline.length >= 20);
+  assert.ok(config.mechanical.outlineCurveTension > 0);
+  const segments = closedCatmullRomSegments(
+    config.mechanical.boardOutline,
+    config.mechanical.outlineCurveTension
+  );
+  assert.equal(segments.length, config.mechanical.boardOutline.length);
+  assert.equal(sampleClosedCurve(segments).length, segments.length * 24);
+  for (let index = 0; index < segments.length; index += 1) {
+    assert.deepEqual(segments[index].end, segments[(index + 1) % segments.length].start);
+  }
+  for (const hole of config.mechanical.mountingHoles) {
+    const nearest = Math.min(...keys.map((key) => distance(hole, key)));
+    assert.ok(nearest > 13, `mounting hole at ${hole.x}, ${hole.y} is too near a key`);
+  }
 });

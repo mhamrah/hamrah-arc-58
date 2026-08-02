@@ -4,10 +4,11 @@ import { fileURLToPath } from "node:url";
 import {
   boundsForPoints,
   buildHalf,
+  closedCatmullRomSegments,
   mirrorKey,
-  plateOutline,
   readConfig,
-  rectangleCorners
+  rectangleCorners,
+  sampleClosedCurve
 } from "./layout-model.mjs";
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
@@ -15,10 +16,15 @@ const rootDirectory = path.resolve(scriptDirectory, "..");
 const outputDirectory = path.join(rootDirectory, "output");
 const config = readConfig();
 const leftKeys = buildHalf(config);
-const leftOutline = plateOutline(leftKeys, config);
+const outlineSegments = closedCatmullRomSegments(
+  config.mechanical.boardOutline,
+  config.mechanical.outlineCurveTension
+);
+const leftOutline = sampleClosedCurve(outlineSegments);
 const halfBounds = boundsForPoints(leftOutline);
 const halfWidth = halfBounds.maxX - halfBounds.minX;
 const halfHeight = halfBounds.maxY - halfBounds.minY;
+const manufacturingBounds = halfBounds;
 
 fs.mkdirSync(outputDirectory, { recursive: true });
 
@@ -28,6 +34,30 @@ function format(value) {
 
 function pointsAttribute(points) {
   return points.map((point) => `${format(point.x)},${format(point.y)}`).join(" ");
+}
+
+function transformCurve(segments, transform) {
+  const point = (value) => transform(value);
+  return segments.map((segment) => ({
+    start: point(segment.start),
+    control1: point(segment.control1),
+    control2: point(segment.control2),
+    end: point(segment.end)
+  }));
+}
+
+function curvePath(segments) {
+  const first = segments[0].start;
+  const commands = [`M ${format(first.x)} ${format(first.y)}`];
+  for (const segment of segments) {
+    commands.push(
+      `C ${format(segment.control1.x)} ${format(segment.control1.y)} ` +
+      `${format(segment.control2.x)} ${format(segment.control2.y)} ` +
+      `${format(segment.end.x)} ${format(segment.end.y)}`
+    );
+  }
+  commands.push("Z");
+  return commands.join(" ");
 }
 
 function svgComponent(key, side, offsetX, mirrorAxis = null) {
@@ -71,11 +101,11 @@ function makeFullSvg() {
   const pageWidth = halfWidth * 2 + gap + pageMargin * 2;
   const pageHeight = halfHeight + pageMargin * 2 + 21;
 
-  const shiftedLeftOutline = leftOutline.map((point) => ({
+  const shiftedLeftOutline = transformCurve(outlineSegments, (point) => ({
     x: point.x + leftOffsetX,
     y: point.y + offsetY
   }));
-  const shiftedRightOutline = leftOutline.map((point) => ({
+  const shiftedRightOutline = transformCurve(outlineSegments, (point) => ({
     x: rightMirrorAxis - point.x + rightOffsetX,
     y: point.y + offsetY
   }));
@@ -128,8 +158,8 @@ function makeFullSvg() {
   <rect class="page" width="100%" height="100%" />
   <text class="title" x="${pageMargin}" y="9">${config.name}</text>
   <text class="subtitle" x="${pageMargin}" y="15">6×4 + clickable encoder + four-key descending thumb arc · Choc v1 · ${config.switch.pitchX} × ${config.switch.pitchY} mm Sofle pitch</text>
-  <polygon class="plate" points="${pointsAttribute(shiftedLeftOutline)}" />
-  <polygon class="plate" points="${pointsAttribute(shiftedRightOutline)}" />
+  <path class="plate" d="${curvePath(shiftedLeftOutline)}" />
+  <path class="plate" d="${curvePath(shiftedRightOutline)}" />
   ${leftKeyMarkup}
   ${rightKeyMarkup}
   <path class="guide" d="M ${format(guideX)} ${format(guideTop)} L ${format(guideX)} ${format(thumbOne.y + offsetY)}" />
@@ -138,18 +168,47 @@ function makeFullSvg() {
 `;
 }
 
-function makePlateSvg() {
+function mirroredPoint(point) {
+  return { x: manufacturingBounds.minX + manufacturingBounds.maxX - point.x, y: point.y };
+}
+
+function halfMechanical(side) {
+  const mirror = side === "right";
+  const anchors = mirror
+    ? config.mechanical.boardOutline.map(mirroredPoint)
+    : config.mechanical.boardOutline;
+  const segments = closedCatmullRomSegments(
+    anchors,
+    config.mechanical.outlineCurveTension
+  );
+  return {
+    label: mirror ? "right" : "left",
+    keys: mirror
+      ? leftKeys.map((key) => mirrorKey(key, halfBounds.minX + halfBounds.maxX))
+      : leftKeys,
+    segments,
+    outline: sampleClosedCurve(segments),
+    holes: mirror
+      ? config.mechanical.mountingHoles.map(mirroredPoint)
+      : config.mechanical.mountingHoles,
+    reset: mirror ? mirroredPoint(config.mechanical.resetAccess) : config.mechanical.resetAccess
+  };
+}
+
+function makePlateSvg(side = "left") {
+  const half = halfMechanical(side);
+  const bounds = boundsForPoints(half.outline);
   const margin = 3;
-  const offsetX = margin - halfBounds.minX;
-  const offsetY = margin - halfBounds.minY;
-  const width = halfWidth + margin * 2;
-  const height = halfHeight + margin * 2;
-  const outline = leftOutline.map((point) => ({
+  const offsetX = margin - bounds.minX;
+  const offsetY = margin - bounds.minY;
+  const width = bounds.maxX - bounds.minX + margin * 2;
+  const height = bounds.maxY - bounds.minY + margin * 2;
+  const outline = transformCurve(half.segments, (point) => ({
     x: point.x + offsetX,
     y: point.y + offsetY
   }));
 
-  const cutouts = leftKeys
+  const cutouts = half.keys
     .map((key) => {
       if (key.group === "encoder") {
         return `  <circle class="cut" data-key="${key.id}" cx="${format(key.x + offsetX)}" cy="${format(key.y + offsetY)}" r="${format(config.encoder.plateHoleDiameter / 2)}" />`;
@@ -162,16 +221,48 @@ function makePlateSvg() {
       return `  <polygon class="cut" data-key="${key.id}" points="${pointsAttribute(points)}" />`;
     })
     .join("\n");
+  const holes = half.holes
+    .map((hole, index) => `  <circle class="cut" data-hole="H${index + 1}" cx="${format(hole.x + offsetX)}" cy="${format(hole.y + offsetY)}" r="${format(config.mechanical.mountingHoleDiameter / 2)}" />`)
+    .join("\n");
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${format(width)}mm" height="${format(height)}mm" viewBox="0 0 ${format(width)} ${format(height)}">
-  <title>${config.name} left switch plate</title>
-  <desc>One-to-one millimetre switch plate geometry. Prototype and measure before manufacturing.</desc>
+  <title>${config.name} ${half.label} top plate</title>
+  <desc>One-to-one millimetre top-plate geometry aligned to the Rev ${config.revision} reversible PCB.</desc>
   <style>
     .outline, .cut { fill: none; stroke: #000; stroke-width: 0.2; vector-effect: non-scaling-stroke; }
   </style>
-  <polygon class="outline" points="${pointsAttribute(outline)}" />
+  <path class="outline" d="${curvePath(outline)}" />
 ${cutouts}
+${holes}
+</svg>
+`;
+}
+
+function makeBottomPlateSvg(side = "left") {
+  const half = halfMechanical(side);
+  const bounds = boundsForPoints(half.outline);
+  const margin = 3;
+  const offsetX = margin - bounds.minX;
+  const offsetY = margin - bounds.minY;
+  const width = bounds.maxX - bounds.minX + margin * 2;
+  const height = bounds.maxY - bounds.minY + margin * 2;
+  const outline = transformCurve(half.segments, (point) => ({
+    x: point.x + offsetX,
+    y: point.y + offsetY
+  }));
+  const holes = half.holes
+    .map((hole, index) => `  <circle class="cut" data-hole="H${index + 1}" cx="${format(hole.x + offsetX)}" cy="${format(hole.y + offsetY)}" r="${format(config.mechanical.mountingHoleDiameter / 2)}" />`)
+    .join("\n");
+  const reset = half.reset;
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="${format(width)}mm" height="${format(height)}mm" viewBox="0 0 ${format(width)} ${format(height)}">
+  <title>${config.name} ${half.label} bottom plate</title>
+  <desc>One-to-one millimetre bottom-plate geometry with reset access, aligned to the Rev ${config.revision} reversible PCB.</desc>
+  <style>.outline, .cut { fill: none; stroke: #000; stroke-width: 0.2; vector-effect: non-scaling-stroke; }</style>
+  <path class="outline" d="${curvePath(outline)}" />
+${holes}
+  <circle class="cut" data-cutout="reset" cx="${format(reset.x + offsetX)}" cy="${format(reset.y + offsetY)}" r="${format(reset.diameter / 2)}" />
 </svg>
 `;
 }
@@ -182,7 +273,7 @@ function makePaperTestSvg() {
   const templateTop = 32;
   const offsetX = (pageWidth - halfWidth) / 2 - halfBounds.minX;
   const offsetY = templateTop - halfBounds.minY;
-  const outline = leftOutline.map((point) => ({
+  const outline = transformCurve(outlineSegments, (point) => ({
     x: point.x + offsetX,
     y: point.y + offsetY
   }));
@@ -239,7 +330,7 @@ function makePaperTestSvg() {
   <rect class="page" width="100%" height="100%" />
   <text class="title" x="${format(pageWidth / 2)}" y="12" text-anchor="middle">${config.name} · left-half paper fit test</text>
   <text class="note" x="${format(pageWidth / 2)}" y="19" text-anchor="middle">Print at Actual Size / 100% · disable Fit to Page</text>
-  <polygon class="outline" points="${pointsAttribute(outline)}" />
+  <path class="outline" d="${curvePath(outline)}" />
   ${keys}
   <path class="calibration" d="M ${format(calibrationX)} ${format(calibrationY - 3)} V ${format(calibrationY + 3)} M ${format(calibrationX)} ${format(calibrationY)} H ${format(calibrationX + 50)} M ${format(calibrationX + 50)} ${format(calibrationY - 3)} V ${format(calibrationY + 3)}" />
   <text class="note" x="${format(pageWidth / 2)}" y="${format(calibrationY + 8)}" text-anchor="middle">This line must measure exactly 50 mm</text>
@@ -282,9 +373,10 @@ function dxfCircle(center, radius, layer) {
   ].join("\n");
 }
 
-function makeDxf() {
-  const entities = [dxfPolyline(leftOutline, "PLATE_OUTLINE")];
-  for (const key of leftKeys) {
+function makeDxf(side = "left") {
+  const half = halfMechanical(side);
+  const entities = [dxfPolyline(half.outline, "PLATE_OUTLINE")];
+  for (const key of half.keys) {
     if (key.group === "encoder") {
       entities.push(
         dxfCircle(key, config.encoder.plateHoleDiameter / 2, "ENCODER_CUTOUTS")
@@ -301,6 +393,9 @@ function makeDxf() {
         "SWITCH_CUTOUTS"
       )
     );
+  }
+  for (const hole of half.holes) {
+    entities.push(dxfCircle(hole, config.mechanical.mountingHoleDiameter / 2, "MOUNTING_HOLES"));
   }
   return [
     "0",
@@ -324,6 +419,16 @@ function makeDxf() {
     "EOF",
     ""
   ].join("\n");
+}
+
+function makeBottomDxf(side = "left") {
+  const half = halfMechanical(side);
+  const entities = [dxfPolyline(half.outline, "PLATE_OUTLINE")];
+  for (const hole of half.holes) {
+    entities.push(dxfCircle(hole, config.mechanical.mountingHoleDiameter / 2, "MOUNTING_HOLES"));
+  }
+  entities.push(dxfCircle(half.reset, half.reset.diameter / 2, "RESET_ACCESS"));
+  return ["0", "SECTION", "2", "HEADER", "9", "$INSUNITS", "70", "4", "0", "ENDSEC", "0", "SECTION", "2", "ENTITIES", ...entities, "0", "ENDSEC", "0", "EOF", ""].join("\n");
 }
 
 function makePositionsJson() {
@@ -366,6 +471,12 @@ const artifacts = {
   "left-half-paper-test-letter.svg": makePaperTestSvg(),
   "left-half-plate.svg": makePlateSvg(),
   "left-half-plate.dxf": makeDxf(),
+  "left-half-bottom-plate.svg": makeBottomPlateSvg(),
+  "left-half-bottom-plate.dxf": makeBottomDxf(),
+  "right-half-plate.svg": makePlateSvg("right"),
+  "right-half-plate.dxf": makeDxf("right"),
+  "right-half-bottom-plate.svg": makeBottomPlateSvg("right"),
+  "right-half-bottom-plate.dxf": makeBottomDxf("right"),
   "key-positions.json": `${makePositionsJson()}\n`
 };
 
