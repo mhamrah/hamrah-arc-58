@@ -1,4 +1,4 @@
-# Arc 58 Rev Alpha bring-up checklist
+# Arc 58 Rev Beta bring-up checklist
 
 Do not connect the two halves together or connect a computer until the first
 three inspections pass. This checklist is the acceptance gate for calling the
@@ -7,12 +7,16 @@ hardware prototype working.
 ## 1. Before power
 
 - Inspect every SK6812MINI-E orientation against the PCB pin-1 marking.
+- Confirm all 28 routed RGB apertures are open and centered under their switch;
+  reject any panel with a missing aperture or an unremoved routing tab.
 - Confirm every diode has its cathode band aligned with the PCB cathode mark.
 - Confirm the 74AHCT1G125 orientation and that its `/OE` pad is tied to GND.
 - With a meter, verify `VCC` to `GND` is not shorted on each unpowered half.
 - Verify the TRRS cable straight through: sleeve is `GND`, ring 2 is `VBUS`,
   tip is `SPLIT_DATA`, and ring 1 is the unused spare. There are no crossed
   TX/RX conductors in this one-wire split design.
+- Dry-fit the TRRS plug and confirm it reaches full insertion through the
+  inner-edge 10 mm plate/case opening without touching the encoder.
 - Confirm B.Cu faces the keycaps on the left half and F.Cu faces the keycaps
   on the right half; sockets, diodes, and LEDs belong on each half's underside.
 - Bridge `JP_HAND` 1-2 on the left assembly and 2-3 on the right assembly.

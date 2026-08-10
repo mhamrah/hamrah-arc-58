@@ -14,7 +14,7 @@ Each half has 29 press inputs:
 
 ## Layout preview
 
-[![Hamrah Arc 58 Rev Alpha rounded layout](output/keyboard-layout.svg)](output/keyboard-layout.svg)
+[![Hamrah Arc 58 Rev Beta rounded layout](output/keyboard-layout.svg)](output/keyboard-layout.svg)
 
 [Open the full-size SVG](output/keyboard-layout.svg)
 
@@ -61,20 +61,29 @@ hardware/kicad/arc58-reversible.kicad_pro
 hardware/kicad/arc58-reversible.kicad_pcb
 ```
 
-Order two copies of the same Rev Alpha PCB. In the assembled keyboard, the B.Cu
+Order two copies of the same Rev Beta PCB. In the assembled keyboard, the B.Cu
 face points toward the keycaps on the left half and the F.Cu face points toward
 the keycaps on the right half. Detailed component-side selection, verified pin
 mapping, DRC status, and safety notes are in `hardware/README.md`; the pair BOM is
-`hardware/BOM-REV-ALPHA.csv`.
+`hardware/BOM-REV-BETA.csv`.
+
+Rev Beta replaces the original Rev Alpha fabrication files. Rev Alpha boards
+can be assembled and used with the RGB LEDs left unpopulated, but they do not
+have the routed optical/package apertures required for per-key RGB and their
+TRRS jack points toward the encoder instead of the cable exit. Do not attempt
+to hand-cut a populated PCB; order Rev Beta for RGB and unobstructed TRRS cable
+access.
 
 ## Prototype status
 
 The routed board passes the repository's structural and electrical checks:
 zero unrouted connections and zero shorts, crossings, or fabrication-clearance
-violations. QMK is configured for Helios, a one-wire TRRS split, OLED, encoder,
+violations. Its Edge.Cuts layer contains 28 closed 3.6 x 3.1 mm RGB apertures
+per half, and the inner-edge TRRS jack/plate geometry provides a 10 mm cable
+opening. QMK is configured for Helios, a one-wire TRRS split, OLED, encoder,
 and a 28+28 RGB Matrix. The default firmware also compiles successfully against
 current upstream QMK; the ignored local UF2 is generated at
-`output/firmware/arc58-rev-alpha-default.uf2`.
+`output/firmware/arc58-rev-beta-default.uf2`.
 
 This is still a prototype until a fabricated pair passes
 `hardware/BRING-UP-CHECKLIST.md`. Choc switches plug into soldered hotswap

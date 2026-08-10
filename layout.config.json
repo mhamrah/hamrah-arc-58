@@ -1,6 +1,6 @@
 {
   "name": "Hamrah Arc 58",
-  "revision": "Alpha",
+  "revision": "Beta",
   "units": "mm",
   "switch": {
     "type": "Kailh Choc v1 (PG1350)",
@@ -34,6 +34,29 @@
     "knobDiameter": 18,
     "plateHoleDiameter": 7.2,
     "click": true
+  },
+  "rgb": {
+    "partNumber": "SK6812MINI-E",
+    "ledsPerHalf": 28,
+    "apertureWidth": 3.6,
+    "apertureHeight": 3.1
+  },
+  "trrs": {
+    "partNumber": "MJ-4PP-9",
+    "pcbCenter": { "x": 83.35, "y": 85.65 },
+    "pcbRotation": 0,
+    "layoutCenter": { "x": 132.45, "y": 40.65 },
+    "mouthOffset": 8.25,
+    "portCenterHeight": 2.5,
+    "plugClearanceDiameter": 10,
+    "plateSlot": {
+      "centerX": 137,
+      "centerY": 40.65,
+      "width": 17,
+      "height": 10,
+      "cornerRadius": 2
+    },
+    "caseNotchBottom": 4.5
   },
   "thumbArc": {
     "count": 4,

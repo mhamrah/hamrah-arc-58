@@ -81,6 +81,38 @@ missing = sorted(required - footprints.keys())
 if missing:
     fail(f"missing footprints: {', '.join(missing)}")
 
+rgb = layout["rgb"]
+if len(KEY_SWITCHES) != rgb["ledsPerHalf"]:
+    fail("layout RGB LED count does not match the key-switch footprints")
+expected_aperture_lengths = sorted([
+    rgb["apertureWidth"], rgb["apertureWidth"],
+    rgb["apertureHeight"], rgb["apertureHeight"],
+])
+for switch_number in KEY_SWITCHES:
+    switch = footprints[f"SW{switch_number}"]
+    aperture = [
+        item for item in switch.GraphicalItems()
+        if item.GetLayer() == pcbnew.Edge_Cuts
+    ]
+    if len(aperture) != 4 or any(item.GetShapeStr() != "Line" for item in aperture):
+        fail(f"SW{switch_number}: expected one four-segment RGB aperture")
+    actual_lengths = sorted(
+        pcbnew.ToMM((item.GetEnd() - item.GetStart()).EuclideanNorm())
+        for item in aperture
+    )
+    if any(
+        not close(actual, expected)
+        for actual, expected in zip(actual_lengths, expected_aperture_lengths)
+    ):
+        fail(f"SW{switch_number}: RGB aperture dimensions are wrong")
+    endpoints = {}
+    for item in aperture:
+        for point in (item.GetStart(), item.GetEnd()):
+            key = (round(pcbnew.ToMM(point.x), 3), round(pcbnew.ToMM(point.y), 3))
+            endpoints[key] = endpoints.get(key, 0) + 1
+    if len(endpoints) != 4 or set(endpoints.values()) != {2}:
+        fail(f"SW{switch_number}: RGB aperture is not a closed rectangle")
+
 # Prove that the routed PCB still uses the approved geometry.  The canonical
 # board is the horizontal mirror of the left-half layout, which is what makes
 # one physical PCB usable for both hands when populated on opposite faces.
@@ -228,7 +260,7 @@ revision_layers = {
     if isinstance(drawing, pcbnew.PCB_TEXT) and drawing.GetText() == revision_mark
 }
 if revision_layers != {"F.Silkscreen", "B.Silkscreen"}:
-    fail("Rev Alpha reversible marking must appear on both silkscreen faces")
+    fail(f"Rev {layout['revision']} reversible marking must appear on both silkscreen faces")
 
 for index in range(1, 7):
     hole = pad(footprints[f"H{index}"], "")
@@ -305,6 +337,18 @@ expected_trrs = {"S": "GND", "R2": "VBUS", "R1": "TRRS_SPARE", "T": "SPLIT_DATA"
 for number, expected in expected_trrs.items():
     if net(footprints["J1"], number) != expected:
         fail(f"J1 pad {number}: expected {expected}")
+trrs = layout["trrs"]
+trrs_x, trrs_y = position_mm(footprints["J1"])
+trrs_rotation = footprints["J1"].GetOrientationDegrees() % 360
+if not (
+    close(trrs_x, trrs["pcbCenter"]["x"])
+    and close(trrs_y, trrs["pcbCenter"]["y"])
+    and close(trrs_rotation, trrs["pcbRotation"])
+):
+    fail(
+        f"J1 must face the inner edge at {trrs['pcbCenter']['x']:.3f},"
+        f"{trrs['pcbCenter']['y']:.3f} @ {trrs['pcbRotation']:.1f} degrees"
+    )
 
 if [net(footprints["JP_HAND"], number) for number in ("1", "2", "3")] != ["VCC3V3", "HAND", "GND"]:
     fail("JP_HAND must select VCC3V3/HAND/GND")
@@ -352,8 +396,10 @@ if net(footprints["D25"], "1") != "ROW4" or net(footprints["D25"], "2") != "KEY_
     fail("D25: encoder switch diode is wrong")
 
 # Keep the SW19-to-SW26 reversible contact route inside the rounded thumb
-# sweep.  The previous route continued vertically to y=162.864 mm and looked
-# like a blue tail leaving the intended enclosure.
+# sweep. The former route continued vertically to y=162.864 mm and looked
+# like a blue tail leaving the intended enclosure. The exact layer-change
+# topology is intentionally not pinned because the RGB-aperture reroute uses
+# a different, DRC-clean path.
 switch_route = [
     track for track in board.GetTracks()
     if track.GetNetname() == "Net-(SW19-Pad2)"
@@ -369,14 +415,6 @@ if any(
     for track in switch_route
 ):
     fail("SW19-to-SW26 B.Cu route extends below the approved thumb sweep")
-if not any(
-    isinstance(track, pcbnew.PCB_VIA)
-    and close(pcbnew.ToMM(track.GetPosition().x), 106.0)
-    and close(pcbnew.ToMM(track.GetPosition().y), 162.864)
-    for track in switch_route
-):
-    fail("SW19-to-SW26 route is missing its inboard layer-change via")
-
 board.BuildConnectivity()
 unconnected = board.GetConnectivity().GetUnconnectedCount(False)
 if unconnected:
@@ -387,7 +425,7 @@ if not list(board.GetTracks()):
 print(
     f"PASS: {BOARD.name} — {len(footprints)} footprints, "
     f"{len(list(board.GetTracks()))} copper items, 28-key RGB chain, "
-    "rounded Rev Alpha geometry and Helios QMK mapping matched, "
+    f"rounded Rev {layout['revision']} geometry and Helios QMK mapping matched, "
     "matrix/controller/OLED/TRRS "
     "nets present, zero unrouted connections"
 )

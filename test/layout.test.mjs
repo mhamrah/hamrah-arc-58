@@ -18,7 +18,7 @@ const thumbKeys = keys.filter((key) => key.group === "thumb");
 
 test("design is named for its 58 press inputs", () => {
   assert.equal(config.name, "Hamrah Arc 58");
-  assert.equal(config.revision, "Alpha");
+  assert.equal(config.revision, "Beta");
   assert.equal(keys.length * 2, 58);
 });
 
@@ -151,6 +151,56 @@ test("T1 has the requested extra millimetre of matrix clearance", () => {
 
 test("Choc v1 plate cutout remains 14 mm square", () => {
   assert.equal(config.switch.plateCutout, 14);
+});
+
+test("per-key RGB specifies one routed aperture for every LED", () => {
+  assert.equal(config.rgb.partNumber, "SK6812MINI-E");
+  assert.equal(config.rgb.ledsPerHalf, 28);
+  assert.equal(config.rgb.ledsPerHalf, keys.length - 1);
+  assert.equal(config.rgb.apertureWidth, 3.6);
+  assert.equal(config.rgb.apertureHeight, 3.1);
+});
+
+test("TRRS jack and ten-millimetre plug envelope exit through the inner edge", () => {
+  const trrs = config.trrs;
+  const transform = config.manufacturing.pcbTransform;
+  assert.equal(trrs.partNumber, "MJ-4PP-9");
+  assert.equal(trrs.pcbRotation, 0);
+  assert.ok(Math.abs(transform.originX - trrs.layoutCenter.x - trrs.pcbCenter.x) < 1e-9);
+  assert.ok(Math.abs(transform.originY + trrs.layoutCenter.y - trrs.pcbCenter.y) < 1e-9);
+
+  const outline = sampleClosedCurve(closedOutlineSegments(config.mechanical), 500);
+  const mouthX = trrs.layoutCenter.x + trrs.mouthOffset;
+  const crossings = [];
+  for (let index = 0; index < outline.length; index += 1) {
+    const start = outline[index];
+    const end = outline[(index + 1) % outline.length];
+    if ((start.y <= trrs.layoutCenter.y && end.y > trrs.layoutCenter.y) ||
+        (end.y <= trrs.layoutCenter.y && start.y > trrs.layoutCenter.y)) {
+      const amount = (trrs.layoutCenter.y - start.y) / (end.y - start.y);
+      crossings.push(start.x + amount * (end.x - start.x));
+    }
+  }
+  const innerEdge = Math.max(...crossings);
+  assert.ok(mouthX >= innerEdge, "TRRS mouth does not reach the PCB edge");
+  assert.ok(mouthX - innerEdge <= 1, "TRRS mouth overhang exceeds one millimetre");
+
+  const window = config.mechanical.acrylic.electronicsWindow;
+  const slot = trrs.plateSlot;
+  assert.ok(slot.centerX - slot.width / 2 <= window.centerX + window.width / 2);
+  assert.ok(
+    slot.centerX + slot.width / 2 >= innerEdge + config.mechanical.cncCase.outerWall,
+    "TRRS slot does not pass through the CNC rim"
+  );
+  assert.ok(slot.height >= trrs.plugClearanceDiameter);
+
+  const plugBottom =
+    config.mechanical.cncCase.pcbUndersideHeight +
+    1.6 +
+    trrs.portCenterHeight -
+    trrs.plugClearanceDiameter / 2;
+  assert.ok(trrs.caseNotchBottom <= plugBottom);
+  assert.ok(trrs.caseNotchBottom >= config.mechanical.cncCase.floorThickness);
 });
 
 test("the shared mechanical design has a smooth outline and six clear M2 fasteners", () => {

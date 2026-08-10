@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** Generate and sanity-check the one reversible Rev Alpha PCB fabrication ZIP. */
+/** Generate and sanity-check the one reversible PCB fabrication ZIP. */
 
 import { execFileSync } from 'node:child_process';
 import {
@@ -16,7 +16,9 @@ import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const board = join(root, 'hardware', 'kicad', 'arc58-reversible.kicad_pcb');
-const packageName = 'arc58-reversible-pcb-rev-alpha';
+const layout = JSON.parse(readFileSync(join(root, 'layout.config.json'), 'utf8'));
+const revisionSlug = layout.revision.toLowerCase();
+const packageName = `arc58-reversible-pcb-rev-${revisionSlug}`;
 const tempRoot = mkdtempSync(join(tmpdir(), 'arc58-fab-'));
 const staging = join(tempRoot, packageName);
 const output = join(root, 'output', 'fabrication', `${packageName}.zip`);
@@ -73,6 +75,20 @@ try {
     if (!readFileSync(join(staging, name), 'utf8').includes('M02*')) {
       throw new Error(`Gerber is missing its end marker: ${name}`);
     }
+  }
+  const edgeGerber = readFileSync(
+    join(staging, 'arc58-reversible-Edge_Cuts.gm1'),
+    'utf8',
+  );
+  const profileStrokes = edgeGerber.match(/^X-?\d+Y-?\d+D02\*$/gm) ?? [];
+  const expectedStrokes =
+    layout.mechanical.boardOutline.length + layout.rgb.ledsPerHalf * 4;
+  if (profileStrokes.length !== expectedStrokes) {
+    throw new Error(
+      `edge profile must contain ${layout.mechanical.boardOutline.length} outer-perimeter ` +
+      `strokes plus four sides for each of ${layout.rgb.ledsPerHalf} RGB apertures; ` +
+      `expected ${expectedStrokes} strokes, found ${profileStrokes.length}`,
+    );
   }
   for (const name of ['arc58-reversible-PTH.drl', 'arc58-reversible-NPTH.drl']) {
     if (!readFileSync(join(staging, name), 'utf8').includes('M30')) {
