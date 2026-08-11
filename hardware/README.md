@@ -4,14 +4,19 @@ Rev Beta is one fully reversible, two-layer PCB derived from the Sofle Choc
 electrical and mechanical approach. Order two identical boards. The F.Cu view
 is the right-hand outline; turning the board over to its B.Cu view produces the
 left-hand outline. The approved 6x4 column-staggered field and four-key Arc
-thumb geometry are unchanged. Its continuous rounded perimeter follows the
-key field and thumb arc with practical space for routing and six M2 fasteners.
+thumb geometry in `layout.config.json` is unchanged; Rev Beta now implements
+that geometry with the correct physical switch axes. Its continuous rounded
+perimeter follows the key field and thumb arc with practical space for routing
+and six M2 fasteners.
 
-Rev Beta corrects two fabrication defects in Rev Alpha: every reverse-mount
-SK6812MINI-E now has a closed 3.6 x 3.1 mm routed aperture on `Edge.Cuts`, and
-J1 is rotated and moved so its mouth faces the inner split edge. Rev Alpha can
-be used as a non-RGB keyboard by leaving all 28 LEDs per half unpopulated, but
-per-key RGB and the corrected TRRS cable path require a new Rev Beta PCB.
+Rev Beta corrects three fabrication defects in Rev Alpha: every reverse-mount
+SK6812MINI-E now has a closed 3.6 x 3.1 mm routed aperture on `Edge.Cuts`, J1 is
+rotated and moved so its mouth faces the inner split edge, and the physical
+thumb-switch axes now follow the intended fan. Rev Alpha's axes were mirrored
+to -10, -30, -50, and -70 degrees on the assembled left half instead of +10,
++30, +50, and +70 degrees. Do not build or reorder Rev Alpha. It can only be
+electrically bench-tested with all 28 LEDs per half omitted and without relying
+on enclosure/TRRS fit; the intended keyboard requires a new Rev Beta PCB.
 
 The canonical KiCad project is:
 
@@ -79,6 +84,9 @@ plate/case opening is 10 mm high so a normal molded plug can be fully inserted.
 Automated checks currently prove:
 
 - all 58 approved physical press positions and plate clearances;
+- the physical thumb locator-hole axes on both assembled faces, independent of
+  the placement transform: B.Cu/left is +10/+30/+50/+70 degrees and F.Cu/right
+  is -10/-30/-50/-70 degrees;
 - all required controller, matrix, encoder, OLED, RGB, and TRRS nets;
 - one 28-LED data chain per assembled half;
 - zero unrouted connections; and

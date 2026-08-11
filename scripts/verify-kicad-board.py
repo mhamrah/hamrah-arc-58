@@ -125,8 +125,44 @@ def pcb_location(x, y, rotation=0):
     return (
         transform["originX"] - x,
         transform["originY"] + y,
-        transform["rotationBase"] - rotation,
+        transform["rotationBase"] + rotation,
     )
+
+
+def undirected_axis_angle(first, second):
+    """Return a physical switch axis in the range [-90, 90) degrees."""
+    angle = math.degrees(math.atan2(second.y - first.y, second.x - first.x))
+    return (angle + 90) % 180 - 90
+
+
+def check_reversible_thumb_axis(footprint, left_rotation):
+    """Prove the assembled F/right and mirrored B/left switch handedness.
+
+    KiCad's footprint rotation number alone is not sufficient here: the Rev
+    Alpha regression came from comparing it to the same incorrect transform.
+    The two 1.8 mm switch-locator holes expose the physical key axis directly.
+    """
+    locator_holes = [
+        item for item in footprint.Pads()
+        if item.GetNumber() == ""
+        and close(pcbnew.ToMM(item.GetDrillSize().x), 1.8)
+        and close(pcbnew.ToMM(item.GetDrillSize().y), 1.8)
+    ]
+    if len(locator_holes) != 2:
+        fail(f"{footprint.GetReference()}: expected two 1.8 mm locator holes")
+    first, second = (item.GetPosition() for item in locator_holes)
+    front_axis = undirected_axis_angle(first, second)
+    back_axis = -front_axis
+    if not close(front_axis, -left_rotation, 0.01):
+        fail(
+            f"{footprint.GetReference()}: F-side/right physical axis "
+            f"{front_axis:.2f} must be {-left_rotation:.2f} degrees"
+        )
+    if not close(back_axis, left_rotation, 0.01):
+        fail(
+            f"{footprint.GetReference()}: B-side/left physical axis "
+            f"{back_axis:.2f} must be {left_rotation:.2f} degrees"
+        )
 
 
 pitch_x = layout["switch"]["pitchX"]
@@ -157,6 +193,7 @@ for index in range(layout["thumbArc"]["count"]):
     reference = f"SW{29 - index}"
     rotation = layout["thumbArc"]["keyRotations"][index]
     check_placement(footprints[reference], *pcb_location(thumb_x, thumb_y, rotation))
+    check_reversible_thumb_axis(footprints[reference], rotation)
     if index < len(layout["thumbArc"]["segmentAngles"]):
         angle = math.radians(layout["thumbArc"]["segmentAngles"][index])
         thumb_x += layout["thumbArc"]["step"] * math.cos(angle)
