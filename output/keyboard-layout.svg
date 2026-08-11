@@ -168,7 +168,7 @@
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">L·C6R4</text>
     </g>
-    <g class="key key--encoder" transform="translate(142.498 102.206)">
+    <g class="key key--encoder" transform="translate(145.498 102.206)">
       <circle class="encoder-knob" r="9" />
       <rect class="encoder-body" x="-6" y="-5.8" width="12" height="11.6" rx="1" />
       <circle class="cutout" r="3.6" />
@@ -344,7 +344,7 @@
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">R·C6R4</text>
     </g>
-    <g class="key key--encoder" transform="translate(278.125 102.206)">
+    <g class="key key--encoder" transform="translate(275.125 102.206)">
       <circle class="encoder-knob" r="9" />
       <rect class="encoder-body" x="-6" y="-5.8" width="12" height="11.6" rx="1" />
       <circle class="cutout" r="3.6" />

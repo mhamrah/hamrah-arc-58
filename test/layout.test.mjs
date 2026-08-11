@@ -95,6 +95,19 @@ test("a clickable encoder is mirrored onto both halves", () => {
   assert.equal(encoder.rotation, -mirrored.rotation);
 });
 
+test("encoder moves three millimetres inward for knob clearance", () => {
+  const encoder = keys.find((key) => key.group === "encoder");
+  const nearestKey = keys.find((key) => key.id === "c6r4");
+  const expectedDistance = config.switch.pitchX + config.encoder.inwardOffset;
+  const edgeGap =
+    distance(encoder, nearestKey) -
+    (config.encoder.knobDiameter + config.switch.keycapWidth) / 2;
+
+  assert.equal(config.encoder.inwardOffset, 3);
+  assert.ok(Math.abs(distance(encoder, nearestKey) - expectedDistance) < 1e-9);
+  assert.ok(Math.abs(edgeGap - 4.8) < 1e-9);
+});
+
 test("first thumb key starts one millimetre toward the outer edge", () => {
   const [columnA, columnB] = config.thumbArc.startBetweenColumns;
   const expectedX =

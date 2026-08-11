@@ -35,6 +35,10 @@ the C5/C6 midpoint. Reject any archive whose thumb fan has the opposite
 handedness or the former 20.5 mm spacing. Confirm the thumb-bay mounting hole
 is between T2 and T3, matching the regenerated plate and case files.
 
+Confirm each encoder center is 3 mm farther toward the inner split edge than
+the adjacent Sofle-pitch column position and matches the regenerated plate
+opening.
+
 Run `npm run verify` immediately before regenerating or ordering. A passed DRC
 does not replace a physical prototype: order a small first batch and complete
 `hardware/BRING-UP-CHECKLIST.md` before a larger run.

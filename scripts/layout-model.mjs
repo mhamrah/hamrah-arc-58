@@ -66,7 +66,9 @@ export function buildHalf(config) {
     keys.push({
       id: "encoder",
       group: "encoder",
-      x: (matrix.columns - 1 + encoder.columnOffset) * switchConfig.pitchX,
+      x:
+        (matrix.columns - 1 + encoder.columnOffset) * switchConfig.pitchX +
+        encoder.inwardOffset,
       y:
         matrix.columnStagger[alignedColumn] +
         encoder.row * switchConfig.pitchY,

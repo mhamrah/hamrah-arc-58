@@ -11,6 +11,10 @@ and six M2 fasteners. The thumb-bay M2 point moves between T2 and T3 so the
 fastener and its boss remain clear of the widened T4 position; use the
 regenerated Rev Beta plates and case with this board.
 
+Each EC11 encoder center is shifted 3 mm farther toward the inner split edge
+than the original Sofle-spaced position. With the specified 18 mm knob and 16.5
+mm keycaps, this leaves 4.8 mm nominal edge clearance from the nearest C6 cap.
+
 Rev Beta corrects four fabrication defects in Rev Alpha: every reverse-mount
 SK6812MINI-E now has a closed 3.6 x 3.1 mm routed aperture on `Edge.Cuts`, J1 is
 rotated and moved so its mouth faces the inner split edge, and the physical

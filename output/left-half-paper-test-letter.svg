@@ -141,7 +141,7 @@
       <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
       <text class="key-label" transform="rotate(0)" y="0.9">C6R4</text>
     </g>
-    <g transform="translate(153.792 111.206)">
+    <g transform="translate(156.792 111.206)">
       <circle class="encoder" r="9" />
       <rect class="encoder-body" x="-6" y="-5.8" width="12" height="11.6" rx="1" />
       <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />

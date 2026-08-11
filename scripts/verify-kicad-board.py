@@ -176,7 +176,10 @@ for column in range(matrix["columns"]):
         check_placement(footprints[reference], *pcb_location(x, y))
 
 encoder_config = layout["encoder"]
-encoder_x = (matrix["columns"] - 1 + encoder_config["columnOffset"]) * pitch_x
+encoder_x = (
+    (matrix["columns"] - 1 + encoder_config["columnOffset"]) * pitch_x
+    + encoder_config["inwardOffset"]
+)
 encoder_y = (
     matrix["columnStagger"][encoder_config["alignWithColumn"]]
     + encoder_config["row"] * pitch_y
