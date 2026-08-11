@@ -20,8 +20,7 @@
     "manufacturer": "Alps Alpine",
     "partNumber": "EC11E15244G1",
     "sofleFootprint": "SofleKeyboard-footprint:RotaryEncoder_Alps_EC11E-Switch_Vertical_H20mm-keebio_modified",
-    "columnOffset": 1,
-    "inwardOffset": 3,
+    "horizontalPlacement": "equal-clearance-between-c6-and-inner-edge",
     "alignWithColumn": 5,
     "row": 3,
     "bodyWidth": 12,
@@ -261,7 +260,7 @@
     {
       "id": "encoder",
       "group": "encoder",
-      "x": 117.3,
+      "x": 121.668,
       "y": 62.15,
       "rotation": 0
     },
@@ -518,7 +517,7 @@
     {
       "id": "encoder",
       "group": "encoder",
-      "x": 19.616,
+      "x": 15.248,
       "y": 62.15,
       "rotation": 0
     },

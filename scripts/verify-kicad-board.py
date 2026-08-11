@@ -168,6 +168,53 @@ def check_reversible_thumb_axis(footprint, left_rotation):
 pitch_x = layout["switch"]["pitchX"]
 pitch_y = layout["switch"]["pitchY"]
 matrix = layout["matrix"]
+
+
+def cubic_point(start, control_1, control_2, end, amount):
+    inverse = 1 - amount
+    return {
+        "x": (
+            inverse ** 3 * start["x"]
+            + 3 * inverse ** 2 * amount * control_1["x"]
+            + 3 * inverse * amount ** 2 * control_2["x"]
+            + amount ** 3 * end["x"]
+        ),
+        "y": (
+            inverse ** 3 * start["y"]
+            + 3 * inverse ** 2 * amount * control_1["y"]
+            + 3 * inverse * amount ** 2 * control_2["y"]
+            + amount ** 3 * end["y"]
+        ),
+    }
+
+
+def outline_crossings_at_y(y, steps=2048):
+    outline = layout["mechanical"]["boardOutline"]
+    sampled = []
+    for index, start in enumerate(outline):
+        end = outline[(index + 1) % len(outline)]
+        for step in range(steps):
+            sampled.append(cubic_point(
+                start,
+                start["controlOut"],
+                end["controlIn"],
+                end,
+                step / steps,
+            ))
+    crossings = []
+    for index, start in enumerate(sampled):
+        end = sampled[(index + 1) % len(sampled)]
+        if (
+            start["y"] <= y < end["y"]
+            or end["y"] <= y < start["y"]
+        ):
+            amount = (y - start["y"]) / (end["y"] - start["y"])
+            crossings.append(start["x"] + amount * (end["x"] - start["x"]))
+    if len(crossings) < 2:
+        fail(f"board outline does not cross encoder y={y} twice")
+    return crossings
+
+
 for column in range(matrix["columns"]):
     for row in range(matrix["rows"]):
         reference = f"SW{row * matrix['columns'] + (matrix['columns'] - column)}"
@@ -176,14 +223,21 @@ for column in range(matrix["columns"]):
         check_placement(footprints[reference], *pcb_location(x, y))
 
 encoder_config = layout["encoder"]
-encoder_x = (
-    (matrix["columns"] - 1 + encoder_config["columnOffset"]) * pitch_x
-    + encoder_config["inwardOffset"]
-)
 encoder_y = (
     matrix["columnStagger"][encoder_config["alignWithColumn"]]
     + encoder_config["row"] * pitch_y
 )
+if (
+    encoder_config["horizontalPlacement"]
+    != "equal-clearance-between-c6-and-inner-edge"
+):
+    fail("unsupported encoder horizontal-placement contract")
+inner_edge_x = max(outline_crossings_at_y(encoder_y))
+column_edge_x = (
+    (matrix["columns"] - 1) * pitch_x
+    + layout["switch"]["keycapWidth"] / 2
+)
+encoder_x = (column_edge_x + inner_edge_x) / 2
 check_placement(footprints["SW25"], *pcb_location(encoder_x, encoder_y))
 
 column_a, column_b = layout["thumbArc"]["startBetweenColumns"]

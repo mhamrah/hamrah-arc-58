@@ -6,6 +6,7 @@ import {
   componentEnvelope,
   distance,
   mirrorKey,
+  outlineCrossingsAtY,
   readConfig,
   rectangleCorners,
   sampleClosedCurve
@@ -95,17 +96,38 @@ test("a clickable encoder is mirrored onto both halves", () => {
   assert.equal(encoder.rotation, -mirrored.rotation);
 });
 
-test("encoder moves three millimetres inward for knob clearance", () => {
+test("encoder has equal empty space to C6 and the curved inner edge", () => {
   const encoder = keys.find((key) => key.group === "encoder");
   const nearestKey = keys.find((key) => key.id === "c6r4");
-  const expectedDistance = config.switch.pitchX + config.encoder.inwardOffset;
-  const edgeGap =
-    distance(encoder, nearestKey) -
-    (config.encoder.knobDiameter + config.switch.keycapWidth) / 2;
+  const innerEdgeX = Math.max(
+    ...outlineCrossingsAtY(config.mechanical, encoder.y)
+  );
+  const knobRadius = config.encoder.knobDiameter / 2;
+  const capEdgeX = nearestKey.x + config.switch.keycapWidth / 2;
+  const capGap = encoder.x - knobRadius - capEdgeX;
+  const boardGap = innerEdgeX - encoder.x - knobRadius;
+  const sampledOutline = sampleClosedCurve(
+    closedOutlineSegments(config.mechanical),
+    2048
+  );
+  const curvedBoardGap =
+    Math.min(
+      ...sampledOutline.map((point, index) =>
+        pointToSegment(
+          encoder,
+          point,
+          sampledOutline[(index + 1) % sampledOutline.length]
+        )
+      )
+    ) - knobRadius;
 
-  assert.equal(config.encoder.inwardOffset, 3);
-  assert.ok(Math.abs(distance(encoder, nearestKey) - expectedDistance) < 1e-9);
-  assert.ok(Math.abs(edgeGap - 4.8) < 1e-9);
+  assert.equal(
+    config.encoder.horizontalPlacement,
+    "equal-clearance-between-c6-and-inner-edge"
+  );
+  assert.ok(Math.abs(capGap - boardGap) < 0.001);
+  assert.ok(Math.abs(capGap - curvedBoardGap) < 0.01);
+  assert.ok(capGap > 9);
 });
 
 test("first thumb key starts one millimetre toward the outer edge", () => {
@@ -291,6 +313,28 @@ test("the shared mechanical design has a smooth outline and six clear M2 fastene
     const nearest = Math.min(...keys.map((key) => distance(hole, key)));
     assert.ok(nearest > 13, `mounting hole at ${hole.x}, ${hole.y} is too near a key`);
   }
+  const encoder = keys.find((key) => key.group === "encoder");
+  const h4 = config.mechanical.mountingHoles[3];
+  const encoderBossGap =
+    distance(encoder, h4) -
+    config.encoder.knobDiameter / 2 -
+    config.mechanical.cncCase.bossDiameter / 2;
+  const sampledOutline = sampleClosedCurve(
+    closedOutlineSegments(config.mechanical),
+    2048
+  );
+  const h4OutlineGap =
+    Math.min(
+      ...sampledOutline.map((point, index) =>
+        pointToSegment(
+          h4,
+          point,
+          sampledOutline[(index + 1) % sampledOutline.length]
+        )
+      )
+    ) - config.mechanical.cncCase.bossDiameter / 2;
+  assert.ok(encoderBossGap > 3.5, `H4 boss gap is only ${encoderBossGap} mm`);
+  assert.ok(h4OutlineGap > 3, `H4 outline gap is only ${h4OutlineGap} mm`);
 });
 
 test("acrylic plates use prototype-safe dimensions and preserve the electronics bay", () => {

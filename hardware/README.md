@@ -11,14 +11,17 @@ and six M2 fasteners. The thumb-bay M2 point moves between T2 and T3 so the
 fastener and its boss remain clear of the widened T4 position; use the
 regenerated Rev Beta plates and case with this board.
 
-Each EC11 encoder center is shifted 3 mm farther toward the inner split edge
-than the original Sofle-spaced position. With the specified 18 mm knob and 16.5
-mm keycaps, this leaves 4.8 mm nominal edge clearance from the nearest C6 cap.
+Each EC11 encoder is centered in the empty bay between the nearest 16.5 mm C6
+keycap edge and the curved inner PCB edge. With the specified 18 mm knob, this
+leaves 9.17 mm nominal clearance on both sides. H4 moves farther down the inner
+edge so its CNC boss retains 3.5 mm clearance from the knob envelope and 3.1
+mm from the case outline.
 
-Rev Beta corrects four fabrication defects in Rev Alpha: every reverse-mount
+Rev Beta corrects five fabrication defects in Rev Alpha: every reverse-mount
 SK6812MINI-E now has a closed 3.6 x 3.1 mm routed aperture on `Edge.Cuts`, J1 is
 rotated and moved so its mouth faces the inner split edge, and the physical
-thumb-switch axes now follow the intended fan at 21.25 mm centers. Rev Alpha's
+thumb-switch axes now follow the intended fan at 21.25 mm centers. The encoder
+also uses equal knob clearance to C6 and the inner edge. Rev Alpha's
 axes were mirrored to -10, -30, -50, and -70 degrees on the assembled left half
 instead of +10, +30, +50, and +70 degrees, and its 20.5 mm thumb centers did
 not meet the conservative 18 x 18 mm keycap-envelope clearance requirement. Do

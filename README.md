@@ -29,7 +29,7 @@ All dimensions live in `layout.config.json`.
 | Specified Choc v1 keycap | 16.5 x 16.5 mm |
 | Choc keys per half | 28 |
 | Clickable encoders per half | 1 |
-| Encoder inward offset / nearest knob-to-cap gap | 3.0 mm / 4.8 mm |
+| Encoder knob-to-C6 / knob-to-inner-edge gap | 9.17 mm / 9.17 mm |
 | Thumb center spacing | 21.25 mm |
 | T1 outward offset from C5/C6 midpoint | 1.0 mm |
 | Conservative thumb envelope / minimum gap | 18 x 18 mm / 0.5 mm |
