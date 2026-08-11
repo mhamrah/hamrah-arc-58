@@ -5,7 +5,10 @@ electrical and mechanical approach. Order two identical boards. The F.Cu view
 is the right-hand outline; turning the board over to its B.Cu view produces the
 left-hand outline. Rev Beta keeps the approved 6x4 column-staggered field and
 updates the four-key Arc to 21.25 mm centers, with T1 shifted only 1 mm toward
-the outer edge and T2-T4 continuing down the fan. Its continuous rounded
+the outer edge and T2-T4 continuing down the fan. T3 rotates to 45 degrees and
+T4 rotates to 55 degrees; the final 45-degree center step moves T4 3.14 mm
+outward and 2.59 mm upward from its former position, increasing T3-T4 keycap
+clearance while following the paper-fit thumb sweep. Its continuous rounded
 perimeter follows the key field and thumb arc with practical space for routing
 and six M2 fasteners. The thumb-bay M2 point moves between T2 and T3 so the
 fastener and its boss remain clear of the widened T4 position; use the
@@ -21,10 +24,11 @@ Rev Beta corrects five fabrication defects in Rev Alpha: every reverse-mount
 SK6812MINI-E now has a closed 3.6 x 3.1 mm routed aperture on `Edge.Cuts`, J1 is
 rotated and moved so its mouth faces the inner split edge, and the physical
 thumb-switch axes now follow the intended fan at 21.25 mm centers. The encoder
-also uses equal knob clearance to C6 and the inner edge. Rev Alpha's
-axes were mirrored to -10, -30, -50, and -70 degrees on the assembled left half
-instead of +10, +30, +50, and +70 degrees, and its 20.5 mm thumb centers did
-not meet the conservative 18 x 18 mm keycap-envelope clearance requirement. Do
+also uses equal knob clearance to C6 and the inner edge. Rev Alpha's physical
+axes mirrored the then-approved 10/30/50/70-degree fan on the assembled left
+half, and its 20.5 mm thumb centers did not meet the conservative 18 x 18 mm
+keycap-envelope clearance requirement. Rev Beta uses the refined
+10/30/45/55-degree physical fan. Do
 not build or reorder Rev Alpha. It can only be electrically bench-tested with
 all 28 LEDs per half omitted and without relying on enclosure/TRRS fit; the
 intended keyboard requires a new Rev Beta PCB.
@@ -108,10 +112,12 @@ Automated checks currently prove:
 
 - all 58 approved physical press positions and plate clearances;
 - the physical thumb locator-hole axes on both assembled faces, independent of
-  the placement transform: B.Cu/left is +10/+30/+50/+70 degrees and F.Cu/right
-  is -10/-30/-50/-70 degrees;
+  the placement transform: B.Cu/left is +10/+30/+45/+55 degrees and F.Cu/right
+  is -10/-30/-45/-55 degrees;
 - at least 0.5 mm nominal clearance between adjacent conservative 18 x 18 mm
   thumb-keycap envelopes at the 21.25 mm centers;
+- the refined final center step and T3/T4 rotations, including more than 3.4 mm
+  nominal clearance between the specified 16.5 mm T3 and T4 keycaps;
 - all required controller, matrix, encoder, OLED, RGB, and TRRS nets;
 - Helios face labels and local high/low handedness-jumper instructions;
 - one 28-LED data chain per assembled half;

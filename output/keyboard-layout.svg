@@ -187,17 +187,17 @@
       <circle class="center" r="0.6" />
       <text transform="rotate(-30)" y="0.9">L·T2</text>
     </g>
-    <g class="key key--thumb" transform="translate(150.541 139.554) rotate(50)">
+    <g class="key key--thumb" transform="translate(150.541 139.554) rotate(45)">
       <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
-      <text transform="rotate(-50)" y="0.9">L·T3</text>
+      <text transform="rotate(-45)" y="0.9">L·T3</text>
     </g>
-    <g class="key key--thumb" transform="translate(162.424 157.171) rotate(70)">
+    <g class="key key--thumb" transform="translate(165.567 154.58) rotate(55)">
       <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
-      <text transform="rotate(-70)" y="0.9">L·T4</text>
+      <text transform="rotate(-55)" y="0.9">L·T4</text>
     </g>
   
     <g class="key key--matrix" transform="translate(392.425 47.456) rotate(0)">
@@ -363,17 +363,17 @@
       <circle class="center" r="0.6" />
       <text transform="rotate(30)" y="0.9">R·T2</text>
     </g>
-    <g class="key key--thumb" transform="translate(270.082 139.554) rotate(-50)">
+    <g class="key key--thumb" transform="translate(270.082 139.554) rotate(-45)">
       <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
-      <text transform="rotate(50)" y="0.9">R·T3</text>
+      <text transform="rotate(45)" y="0.9">R·T3</text>
     </g>
-    <g class="key key--thumb" transform="translate(258.199 157.171) rotate(-70)">
+    <g class="key key--thumb" transform="translate(255.056 154.58) rotate(-55)">
       <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
-      <text transform="rotate(70)" y="0.9">R·T4</text>
+      <text transform="rotate(55)" y="0.9">R·T4</text>
     </g>
   <path class="guide" d="M 112.923 102.206 L 112.923 121.206" />
   <text class="guide-label" x="114.923" y="111.706">T1 is 1 mm outward from C5 / C6 midpoint</text>

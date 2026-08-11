@@ -28,12 +28,15 @@ mirroring individual files, inspect every layer in the fabricator's viewer,
 and confirm the outline and drill files are recognized before ordering.
 Zoom into several switch centers and verify that each RGB aperture is visible.
 Also inspect the four thumb switch locator-hole pairs: on the F.Cu/right view
-their physical axes must be -10, -30, -50, and -70 degrees from inner to outer;
-after mirroring for the B.Cu/left assembly they must be +10, +30, +50, and +70
+their physical axes must be -10, -30, -45, and -55 degrees from inner to outer;
+after mirroring for the B.Cu/left assembly they must be +10, +30, +45, and +55
 degrees. The four centers must be 21.25 mm apart, with T1 only 1 mm outward from
-the C5/C6 midpoint. Reject any archive whose thumb fan has the opposite
-handedness or the former 20.5 mm spacing. Confirm the thumb-bay mounting hole
-is between T2 and T3, matching the regenerated plate and case files.
+the C5/C6 midpoint. The final center step is 45 degrees, placing T4 farther
+outward and upward with more than 3.4 mm nominal clearance from T3 when using
+the specified 16.5 mm keycaps. Reject any archive whose thumb fan has the
+opposite handedness or the former 20.5 mm spacing. Confirm the thumb-bay
+mounting hole is between T2 and T3, matching the regenerated plate and case
+files.
 
 Confirm each 18 mm encoder knob has equal 9.17 mm clearance to the nearest C6
 keycap edge and the curved inner PCB edge. Confirm the relocated inner H4

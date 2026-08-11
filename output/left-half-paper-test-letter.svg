@@ -157,15 +157,15 @@
       <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
       <text class="key-label" transform="rotate(-30)" y="0.9">T2</text>
     </g>
-    <g transform="translate(161.835 148.554) rotate(50)">
+    <g transform="translate(161.835 148.554) rotate(45)">
       <rect class="keycap thumb" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.2" />
       <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
-      <text class="key-label" transform="rotate(-50)" y="0.9">T3</text>
+      <text class="key-label" transform="rotate(-45)" y="0.9">T3</text>
     </g>
-    <g transform="translate(173.718 166.171) rotate(70)">
+    <g transform="translate(176.861 163.58) rotate(55)">
       <rect class="keycap thumb" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.2" />
       <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
-      <text class="key-label" transform="rotate(-70)" y="0.9">T4</text>
+      <text class="key-label" transform="rotate(-55)" y="0.9">T4</text>
     </g>
   <path class="calibration" d="M 82.95 201.159 V 207.159 M 82.95 204.159 H 132.95 M 132.95 201.159 V 207.159" />
   <text class="note" x="107.95" y="212.159" text-anchor="middle">This line must measure exactly 50 mm</text>

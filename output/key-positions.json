@@ -286,15 +286,15 @@
       "index": 2,
       "x": 122.343,
       "y": 99.498,
-      "rotation": 50
+      "rotation": 45
     },
     {
       "id": "thumb4",
       "group": "thumb",
       "index": 3,
-      "x": 134.226,
-      "y": 117.115,
-      "rotation": 70
+      "x": 137.369,
+      "y": 114.524,
+      "rotation": 55
     }
   ],
   "right": [
@@ -543,15 +543,15 @@
       "index": 2,
       "x": 14.573,
       "y": 99.498,
-      "rotation": -50
+      "rotation": -45
     },
     {
       "id": "thumb4",
       "group": "thumb",
       "index": 3,
-      "x": 2.69,
-      "y": 117.115,
-      "rotation": -70
+      "x": -0.453,
+      "y": 114.524,
+      "rotation": -55
     }
   ]
 }

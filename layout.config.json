@@ -69,8 +69,8 @@
     "startOffsetTowardOuterEdge": 1,
     "dropFromLowerColumnKey": 19,
     "step": 21.25,
-    "segmentAngles": [16, 36, 56],
-    "keyRotations": [10, 30, 50, 70]
+    "segmentAngles": [16, 36, 45],
+    "keyRotations": [10, 30, 45, 55]
   },
   "preview": {
     "splitGap": 58,

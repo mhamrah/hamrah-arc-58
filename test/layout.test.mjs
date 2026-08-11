@@ -158,6 +158,31 @@ test("thumb keys form a descending inward arc", () => {
   }
 });
 
+test("T3 and T4 follow the refined outward thumb sweep", () => {
+  assert.deepEqual(config.thumbArc.segmentAngles, [16, 36, 45]);
+  assert.deepEqual(config.thumbArc.keyRotations, [10, 30, 45, 55]);
+
+  const [thumbThree, thumbFour] = thumbKeys.slice(2);
+  assert.ok(Math.abs(thumbFour.x - 137.3694) < 0.0001);
+  assert.ok(Math.abs(thumbFour.y - 114.5237) < 0.0001);
+  assert.ok(thumbFour.x - thumbThree.x > 15);
+  assert.ok(thumbFour.y - thumbThree.y > 15);
+  assert.ok(
+    polygonGap(
+      rectangleCorners(
+        thumbThree,
+        config.switch.keycapWidth,
+        config.switch.keycapHeight
+      ),
+      rectangleCorners(
+        thumbFour,
+        config.switch.keycapWidth,
+        config.switch.keycapHeight
+      )
+    ) >= 3.4
+  );
+});
+
 test("keycaps and encoder knob do not overlap", () => {
   const polygons = keys.map((key) => ({
     id: key.id,
