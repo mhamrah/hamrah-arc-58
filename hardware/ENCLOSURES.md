@@ -1,7 +1,7 @@
-# Rev Alpha plates and enclosure
+# Rev Beta plates and enclosure
 
 The repository generates two vendor-ready manufacturing packages. They share
-the exact Rev Alpha PCB outline and six M2 mounting positions, but the left and
+the exact Rev Beta PCB outline and six M2 mounting positions, but the left and
 right parts are separate because the physical halves are mirrored. Do not ask a
 vendor to mirror any supplied file.
 
@@ -10,7 +10,7 @@ vendor to mirror any supplied file.
 Run `npm run generate:enclosures`, then upload:
 
 ```text
-output/manufacturing/arc58-acrylic-plates-rev-alpha.zip
+output/manufacturing/arc58-acrylic-plates-rev-beta.zip
 ```
 
 The package contains left/right DXF cut files, SVG previews, an order README,
@@ -28,22 +28,25 @@ acrylic thickness and laser kerf materially affect Choc switch retention. Do
 not release the full decorative plate until the actual switch batch fits the
 coupon.
 
-The large rounded top opening provides access to the Helios, OLED, TRRS jack,
-and reset area. Six 2.4 mm holes clear M2 fasteners. The 4.5 mm bottom opening
-provides reset access.
+The large rounded top opening provides access to the Helios, OLED, and reset
+area. A separate rounded 17 x 10 mm slot opens through the inner plate edge at
+the TRRS mouth so a molded cable can be inserted after assembly. Six 2.4 mm
+holes clear M2 fasteners. The 4.5 mm bottom opening provides reset access.
 
 ## CNC aluminum case
 
 Upload this package to a CNC shop:
 
 ```text
-output/manufacturing/arc58-cnc-aluminum-case-rev-alpha.zip
+output/manufacturing/arc58-cnc-aluminum-case-rev-beta.zip
 ```
 
 The selected architecture is a low-profile machined bottom chassis with a
 separate switch plate. This keeps USB-C and TRRS access visible above the rim
-and avoids hidden side undercuts. The switch plate can be either the included
-1.5 mm aluminum STEP model or the acrylic top plate.
+and avoids hidden side undercuts. The inner rim has an open TRRS cable notch
+from Z=4.5 mm through the top, aligned with the same 10 mm-high plate slot. The
+switch plate can be either the included 1.5 mm aluminum STEP model or the
+acrylic top plate.
 
 Specify:
 
@@ -77,7 +80,7 @@ not prescribe a decorative external screw head or rubber-foot system.
 ## Prototype requirement
 
 These packages are mechanically checked and the STEP files are re-imported as
-valid solids during generation. They remain Rev Alpha: first order one
+valid solids during generation. They remain Rev Beta: first order one
 prototype pair, dry-fit the PCB and switches, and complete
 `BRING-UP-CHECKLIST.md` before ordering finished cases in quantity.
 

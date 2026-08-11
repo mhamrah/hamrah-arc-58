@@ -81,6 +81,38 @@ missing = sorted(required - footprints.keys())
 if missing:
     fail(f"missing footprints: {', '.join(missing)}")
 
+rgb = layout["rgb"]
+if len(KEY_SWITCHES) != rgb["ledsPerHalf"]:
+    fail("layout RGB LED count does not match the key-switch footprints")
+expected_aperture_lengths = sorted([
+    rgb["apertureWidth"], rgb["apertureWidth"],
+    rgb["apertureHeight"], rgb["apertureHeight"],
+])
+for switch_number in KEY_SWITCHES:
+    switch = footprints[f"SW{switch_number}"]
+    aperture = [
+        item for item in switch.GraphicalItems()
+        if item.GetLayer() == pcbnew.Edge_Cuts
+    ]
+    if len(aperture) != 4 or any(item.GetShapeStr() != "Line" for item in aperture):
+        fail(f"SW{switch_number}: expected one four-segment RGB aperture")
+    actual_lengths = sorted(
+        pcbnew.ToMM((item.GetEnd() - item.GetStart()).EuclideanNorm())
+        for item in aperture
+    )
+    if any(
+        not close(actual, expected)
+        for actual, expected in zip(actual_lengths, expected_aperture_lengths)
+    ):
+        fail(f"SW{switch_number}: RGB aperture dimensions are wrong")
+    endpoints = {}
+    for item in aperture:
+        for point in (item.GetStart(), item.GetEnd()):
+            key = (round(pcbnew.ToMM(point.x), 3), round(pcbnew.ToMM(point.y), 3))
+            endpoints[key] = endpoints.get(key, 0) + 1
+    if len(endpoints) != 4 or set(endpoints.values()) != {2}:
+        fail(f"SW{switch_number}: RGB aperture is not a closed rectangle")
+
 # Prove that the routed PCB still uses the approved geometry.  The canonical
 # board is the horizontal mirror of the left-half layout, which is what makes
 # one physical PCB usable for both hands when populated on opposite faces.
@@ -93,8 +125,44 @@ def pcb_location(x, y, rotation=0):
     return (
         transform["originX"] - x,
         transform["originY"] + y,
-        transform["rotationBase"] - rotation,
+        transform["rotationBase"] + rotation,
     )
+
+
+def undirected_axis_angle(first, second):
+    """Return a physical switch axis in the range [-90, 90) degrees."""
+    angle = math.degrees(math.atan2(second.y - first.y, second.x - first.x))
+    return (angle + 90) % 180 - 90
+
+
+def check_reversible_thumb_axis(footprint, left_rotation):
+    """Prove the assembled F/right and mirrored B/left switch handedness.
+
+    KiCad's footprint rotation number alone is not sufficient here: the Rev
+    Alpha regression came from comparing it to the same incorrect transform.
+    The two 1.8 mm switch-locator holes expose the physical key axis directly.
+    """
+    locator_holes = [
+        item for item in footprint.Pads()
+        if item.GetNumber() == ""
+        and close(pcbnew.ToMM(item.GetDrillSize().x), 1.8)
+        and close(pcbnew.ToMM(item.GetDrillSize().y), 1.8)
+    ]
+    if len(locator_holes) != 2:
+        fail(f"{footprint.GetReference()}: expected two 1.8 mm locator holes")
+    first, second = (item.GetPosition() for item in locator_holes)
+    front_axis = undirected_axis_angle(first, second)
+    back_axis = -front_axis
+    if not close(front_axis, -left_rotation, 0.01):
+        fail(
+            f"{footprint.GetReference()}: F-side/right physical axis "
+            f"{front_axis:.2f} must be {-left_rotation:.2f} degrees"
+        )
+    if not close(back_axis, left_rotation, 0.01):
+        fail(
+            f"{footprint.GetReference()}: B-side/left physical axis "
+            f"{back_axis:.2f} must be {left_rotation:.2f} degrees"
+        )
 
 
 pitch_x = layout["switch"]["pitchX"]
@@ -125,6 +193,7 @@ for index in range(layout["thumbArc"]["count"]):
     reference = f"SW{29 - index}"
     rotation = layout["thumbArc"]["keyRotations"][index]
     check_placement(footprints[reference], *pcb_location(thumb_x, thumb_y, rotation))
+    check_reversible_thumb_axis(footprints[reference], rotation)
     if index < len(layout["thumbArc"]["segmentAngles"]):
         angle = math.radians(layout["thumbArc"]["segmentAngles"][index])
         thumb_x += layout["thumbArc"]["step"] * math.cos(angle)
@@ -228,7 +297,31 @@ revision_layers = {
     if isinstance(drawing, pcbnew.PCB_TEXT) and drawing.GetText() == revision_mark
 }
 if revision_layers != {"F.Silkscreen", "B.Silkscreen"}:
-    fail("Rev Alpha reversible marking must appear on both silkscreen faces")
+    fail(f"Rev {layout['revision']} reversible marking must appear on both silkscreen faces")
+
+required_assembly_labels = [
+    ("RIGHT HELIOS • F.Cu FACE", "F.Silkscreen", 120, 36.5),
+    ("LEFT HELIOS • B.Cu FACE", "B.Silkscreen", 120, 36.5),
+    ("R", "F.Silkscreen", 92.18, 38.9),
+    ("R", "F.Silkscreen", 107.42, 38.9),
+    ("L", "B.Silkscreen", 93.479, 40.1),
+    ("L", "B.Silkscreen", 108.719, 40.1),
+    ("L 1-2", "F.Silkscreen", 79.5, 69.3),
+    ("R 2-3", "F.Silkscreen", 79.5, 70.7),
+]
+board_text = [
+    drawing for drawing in board.GetDrawings()
+    if isinstance(drawing, pcbnew.PCB_TEXT)
+]
+for label, layer, expected_x, expected_y in required_assembly_labels:
+    if not any(
+        drawing.GetText() == label
+        and drawing.GetLayerName() == layer
+        and close(pcbnew.ToMM(drawing.GetPosition().x), expected_x)
+        and close(pcbnew.ToMM(drawing.GetPosition().y), expected_y)
+        for drawing in board_text
+    ):
+        fail(f"missing local assembly label {label!r} on {layer}")
 
 for index in range(1, 7):
     hole = pad(footprints[f"H{index}"], "")
@@ -293,6 +386,8 @@ if split.get("encoder", {}).get("right", {}).get("rotary") != [
 config_h = (FIRMWARE / "config.h").read_text()
 if "#define I2C1_SDA_PIN D1" not in config_h or "#define I2C1_SCL_PIN D0" not in config_h:
     fail("QMK OLED I2C pins do not match U1 OLED_SDA/OLED_SCL")
+if "SPLIT_HAND_PIN_LOW_IS_LEFT" in config_h:
+    fail("QMK handedness polarity must remain high=left and low=right")
 if "CONVERT_TO = helios" not in (FIRMWARE / "rules.mk").read_text():
     fail("QMK build must target the KEEBD Helios converter")
 
@@ -305,9 +400,34 @@ expected_trrs = {"S": "GND", "R2": "VBUS", "R1": "TRRS_SPARE", "T": "SPLIT_DATA"
 for number, expected in expected_trrs.items():
     if net(footprints["J1"], number) != expected:
         fail(f"J1 pad {number}: expected {expected}")
+trrs = layout["trrs"]
+trrs_x, trrs_y = position_mm(footprints["J1"])
+trrs_rotation = footprints["J1"].GetOrientationDegrees() % 360
+if not (
+    close(trrs_x, trrs["pcbCenter"]["x"])
+    and close(trrs_y, trrs["pcbCenter"]["y"])
+    and close(trrs_rotation, trrs["pcbRotation"])
+):
+    fail(
+        f"J1 must face the inner edge at {trrs['pcbCenter']['x']:.3f},"
+        f"{trrs['pcbCenter']['y']:.3f} @ {trrs['pcbRotation']:.1f} degrees"
+    )
 
 if [net(footprints["JP_HAND"], number) for number in ("1", "2", "3")] != ["VCC3V3", "HAND", "GND"]:
     fail("JP_HAND must select VCC3V3/HAND/GND")
+expected_test_points = {
+    "TP1": "GND",
+    "TP2": "VBUS",
+    "TP3": "VCC3V3",
+    "TP4": "SPLIT_DATA",
+    "TP5": "HAND",
+    "TP6": "RGB_LED_IN",
+    "TP7": "OLED_SDA",
+    "TP8": "OLED_SCL",
+}
+for reference, expected in expected_test_points.items():
+    if net(footprints[reference], "1") != expected:
+        fail(f"{reference}: expected {expected} test point")
 
 for switch_number in KEY_SWITCHES:
     switch = footprints[f"SW{switch_number}"]
@@ -352,8 +472,10 @@ if net(footprints["D25"], "1") != "ROW4" or net(footprints["D25"], "2") != "KEY_
     fail("D25: encoder switch diode is wrong")
 
 # Keep the SW19-to-SW26 reversible contact route inside the rounded thumb
-# sweep.  The previous route continued vertically to y=162.864 mm and looked
-# like a blue tail leaving the intended enclosure.
+# sweep. The former route continued vertically to y=162.864 mm and looked
+# like a blue tail leaving the intended enclosure. The exact layer-change
+# topology is intentionally not pinned because the RGB-aperture reroute uses
+# a different, DRC-clean path.
 switch_route = [
     track for track in board.GetTracks()
     if track.GetNetname() == "Net-(SW19-Pad2)"
@@ -369,14 +491,6 @@ if any(
     for track in switch_route
 ):
     fail("SW19-to-SW26 B.Cu route extends below the approved thumb sweep")
-if not any(
-    isinstance(track, pcbnew.PCB_VIA)
-    and close(pcbnew.ToMM(track.GetPosition().x), 106.0)
-    and close(pcbnew.ToMM(track.GetPosition().y), 162.864)
-    for track in switch_route
-):
-    fail("SW19-to-SW26 route is missing its inboard layer-change via")
-
 board.BuildConnectivity()
 unconnected = board.GetConnectivity().GetUnconnectedCount(False)
 if unconnected:
@@ -387,7 +501,7 @@ if not list(board.GetTracks()):
 print(
     f"PASS: {BOARD.name} — {len(footprints)} footprints, "
     f"{len(list(board.GetTracks()))} copper items, 28-key RGB chain, "
-    "rounded Rev Alpha geometry and Helios QMK mapping matched, "
+    f"rounded Rev {layout['revision']} geometry and Helios QMK mapping matched, "
     "matrix/controller/OLED/TRRS "
     "nets present, zero unrouted connections"
 )

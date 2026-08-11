@@ -1,4 +1,4 @@
-# Arc 58 Rev Alpha bring-up checklist
+# Arc 58 Rev Beta bring-up checklist
 
 Do not connect the two halves together or connect a computer until the first
 three inspections pass. This checklist is the acceptance gate for calling the
@@ -7,15 +7,28 @@ hardware prototype working.
 ## 1. Before power
 
 - Inspect every SK6812MINI-E orientation against the PCB pin-1 marking.
+- Confirm all 28 routed RGB apertures are open and centered under their switch;
+  reject any panel with a missing aperture or an unremoved routing tab.
 - Confirm every diode has its cathode band aligned with the PCB cathode mark.
 - Confirm the 74AHCT1G125 orientation and that its `/OE` pad is tied to GND.
 - With a meter, verify `VCC` to `GND` is not shorted on each unpowered half.
 - Verify the TRRS cable straight through: sleeve is `GND`, ring 2 is `VBUS`,
   tip is `SPLIT_DATA`, and ring 1 is the unused spare. There are no crossed
   TX/RX conductors in this one-wire split design.
+- Dry-fit the TRRS plug and confirm it reaches full insertion through the
+  inner-edge 10 mm plate/case opening without touching the encoder.
 - Confirm B.Cu faces the keycaps on the left half and F.Cu faces the keycaps
   on the right half; sockets, diodes, and LEDs belong on each half's underside.
-- Bridge `JP_HAND` 1-2 on the left assembly and 2-3 on the right assembly.
+- Dry-fit all four thumb switches on each face against the 1:1 paper/plate
+  template. The B.Cu/left axes must fan +10/+30/+50/+70 degrees and the
+  F.Cu/right axes must mirror to -10/-30/-50/-70 degrees.
+- Confirm the Helios uses only the `L`-marked header holes on the B.Cu/left
+  face or the `R`-marked holes on the F.Cu/right face.
+- Bridge exactly one `JP_HAND` gap: 1-2 (`D4` to `3V3`) on the left assembly or
+  2-3 (`D4` to `GND`) on the right. Never leave both open or bridge both.
+- With power disconnected, confirm left `TP5` (`HAND`) has continuity to `TP3`
+  (`3V3`) but not `TP1` (`GND`); confirm right `TP5` has continuity to `TP1`
+  but not `TP3`.
 - Bridge front `JP1-JP4` on the left and back `JP5-JP8` on the right. The
   selected jumper bank is opposite the OLED face; never bridge both banks.
 

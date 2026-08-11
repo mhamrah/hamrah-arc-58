@@ -1,11 +1,22 @@
-# Hamrah Arc 58 Rev Alpha hardware
+# Hamrah Arc 58 Rev Beta hardware
 
-Rev Alpha is one fully reversible, two-layer PCB derived from the Sofle Choc
+Rev Beta is one fully reversible, two-layer PCB derived from the Sofle Choc
 electrical and mechanical approach. Order two identical boards. The F.Cu view
 is the right-hand outline; turning the board over to its B.Cu view produces the
 left-hand outline. The approved 6x4 column-staggered field and four-key Arc
-thumb geometry are unchanged. Its continuous rounded perimeter follows the
-key field and thumb arc with practical space for routing and six M2 fasteners.
+thumb geometry in `layout.config.json` is unchanged; Rev Beta now implements
+that geometry with the correct physical switch axes. Its continuous rounded
+perimeter follows the key field and thumb arc with practical space for routing
+and six M2 fasteners.
+
+Rev Beta corrects three fabrication defects in Rev Alpha: every reverse-mount
+SK6812MINI-E now has a closed 3.6 x 3.1 mm routed aperture on `Edge.Cuts`, J1 is
+rotated and moved so its mouth faces the inner split edge, and the physical
+thumb-switch axes now follow the intended fan. Rev Alpha's axes were mirrored
+to -10, -30, -50, and -70 degrees on the assembled left half instead of +10,
++30, +50, and +70 degrees. Do not build or reorder Rev Alpha. It can only be
+electrically bench-tested with all 28 LEDs per half omitted and without relying
+on enclosure/TRRS fit; the intended keyboard requires a new Rev Beta PCB.
 
 The canonical KiCad project is:
 
@@ -45,37 +56,58 @@ The Helios/Pro-Micro pad mapping used by the PCB and QMK is:
 
 Use these face assignments when the finished keyboard is upright:
 
-| Half | Face toward keycaps | Hotswap/diode/LED underside | Hand jumper | OLED jumper bank |
-| --- | --- | --- | --- | --- |
-| Left | B.Cu / B.SilkS | F.Cu / F.SilkS | `JP_HAND` 1-2 | front `JP1-JP4` |
-| Right | F.Cu / F.SilkS | B.Cu / B.SilkS | `JP_HAND` 2-3 | back `JP5-JP8` |
+| Half | Face toward keycaps | Helios header holes | Hotswap/diode/LED underside | Hand jumper | OLED jumper bank |
+| --- | --- | --- | --- | --- | --- |
+| Left | B.Cu / B.SilkS | `L`-marked B.SilkS holes | F.Cu / F.SilkS | `JP_HAND` 1-2: D4 to 3V3 | front `JP1-JP4` |
+| Right | F.Cu / F.SilkS | `R`-marked F.SilkS holes | B.Cu / B.SilkS | `JP_HAND` 2-3: D4 to GND | back `JP5-JP8` |
 
 Mount the Helios, OLED, encoder, and TRRS jack on the face toward the keycaps.
+For the Helios, solder only the two 12-hole rows marked `L` on the B.Cu/left
+face or `R` on the F.Cu/right face; the offset duplicate holes belong to the
+opposite assembly. Do not fill both header positions.
+
+`JP_HAND` is a separate three-pad solder jumper on F.Cu, not a Helios header
+choice. The center pad is Helios D4 (`HAND`), pad 1 is 3V3, and pad 3 is GND.
+QMK reads high as left and low as right, so bridge exactly one gap: 1-2 for the
+left PCB or 2-3 for the right PCB. Leaving both gaps open makes D4 float;
+bridging both shorts 3V3 to GND. The original Sofle firmware normally infers
+left from the USB/master half, whereas this dedicated pin lets either Arc half
+be the USB master without losing its physical handedness.
+
 Mount each Choc hotswap socket, SOD-123 diode, and reverse-mount RGB LED on the
 opposite/underside face. Populate the fixed F.Cu footprints (`U2`, `R1-R3`,
 `C1-C2`, and `JP_HAND`) on F.Cu on both physical boards. The OLED jumper bank
 is deliberately on the face opposite its OLED: front `JP1-JP4` for the left
 half and back `JP5-JP8` for the right. Never bridge both OLED banks.
 
+The RGB LED stays soldered to the underside SMD pads; its emitting face aligns
+with the routed aperture beneath the switch. The package is not placed loose
+on the keycap side. It is also valid to omit every RGB LED, `U2`, `R1`, and the
+RGB-only capacitors if lighting is not wanted.
+
 The TRRS pinout is identical on both halves: sleeve `GND`, ring 2 `VBUS`, tip
 `SPLIT_DATA`, ring 1 unused/spare. Connect or remove TRRS only while USB is
 unplugged, and do not power both halves from separate USB ports while TRRS is
-installed.
+installed. J1's cable mouth must face the inner split edge; the matching top
+plate/case opening is 10 mm high so a normal molded plug can be fully inserted.
 
 ## Verification status
 
 Automated checks currently prove:
 
 - all 58 approved physical press positions and plate clearances;
+- the physical thumb locator-hole axes on both assembled faces, independent of
+  the placement transform: B.Cu/left is +10/+30/+50/+70 degrees and F.Cu/right
+  is -10/-30/-50/-70 degrees;
 - all required controller, matrix, encoder, OLED, RGB, and TRRS nets;
+- Helios face labels and local high/low handedness-jumper instructions;
 - one 28-LED data chain per assembled half;
 - zero unrouted connections; and
 - zero shorts, crossings, copper/hole/mask/silkscreen clearance violations.
 
-KiCad still reports 24 dangling-track and three dangling-via warnings. They are
-reviewed redundant ends retained from the reversible Sofle route; the verifier
-pins their exact count so a change fails CI-style verification. They are not
-unrouted nets.
+KiCad reports six reviewed reversible-pad endpoint warnings and no dangling-via
+warnings. The verifier pins their exact count so a change fails CI-style
+verification; connectivity analysis still reports zero unrouted nets.
 
 Run:
 
@@ -86,4 +118,4 @@ npm run verify
 The board is design-checked, not hardware-proven. Order a small prototype
 quantity, follow `hardware/BRING-UP-CHECKLIST.md`, and do not call the revision
 production-ready until an assembled pair passes the physical and electrical
-bring-up tests. The complete pair BOM is `hardware/BOM-REV-ALPHA.csv`.
+bring-up tests. The complete pair BOM is `hardware/BOM-REV-BETA.csv`.

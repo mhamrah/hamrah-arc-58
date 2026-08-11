@@ -12,8 +12,7 @@ const boardPath = join(root, 'hardware', 'kicad', board);
 const reportDir = mkdtempSync(join(tmpdir(), 'arc58-drc-'));
 const report = join(reportDir, `${board}.json`);
 const reviewedWarnings = new Map([
-  ['track_dangling', 24],
-  ['via_dangling', 3],
+  ['track_dangling', 6],
 ]);
 
 function fail(message) {
@@ -54,7 +53,7 @@ try {
 
   console.log(
     `PASS: ${board} — zero unrouted/electrical/clearance/mask/silkscreen violations; ` +
-    '27 reviewed reversible-route stub warnings match the pinned baseline.',
+    '6 reviewed reversible-pad endpoint warnings match the pinned baseline.',
   );
 } finally {
   rmSync(reportDir, { recursive: true, force: true });

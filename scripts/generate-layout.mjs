@@ -191,6 +191,7 @@ function mirroredPoint(point) {
 
 function halfMechanical(side) {
   const mirror = side === "right";
+  const trrsSlot = config.trrs.plateSlot;
   const segments = mirror
     ? transformCurve(outlineSegments, mirroredPoint)
     : outlineSegments;
@@ -209,6 +210,12 @@ function halfMechanical(side) {
       ...config.mechanical.acrylic.electronicsWindow,
       ...(mirror
         ? { centerX: mirroredPoint({ x: config.mechanical.acrylic.electronicsWindow.centerX, y: 0 }).x }
+        : {})
+    },
+    trrsSlot: {
+      ...trrsSlot,
+      ...(mirror
+        ? { centerX: mirroredPoint({ x: trrsSlot.centerX, y: 0 }).x }
         : {})
     }
   };
@@ -244,6 +251,7 @@ function makePlateSvg(side = "left") {
     .map((hole, index) => `  <circle class="cut" data-hole="H${index + 1}" cx="${format(hole.x + offsetX)}" cy="${format(hole.y + offsetY)}" r="${format(config.mechanical.acrylic.mountingHoleDiameter / 2)}" />`)
     .join("\n");
   const electronics = half.electronicsWindow;
+  const trrsSlot = half.trrsSlot;
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${format(width)}mm" height="${format(height)}mm" viewBox="0 0 ${format(width)} ${format(height)}">
@@ -256,6 +264,7 @@ function makePlateSvg(side = "left") {
 ${cutouts}
 ${holes}
   <rect class="cut" data-cutout="controller-oled-trrs" x="${format(electronics.centerX - electronics.width / 2 + offsetX)}" y="${format(electronics.centerY - electronics.height / 2 + offsetY)}" width="${format(electronics.width)}" height="${format(electronics.height)}" rx="${format(electronics.cornerRadius)}" />
+  <rect class="cut" data-cutout="trrs-cable-clearance" x="${format(trrsSlot.centerX - trrsSlot.width / 2 + offsetX)}" y="${format(trrsSlot.centerY - trrsSlot.height / 2 + offsetY)}" width="${format(trrsSlot.width)}" height="${format(trrsSlot.height)}" rx="${format(trrsSlot.cornerRadius)}" />
 </svg>
 `;
 }
@@ -428,6 +437,18 @@ function makeDxf(side = "left") {
         electronics.cornerRadius
       ),
       "ELECTRONICS_WINDOW"
+    )
+  );
+  const trrsSlot = half.trrsSlot;
+  entities.push(
+    dxfPolyline(
+      roundedRectanglePoints(
+        { x: trrsSlot.centerX, y: trrsSlot.centerY },
+        trrsSlot.width,
+        trrsSlot.height,
+        trrsSlot.cornerRadius
+      ),
+      "TRRS_CABLE_CLEARANCE"
     )
   );
   return [

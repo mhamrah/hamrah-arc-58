@@ -29,6 +29,7 @@ POSITIONS = json.loads((OUTPUT / "key-positions.json").read_text())
 MECHANICAL = CONFIG["mechanical"]
 ACRYLIC = MECHANICAL["acrylic"]
 CASE = MECHANICAL["cncCase"]
+TRRS = CONFIG["trrs"]
 
 
 def transformed(point: dict, mirror_axis: float | None = None) -> tuple[float, float]:
@@ -118,6 +119,7 @@ def side_geometry(side: str) -> dict:
     transform = lambda point: transformed(point, mirror_axis)
     electronics = ACRYLIC["electronicsWindow"]
     center = transform({"x": electronics["centerX"], "y": electronics["centerY"]})
+    trrs_slot = TRRS["plateSlot"]
     return {
         "mirrorAxis": mirror_axis,
         "outline": outline_wire(mirror_axis),
@@ -125,6 +127,7 @@ def side_geometry(side: str) -> dict:
         "holes": [transform(point) for point in MECHANICAL["mountingHoles"]],
         "reset": transform(MECHANICAL["resetAccess"]),
         "electronics": center,
+        "trrsSlot": transform({"x": trrs_slot["centerX"], "y": trrs_slot["centerY"]}),
         "keys": POSITIONS[side],
     }
 
@@ -157,6 +160,17 @@ def make_switch_plate(geometry: dict) -> cq.Workplane:
             -1,
         )
     )
+    trrs_slot = TRRS["plateSlot"]
+    plate = plate.cut(
+        rounded_rectangle(
+            geometry["trrsSlot"],
+            trrs_slot["width"],
+            trrs_slot["height"],
+            trrs_slot["cornerRadius"],
+            cut_depth,
+            -1,
+        )
+    )
     return plate
 
 
@@ -169,6 +183,18 @@ def make_case_base(geometry: dict) -> cq.Workplane:
             pocket,
             CASE["overallHeight"] - CASE["floorThickness"] + 1,
             CASE["floorThickness"],
+        )
+    )
+    trrs_slot = TRRS["plateSlot"]
+    notch_bottom = TRRS["caseNotchBottom"]
+    body = body.cut(
+        rounded_rectangle(
+            geometry["trrsSlot"],
+            trrs_slot["width"],
+            trrs_slot["height"],
+            trrs_slot["cornerRadius"],
+            CASE["overallHeight"] - notch_bottom + 1,
+            notch_bottom,
         )
     )
     boss_height = CASE["pcbUndersideHeight"] - CASE["floorThickness"]
@@ -213,7 +239,7 @@ def ordered_wire_points(wire: cq.Wire, samples_per_edge: int = 24) -> list[tuple
 def write_case_dxf(path: Path, geometry: dict) -> None:
     doc = ezdxf.new("R2010", setup=True)
     doc.units = ezdxf.units.MM
-    for name, color in (("OUTER_PROFILE", 7), ("PCB_POCKET", 3), ("BOSSES", 4), ("M2_TAP_DRILL", 1), ("RESET_ACCESS", 6)):
+    for name, color in (("OUTER_PROFILE", 7), ("PCB_POCKET", 3), ("BOSSES", 4), ("M2_TAP_DRILL", 1), ("RESET_ACCESS", 6), ("TRRS_CABLE_CLEARANCE", 2)):
         doc.layers.add(name, color=color)
     model = doc.modelspace()
     outer = expanded_wire(geometry["outlinePoints"], CASE["outerWall"])
@@ -224,6 +250,19 @@ def write_case_dxf(path: Path, geometry: dict) -> None:
         model.add_circle(hole, CASE["bossDiameter"] / 2, dxfattribs={"layer": "BOSSES"})
         model.add_circle(hole, CASE["tapDrillDiameter"] / 2, dxfattribs={"layer": "M2_TAP_DRILL"})
     model.add_circle(geometry["reset"], CASE["resetAccessDiameter"] / 2, dxfattribs={"layer": "RESET_ACCESS"})
+    trrs_slot = TRRS["plateSlot"]
+    slot_wire = rounded_rectangle(
+        geometry["trrsSlot"],
+        trrs_slot["width"],
+        trrs_slot["height"],
+        trrs_slot["cornerRadius"],
+        1,
+    ).faces(">Z").wires().val()
+    model.add_lwpolyline(
+        ordered_wire_points(slot_wire),
+        close=True,
+        dxfattribs={"layer": "TRRS_CABLE_CLEARANCE"},
+    )
     doc.saveas(path)
 
 
@@ -281,13 +320,14 @@ def validate_step(path: Path, minimum_volume: float) -> tuple[float, tuple[float
 
 
 def acrylic_readme() -> str:
-    return f"""# Hamrah Arc 58 Rev Alpha acrylic plates
+    return f"""# Hamrah Arc 58 Rev {CONFIG['revision']} acrylic plates
 
 All geometry is 1:1 in millimetres. Order one left and one right file for each
 layer; do not mirror files at the laser cutter.
 
 - Top plates: {ACRYLIC['topThickness']} mm cast acrylic, with 14.0 mm Choc v1 cutouts,
-  a controller/OLED/TRRS service window, encoder opening, and 2.4 mm M2 clearance holes.
+  a controller/OLED service window, a {TRRS['plugClearanceDiameter']} mm-high TRRS cable-exit slot,
+  an encoder opening, and 2.4 mm M2 clearance holes.
 - Bottom plates: {ACRYLIC['bottomThickness']} mm cast acrylic, with 2.4 mm M2 clearance holes
   and a {ACRYLIC['resetAccessDiameter']} mm reset opening.
 - Use the supplied 13.8/14.0/14.2 mm fit coupon in the exact stock, color, and
@@ -299,13 +339,13 @@ layer; do not mirror files at the laser cutter.
 The top plate is designed to sit nominally 2.2 mm above the PCB. Dry-fit the
 actual Choc switch batch before choosing final sleeves/washers. Keep at least
 3.5 mm between the PCB underside and bottom plate for hotswap sockets, diodes,
-and RGB components. This is Rev Alpha prototype tooling and should be verified
+and RGB components. This is Rev {CONFIG['revision']} prototype tooling and should be verified
 against a fabricated PCB before ordering decorative materials in quantity.
 """
 
 
 def cnc_readme(case_dimensions: dict) -> str:
-    return f"""# Hamrah Arc 58 Rev Alpha CNC aluminum case
+    return f"""# Hamrah Arc 58 Rev {CONFIG['revision']} CNC aluminum case
 
 This package contains separate left/right 6061-T6 aluminum bottom chassis and
 1.5 mm switch plates. The switch plate can be replaced with the acrylic top
@@ -323,7 +363,8 @@ Nominal construction:
 - Boss holes: drill {CASE['tapDrillDiameter']} mm and tap {CASE['thread']} to {CASE['threadDepth']} mm depth.
 - Reset access: {CASE['resetAccessDiameter']} mm through the floor.
 - Switch plate: {CASE['topPlateThickness']} mm, 14.0 mm Choc v1 openings,
-  2.4 mm M2 clearance holes, and the controller/OLED/TRRS service window.
+  2.4 mm M2 clearance holes, the controller/OLED service window, and a
+  {TRRS['plugClearanceDiameter']} mm-high TRRS cable-exit slot.
 - Plate underside: Z={CASE['pcbUndersideHeight'] + 1.6 + CASE['pcbToPlateGap']:.3f} mm in the reference assembly.
 
 Manufacturing notes:
@@ -333,10 +374,11 @@ Manufacturing notes:
 - Use a 1.0 mm internal floor radius or the shop's standard small end-mill
   radius. Break exposed edges R0.5 maximum and deburr all holes.
 - Mask threaded holes during anodizing and chase the M2 threads afterward.
-- The low rim ends below the PCB top surface, so USB and TRRS cables approach
-  above the rim through the electronics opening; no hidden side undercut is required.
+- The TRRS jack faces the inner split edge. Machine the open cable notch from
+  Z={TRRS['caseNotchBottom']} mm through the top rim; it clears a nominal
+  {TRRS['plugClearanceDiameter']} mm-diameter plug housing.
 - Order one left and one right chassis. Do not mirror at the machine shop.
-- Prototype the PCB and acrylic stack first. Rev Alpha has passed design-rule
+- Prototype the PCB and acrylic stack first. Rev {CONFIG['revision']} has passed design-rule
   checks but has not yet completed physical keyboard bring-up.
 """
 
@@ -378,7 +420,8 @@ def main() -> None:
         "choc-v1-acrylic-fit-coupon.dxf": "choc-v1-fit-coupon.dxf",
         "choc-v1-acrylic-fit-coupon.svg": "previews/choc-v1-fit-coupon.svg",
     }
-    acrylic_zip = MANUFACTURING / "arc58-acrylic-plates-rev-alpha.zip"
+    revision_slug = CONFIG["revision"].lower()
+    acrylic_zip = MANUFACTURING / f"arc58-acrylic-plates-rev-{revision_slug}.zip"
     write_zip(
         acrylic_zip,
         [(OUTPUT / source, target) for source, target in acrylic_names.items()],
@@ -438,9 +481,9 @@ def main() -> None:
                     f"left={left[property_name]:.4f}, right={right[property_name]:.4f}"
                 )
         specification = temp / "case-specifications.json"
-        specification.write_text(json.dumps({"revision": CONFIG["revision"], "units": "mm", "acrylic": ACRYLIC, "cncCase": CASE, "generatedDimensions": side_results}, indent=2) + "\n")
+        specification.write_text(json.dumps({"revision": CONFIG["revision"], "units": "mm", "acrylic": ACRYLIC, "cncCase": CASE, "trrs": TRRS, "generatedDimensions": side_results}, indent=2) + "\n")
         package_files.append((specification, specification.name))
-        cnc_zip = MANUFACTURING / "arc58-cnc-aluminum-case-rev-alpha.zip"
+        cnc_zip = MANUFACTURING / f"arc58-cnc-aluminum-case-rev-{revision_slug}.zip"
         write_zip(cnc_zip, package_files, cnc_readme(left))
 
     print(f"PASS: wrote {acrylic_zip}")
