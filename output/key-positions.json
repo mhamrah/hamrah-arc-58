@@ -6,8 +6,13 @@
     "plateCutout": 14,
     "pitchX": 19.05,
     "pitchY": 19.05,
-    "keycapWidth": 17.5,
-    "keycapHeight": 16.5
+    "keycapWidth": 16.5,
+    "keycapHeight": 16.5,
+    "keycapClearanceEnvelope": {
+      "width": 18,
+      "height": 18,
+      "minimumGap": 1
+    }
   },
   "encoder": {
     "enabled": true,
@@ -263,7 +268,7 @@
       "id": "thumb1",
       "group": "thumb",
       "index": 0,
-      "x": 85.725,
+      "x": 84.725,
       "y": 81.15,
       "rotation": 10
     },
@@ -271,24 +276,24 @@
       "id": "thumb2",
       "group": "thumb",
       "index": 1,
-      "x": 105.431,
-      "y": 86.801,
+      "x": 105.873,
+      "y": 87.214,
       "rotation": 30
     },
     {
       "id": "thumb3",
       "group": "thumb",
       "index": 2,
-      "x": 122.016,
-      "y": 98.85,
+      "x": 123.671,
+      "y": 100.145,
       "rotation": 50
     },
     {
       "id": "thumb4",
       "group": "thumb",
       "index": 3,
-      "x": 133.479,
-      "y": 115.845,
+      "x": 135.973,
+      "y": 118.384,
       "rotation": 70
     }
   ],
@@ -520,7 +525,7 @@
       "id": "thumb1",
       "group": "thumb",
       "index": 0,
-      "x": 51.191,
+      "x": 52.191,
       "y": 81.15,
       "rotation": -10
     },
@@ -528,24 +533,24 @@
       "id": "thumb2",
       "group": "thumb",
       "index": 1,
-      "x": 31.485,
-      "y": 86.801,
+      "x": 31.043,
+      "y": 87.214,
       "rotation": -30
     },
     {
       "id": "thumb3",
       "group": "thumb",
       "index": 2,
-      "x": 14.9,
-      "y": 98.85,
+      "x": 13.245,
+      "y": 100.145,
       "rotation": -50
     },
     {
       "id": "thumb4",
       "group": "thumb",
       "index": 3,
-      "x": 3.437,
-      "y": 115.845,
+      "x": 0.943,
+      "y": 118.384,
       "rotation": -70
     }
   ]

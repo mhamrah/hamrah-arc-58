@@ -26,9 +26,12 @@ All dimensions live in `layout.config.json`.
 | --- | ---: |
 | Main matrix pitch | 19.05 x 19.05 mm |
 | Choc plate cutout | 14 x 14 mm |
+| Specified Choc v1 keycap | 16.5 x 16.5 mm |
 | Choc keys per half | 28 |
 | Clickable encoders per half | 1 |
-| Thumb center spacing | 20.5 mm |
+| Thumb center spacing | 22.0 mm |
+| T1 outward offset from C5/C6 midpoint | 1.0 mm |
+| Conservative thumb envelope / minimum gap | 18 x 18 mm / 1.0 mm |
 | Thumb key rotations | 10, 30, 50, 70 degrees |
 | Mounting holes per half | 6 x 2.2 mm |
 
@@ -70,10 +73,11 @@ mapping, DRC status, and safety notes are in `hardware/README.md`; the pair BOM 
 Rev Beta replaces the original Rev Alpha fabrication files. Do not build or
 reorder Rev Alpha: it has no routed optical/package apertures for per-key RGB,
 its TRRS jack points toward the encoder instead of the cable exit, and its
-four thumb-switch axes are mirrored to the wrong physical angles. Rev Alpha
-may be electrically bench-tested with every RGB LED omitted and without an
-enclosure, but it does not implement the intended keyboard. Do not hand-cut a
-populated PCB; use Rev Beta for the corrected thumb fan, per-key RGB, and
+four thumb-switch axes are mirrored to the wrong physical angles. Its 20.5 mm
+thumb centers also fail the conservative 18 x 18 mm clearance requirement. Rev
+Alpha may be electrically bench-tested with every RGB LED omitted and without
+an enclosure, but it does not implement the intended keyboard. Do not hand-cut
+a populated PCB; use Rev Beta for the corrected thumb fan, per-key RGB, and
 unobstructed TRRS cable access.
 
 ## Prototype status
@@ -84,7 +88,9 @@ violations. Its Edge.Cuts layer contains 28 closed 3.6 x 3.1 mm RGB apertures
 per half, and the inner-edge TRRS jack/plate geometry provides a 10 mm cable
 opening. The switch locator holes independently verify the assembled thumb
 axes: +10, +30, +50, and +70 degrees on the B.Cu/left half, mirrored to -10,
--30, -50, and -70 degrees on the F.Cu/right half. QMK is configured for
+-30, -50, and -70 degrees on the F.Cu/right half. The thumb centers are 22 mm
+apart and preserve more than 1 mm nominal clearance for an 18 x 18 mm Choc v1
+keycap envelope. QMK is configured for
 Helios, a one-wire TRRS split, OLED, encoder, and a 28+28 RGB Matrix. The
 default firmware also compiles successfully against current upstream QMK; the
 ignored local UF2 is generated at

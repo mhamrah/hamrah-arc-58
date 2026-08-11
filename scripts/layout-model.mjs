@@ -76,7 +76,8 @@ export function buildHalf(config) {
 
   const [startColumnA, startColumnB] = thumbArc.startBetweenColumns;
   const startX =
-    ((startColumnA + startColumnB) / 2) * switchConfig.pitchX;
+    ((startColumnA + startColumnB) / 2) * switchConfig.pitchX -
+    thumbArc.startOffsetTowardOuterEdge;
   const startY =
     Math.max(
       matrix.columnStagger[startColumnA] +

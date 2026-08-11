@@ -3,20 +3,24 @@
 Rev Beta is one fully reversible, two-layer PCB derived from the Sofle Choc
 electrical and mechanical approach. Order two identical boards. The F.Cu view
 is the right-hand outline; turning the board over to its B.Cu view produces the
-left-hand outline. The approved 6x4 column-staggered field and four-key Arc
-thumb geometry in `layout.config.json` is unchanged; Rev Beta now implements
-that geometry with the correct physical switch axes. Its continuous rounded
+left-hand outline. Rev Beta keeps the approved 6x4 column-staggered field and
+updates the four-key Arc to 22 mm centers, with T1 shifted only 1 mm toward the
+outer edge and T2-T4 continuing down the fan. Its continuous rounded
 perimeter follows the key field and thumb arc with practical space for routing
-and six M2 fasteners.
+and six M2 fasteners. The thumb-bay M2 point moves between T2 and T3 so the
+fastener and its boss remain clear of the widened T4 position; use the
+regenerated Rev Beta plates and case with this board.
 
-Rev Beta corrects three fabrication defects in Rev Alpha: every reverse-mount
+Rev Beta corrects four fabrication defects in Rev Alpha: every reverse-mount
 SK6812MINI-E now has a closed 3.6 x 3.1 mm routed aperture on `Edge.Cuts`, J1 is
 rotated and moved so its mouth faces the inner split edge, and the physical
-thumb-switch axes now follow the intended fan. Rev Alpha's axes were mirrored
-to -10, -30, -50, and -70 degrees on the assembled left half instead of +10,
-+30, +50, and +70 degrees. Do not build or reorder Rev Alpha. It can only be
-electrically bench-tested with all 28 LEDs per half omitted and without relying
-on enclosure/TRRS fit; the intended keyboard requires a new Rev Beta PCB.
+thumb-switch axes now follow the intended fan at 22 mm centers. Rev Alpha's
+axes were mirrored to -10, -30, -50, and -70 degrees on the assembled left half
+instead of +10, +30, +50, and +70 degrees, and its 20.5 mm thumb centers did
+not meet the conservative 18 x 18 mm keycap-envelope clearance requirement. Do
+not build or reorder Rev Alpha. It can only be electrically bench-tested with
+all 28 LEDs per half omitted and without relying on enclosure/TRRS fit; the
+intended keyboard requires a new Rev Beta PCB.
 
 The canonical KiCad project is:
 
@@ -99,6 +103,8 @@ Automated checks currently prove:
 - the physical thumb locator-hole axes on both assembled faces, independent of
   the placement transform: B.Cu/left is +10/+30/+50/+70 degrees and F.Cu/right
   is -10/-30/-50/-70 degrees;
+- at least 1 mm nominal clearance between adjacent 18 x 18 mm thumb-keycap
+  envelopes at the 22 mm centers;
 - all required controller, matrix, encoder, OLED, RGB, and TRRS nets;
 - Helios face labels and local high/low handedness-jumper instructions;
 - one 28-LED data chain per assembled half;

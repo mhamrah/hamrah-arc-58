@@ -25,145 +25,145 @@
   <path class="plate" d="M 405.425 33.056 C 404.05 30.306 403.425 29.181 397.425 28.056 C 391.425 26.931 368.05 24.681 357.425 24.056 C 346.8 23.431 323.05 22.806 312.425 23.056 C 301.8 23.306 262.547 25.931 257.464 29.159 C 251.035 33.241 250.213 57.045 250.964 64.659 C 256.103 116.751 248.175 132.556 246.425 140.056 C 244.675 147.556 240.117 154.345 239.425 158.056 C 237.986 165.775 249.455 174.923 259.464 175.159 C 282.151 175.692 284.863 148.216 317.425 139.056 C 323.133 137.451 340.55 132.431 347.425 131.056 C 354.3 129.681 365.8 128.931 372.425 128.056 C 379.05 127.181 396.05 125.556 400.425 124.056 C 404.8 122.556 406.425 121.556 407.425 116.056 C 408.425 110.556 408.3 88.306 408.425 80.056 C 408.55 71.806 408.8 55.931 408.425 50.056 C 408.05 44.181 406.8 35.806 405.425 33.056 Z" />
   
     <g class="key key--matrix" transform="translate(28.198 47.456) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">L·C1R1</text>
     </g>
     <g class="key key--matrix" transform="translate(28.198 66.506) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">L·C1R2</text>
     </g>
     <g class="key key--matrix" transform="translate(28.198 85.556) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">L·C1R3</text>
     </g>
     <g class="key key--matrix" transform="translate(28.198 104.606) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">L·C1R4</text>
     </g>
     <g class="key key--matrix" transform="translate(47.248 47.456) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">L·C2R1</text>
     </g>
     <g class="key key--matrix" transform="translate(47.248 66.506) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">L·C2R2</text>
     </g>
     <g class="key key--matrix" transform="translate(47.248 85.556) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">L·C2R3</text>
     </g>
     <g class="key key--matrix" transform="translate(47.248 104.606) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">L·C2R4</text>
     </g>
     <g class="key key--matrix" transform="translate(66.298 42.556) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">L·C3R1</text>
     </g>
     <g class="key key--matrix" transform="translate(66.298 61.606) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">L·C3R2</text>
     </g>
     <g class="key key--matrix" transform="translate(66.298 80.656) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">L·C3R3</text>
     </g>
     <g class="key key--matrix" transform="translate(66.298 99.706) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">L·C3R4</text>
     </g>
     <g class="key key--matrix" transform="translate(85.348 40.056) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">L·C4R1</text>
     </g>
     <g class="key key--matrix" transform="translate(85.348 59.106) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">L·C4R2</text>
     </g>
     <g class="key key--matrix" transform="translate(85.348 78.156) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">L·C4R3</text>
     </g>
     <g class="key key--matrix" transform="translate(85.348 97.206) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">L·C4R4</text>
     </g>
     <g class="key key--matrix" transform="translate(104.398 42.556) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">L·C5R1</text>
     </g>
     <g class="key key--matrix" transform="translate(104.398 61.606) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">L·C5R2</text>
     </g>
     <g class="key key--matrix" transform="translate(104.398 80.656) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">L·C5R3</text>
     </g>
     <g class="key key--matrix" transform="translate(104.398 99.706) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">L·C5R4</text>
     </g>
     <g class="key key--matrix" transform="translate(123.448 45.056) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">L·C6R1</text>
     </g>
     <g class="key key--matrix" transform="translate(123.448 64.106) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">L·C6R2</text>
     </g>
     <g class="key key--matrix" transform="translate(123.448 83.156) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">L·C6R3</text>
     </g>
     <g class="key key--matrix" transform="translate(123.448 102.206) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">L·C6R4</text>
@@ -175,171 +175,171 @@
       <circle class="center" r="0.6" />
       <text y="0.9">L·ENC</text>
     </g>
-    <g class="key key--thumb" transform="translate(113.923 121.206) rotate(10)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+    <g class="key key--thumb" transform="translate(112.923 121.206) rotate(10)">
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(-10)" y="0.9">L·T1</text>
     </g>
-    <g class="key key--thumb" transform="translate(133.629 126.857) rotate(30)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+    <g class="key key--thumb" transform="translate(134.071 127.27) rotate(30)">
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(-30)" y="0.9">L·T2</text>
     </g>
-    <g class="key key--thumb" transform="translate(150.213 138.906) rotate(50)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+    <g class="key key--thumb" transform="translate(151.869 140.201) rotate(50)">
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(-50)" y="0.9">L·T3</text>
     </g>
-    <g class="key key--thumb" transform="translate(161.677 155.902) rotate(70)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+    <g class="key key--thumb" transform="translate(164.171 158.44) rotate(70)">
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(-70)" y="0.9">L·T4</text>
     </g>
   
     <g class="key key--matrix" transform="translate(392.425 47.456) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">R·C1R1</text>
     </g>
     <g class="key key--matrix" transform="translate(392.425 66.506) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">R·C1R2</text>
     </g>
     <g class="key key--matrix" transform="translate(392.425 85.556) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">R·C1R3</text>
     </g>
     <g class="key key--matrix" transform="translate(392.425 104.606) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">R·C1R4</text>
     </g>
     <g class="key key--matrix" transform="translate(373.375 47.456) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">R·C2R1</text>
     </g>
     <g class="key key--matrix" transform="translate(373.375 66.506) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">R·C2R2</text>
     </g>
     <g class="key key--matrix" transform="translate(373.375 85.556) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">R·C2R3</text>
     </g>
     <g class="key key--matrix" transform="translate(373.375 104.606) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">R·C2R4</text>
     </g>
     <g class="key key--matrix" transform="translate(354.325 42.556) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">R·C3R1</text>
     </g>
     <g class="key key--matrix" transform="translate(354.325 61.606) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">R·C3R2</text>
     </g>
     <g class="key key--matrix" transform="translate(354.325 80.656) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">R·C3R3</text>
     </g>
     <g class="key key--matrix" transform="translate(354.325 99.706) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">R·C3R4</text>
     </g>
     <g class="key key--matrix" transform="translate(335.275 40.056) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">R·C4R1</text>
     </g>
     <g class="key key--matrix" transform="translate(335.275 59.106) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">R·C4R2</text>
     </g>
     <g class="key key--matrix" transform="translate(335.275 78.156) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">R·C4R3</text>
     </g>
     <g class="key key--matrix" transform="translate(335.275 97.206) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">R·C4R4</text>
     </g>
     <g class="key key--matrix" transform="translate(316.225 42.556) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">R·C5R1</text>
     </g>
     <g class="key key--matrix" transform="translate(316.225 61.606) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">R·C5R2</text>
     </g>
     <g class="key key--matrix" transform="translate(316.225 80.656) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">R·C5R3</text>
     </g>
     <g class="key key--matrix" transform="translate(316.225 99.706) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">R·C5R4</text>
     </g>
     <g class="key key--matrix" transform="translate(297.175 45.056) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">R·C6R1</text>
     </g>
     <g class="key key--matrix" transform="translate(297.175 64.106) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">R·C6R2</text>
     </g>
     <g class="key key--matrix" transform="translate(297.175 83.156) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">R·C6R3</text>
     </g>
     <g class="key key--matrix" transform="translate(297.175 102.206) rotate(0)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(0)" y="0.9">R·C6R4</text>
@@ -351,30 +351,30 @@
       <circle class="center" r="0.6" />
       <text y="0.9">R·ENC</text>
     </g>
-    <g class="key key--thumb" transform="translate(306.7 121.206) rotate(-10)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+    <g class="key key--thumb" transform="translate(307.7 121.206) rotate(-10)">
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(10)" y="0.9">R·T1</text>
     </g>
-    <g class="key key--thumb" transform="translate(286.994 126.857) rotate(-30)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+    <g class="key key--thumb" transform="translate(286.552 127.27) rotate(-30)">
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(30)" y="0.9">R·T2</text>
     </g>
-    <g class="key key--thumb" transform="translate(270.409 138.906) rotate(-50)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+    <g class="key key--thumb" transform="translate(268.754 140.201) rotate(-50)">
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(50)" y="0.9">R·T3</text>
     </g>
-    <g class="key key--thumb" transform="translate(258.946 155.902) rotate(-70)">
-      <rect class="keycap" x="-8.75" y="-8.25" width="17.5" height="16.5" rx="1.6" />
+    <g class="key key--thumb" transform="translate(256.452 158.44) rotate(-70)">
+      <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(70)" y="0.9">R·T4</text>
     </g>
-  <path class="guide" d="M 113.923 102.206 L 113.923 121.206" />
-  <text class="guide-label" x="115.923" y="111.706">T1 starts between C5 / C6</text>
+  <path class="guide" d="M 112.923 102.206 L 112.923 121.206" />
+  <text class="guide-label" x="114.923" y="111.706">T1 is 1 mm outward from C5 / C6 midpoint</text>
 </svg>

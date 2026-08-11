@@ -141,8 +141,8 @@ function makeFullSvg() {
     .join("");
 
   const [columnA, columnB] = config.thumbArc.startBetweenColumns;
-  const guideX =
-    ((columnA + columnB) / 2) * config.switch.pitchX + leftOffsetX;
+  const thumbOne = leftKeys.find((key) => key.id === "thumb1");
+  const guideX = thumbOne.x + leftOffsetX;
   const guideTop =
     Math.max(
       config.matrix.columnStagger[columnA] +
@@ -150,8 +150,6 @@ function makeFullSvg() {
       config.matrix.columnStagger[columnB] +
         (config.matrix.rows - 1) * config.switch.pitchY
     ) + offsetY;
-  const thumbOne = leftKeys.find((key) => key.id === "thumb1");
-
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${format(pageWidth)}mm" height="${format(pageHeight)}mm" viewBox="0 0 ${format(pageWidth)} ${format(pageHeight)}">
   <title>${config.name} physical layout</title>
@@ -180,7 +178,7 @@ function makeFullSvg() {
   ${leftKeyMarkup}
   ${rightKeyMarkup}
   <path class="guide" d="M ${format(guideX)} ${format(guideTop)} L ${format(guideX)} ${format(thumbOne.y + offsetY)}" />
-  <text class="guide-label" x="${format(guideX + 2)}" y="${format((guideTop + thumbOne.y + offsetY) / 2)}">T1 starts between C5 / C6</text>
+  <text class="guide-label" x="${format(guideX + 2)}" y="${format((guideTop + thumbOne.y + offsetY) / 2)}">T1 is ${config.thumbArc.startOffsetTowardOuterEdge} mm outward from C5 / C6 midpoint</text>
 </svg>
 `;
 }

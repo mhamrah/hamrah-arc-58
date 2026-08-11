@@ -21,7 +21,8 @@ hardware prototype working.
   on the right half; sockets, diodes, and LEDs belong on each half's underside.
 - Dry-fit all four thumb switches on each face against the 1:1 paper/plate
   template. The B.Cu/left axes must fan +10/+30/+50/+70 degrees and the
-  F.Cu/right axes must mirror to -10/-30/-50/-70 degrees.
+  F.Cu/right axes must mirror to -10/-30/-50/-70 degrees. Confirm the 22 mm
+  centers leave visible clearance between all four installed Choc v1 keycaps.
 - Confirm the Helios uses only the `L`-marked header holes on the B.Cu/left
   face or the `R`-marked holes on the F.Cu/right face.
 - Bridge exactly one `JP_HAND` gap: 1-2 (`D4` to `3V3`) on the left assembly or

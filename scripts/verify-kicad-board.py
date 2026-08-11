@@ -184,7 +184,10 @@ encoder_y = (
 check_placement(footprints["SW25"], *pcb_location(encoder_x, encoder_y))
 
 column_a, column_b = layout["thumbArc"]["startBetweenColumns"]
-thumb_x = ((column_a + column_b) / 2) * pitch_x
+thumb_x = (
+    ((column_a + column_b) / 2) * pitch_x
+    - layout["thumbArc"]["startOffsetTowardOuterEdge"]
+)
 thumb_y = max(
     matrix["columnStagger"][column_a] + (matrix["rows"] - 1) * pitch_y,
     matrix["columnStagger"][column_b] + (matrix["rows"] - 1) * pitch_y,
