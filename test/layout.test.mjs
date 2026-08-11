@@ -362,6 +362,67 @@ test("the shared mechanical design has a smooth outline and six clear M2 fastene
   assert.ok(h4OutlineGap > 3, `H4 outline gap is only ${h4OutlineGap} mm`);
 });
 
+test("the lower outline is trimmed while the outer thumb edge is expanded", () => {
+  const sampledOutline = sampleClosedCurve(
+    closedOutlineSegments(config.mechanical),
+    2048
+  );
+  const maxX = Math.max(...sampledOutline.map((point) => point.x));
+  const maxY = Math.max(...sampledOutline.map((point) => point.y));
+
+  assert.ok(maxX > 156.5, `outer thumb edge only reaches ${maxX} mm`);
+  assert.ok(maxY < 132.2, `lower edge still reaches ${maxY} mm`);
+
+  const outlineGap = (key) => {
+    const keycap = rectangleCorners(
+      key,
+      config.switch.keycapWidth,
+      config.switch.keycapHeight
+    );
+    let gap = Infinity;
+    for (const corner of keycap) {
+      for (let index = 0; index < sampledOutline.length; index += 1) {
+        gap = Math.min(
+          gap,
+          pointToSegment(
+            corner,
+            sampledOutline[index],
+            sampledOutline[(index + 1) % sampledOutline.length]
+          )
+        );
+      }
+    }
+    for (const outlinePoint of sampledOutline) {
+      for (let index = 0; index < keycap.length; index += 1) {
+        gap = Math.min(
+          gap,
+          pointToSegment(
+            outlinePoint,
+            keycap[index],
+            keycap[(index + 1) % keycap.length]
+          )
+        );
+      }
+    }
+    return gap;
+  };
+  assert.ok(outlineGap(thumbKeys[0]) > 6, "T1 has less than 6 mm of edge clearance");
+  assert.ok(outlineGap(thumbKeys[3]) > 5.7, "T4 has less than 5.7 mm of edge clearance");
+
+  const h5 = config.mechanical.mountingHoles[4];
+  const h5BossEdgeGap =
+    Math.min(
+      ...sampledOutline.map((point, index) =>
+        pointToSegment(
+          h5,
+          point,
+          sampledOutline[(index + 1) % sampledOutline.length]
+        )
+      )
+    ) - config.mechanical.cncCase.bossDiameter / 2;
+  assert.ok(h5BossEdgeGap > 2.75, `H5 boss edge gap is only ${h5BossEdgeGap} mm`);
+});
+
 test("acrylic plates use prototype-safe dimensions and preserve the electronics bay", () => {
   const acrylic = config.mechanical.acrylic;
   assert.equal(acrylic.material, "cast acrylic");
