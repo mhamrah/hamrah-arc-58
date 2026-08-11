@@ -19685,10 +19685,54 @@
 			)
 		)
 	)
-	(gr_text "U1 HELIOS RP2040"
+	(gr_text "RIGHT HELIOS • F.Cu FACE"
 		(at 120 36.5 0)
 		(layer "F.SilkS")
 		(uuid "ccca997a-0675-4729-b4d6-8d3c6fc7189e")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "R"
+		(at 92.18 38.9 0)
+		(layer "F.SilkS")
+		(uuid "7a74bbb2-52fa-47de-b945-a3f979399db9")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "R"
+		(at 107.42 38.9 0)
+		(layer "F.SilkS")
+		(uuid "956989fc-c1f4-42fb-91be-c64bf50e02be")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "L 1-2"
+		(at 79.5 69.3 0)
+		(layer "F.SilkS")
+		(uuid "5a230e65-c2bf-43ea-bbe7-94cf4d5f8a30")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_text "R 2-3"
+		(at 79.5 70.7 0)
+		(layer "F.SilkS")
+		(uuid "30d9b92a-4be1-4611-848e-69133045406a")
 		(effects
 			(font
 				(size 1 1)
@@ -20542,10 +20586,34 @@
 			(justify mirror)
 		)
 	)
-	(gr_text "U1 HELIOS RP2040"
+	(gr_text "LEFT HELIOS • B.Cu FACE"
 		(at 120 36.5 0)
 		(layer "B.SilkS")
 		(uuid "a4c6d1e0-8d13-4be7-9d9d-791696b9e88b")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "L"
+		(at 93.479 40.1 0)
+		(layer "B.SilkS")
+		(uuid "e609007e-9c04-48af-adf7-e9d76c015a10")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "L"
+		(at 108.719 40.1 0)
+		(layer "B.SilkS")
+		(uuid "0656f4f4-61d9-4110-9008-aa73ccd79ab4")
 		(effects
 			(font
 				(size 1 1)

@@ -299,6 +299,30 @@ revision_layers = {
 if revision_layers != {"F.Silkscreen", "B.Silkscreen"}:
     fail(f"Rev {layout['revision']} reversible marking must appear on both silkscreen faces")
 
+required_assembly_labels = [
+    ("RIGHT HELIOS • F.Cu FACE", "F.Silkscreen", 120, 36.5),
+    ("LEFT HELIOS • B.Cu FACE", "B.Silkscreen", 120, 36.5),
+    ("R", "F.Silkscreen", 92.18, 38.9),
+    ("R", "F.Silkscreen", 107.42, 38.9),
+    ("L", "B.Silkscreen", 93.479, 40.1),
+    ("L", "B.Silkscreen", 108.719, 40.1),
+    ("L 1-2", "F.Silkscreen", 79.5, 69.3),
+    ("R 2-3", "F.Silkscreen", 79.5, 70.7),
+]
+board_text = [
+    drawing for drawing in board.GetDrawings()
+    if isinstance(drawing, pcbnew.PCB_TEXT)
+]
+for label, layer, expected_x, expected_y in required_assembly_labels:
+    if not any(
+        drawing.GetText() == label
+        and drawing.GetLayerName() == layer
+        and close(pcbnew.ToMM(drawing.GetPosition().x), expected_x)
+        and close(pcbnew.ToMM(drawing.GetPosition().y), expected_y)
+        for drawing in board_text
+    ):
+        fail(f"missing local assembly label {label!r} on {layer}")
+
 for index in range(1, 7):
     hole = pad(footprints[f"H{index}"], "")
     if hole is None or hole.GetDrillSize().x != pcbnew.FromMM(2.2):
@@ -362,6 +386,8 @@ if split.get("encoder", {}).get("right", {}).get("rotary") != [
 config_h = (FIRMWARE / "config.h").read_text()
 if "#define I2C1_SDA_PIN D1" not in config_h or "#define I2C1_SCL_PIN D0" not in config_h:
     fail("QMK OLED I2C pins do not match U1 OLED_SDA/OLED_SCL")
+if "SPLIT_HAND_PIN_LOW_IS_LEFT" in config_h:
+    fail("QMK handedness polarity must remain high=left and low=right")
 if "CONVERT_TO = helios" not in (FIRMWARE / "rules.mk").read_text():
     fail("QMK build must target the KEEBD Helios converter")
 
@@ -389,6 +415,19 @@ if not (
 
 if [net(footprints["JP_HAND"], number) for number in ("1", "2", "3")] != ["VCC3V3", "HAND", "GND"]:
     fail("JP_HAND must select VCC3V3/HAND/GND")
+expected_test_points = {
+    "TP1": "GND",
+    "TP2": "VBUS",
+    "TP3": "VCC3V3",
+    "TP4": "SPLIT_DATA",
+    "TP5": "HAND",
+    "TP6": "RGB_LED_IN",
+    "TP7": "OLED_SDA",
+    "TP8": "OLED_SCL",
+}
+for reference, expected in expected_test_points.items():
+    if net(footprints[reference], "1") != expected:
+        fail(f"{reference}: expected {expected} test point")
 
 for switch_number in KEY_SWITCHES:
     switch = footprints[f"SW{switch_number}"]

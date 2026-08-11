@@ -22,7 +22,13 @@ hardware prototype working.
 - Dry-fit all four thumb switches on each face against the 1:1 paper/plate
   template. The B.Cu/left axes must fan +10/+30/+50/+70 degrees and the
   F.Cu/right axes must mirror to -10/-30/-50/-70 degrees.
-- Bridge `JP_HAND` 1-2 on the left assembly and 2-3 on the right assembly.
+- Confirm the Helios uses only the `L`-marked header holes on the B.Cu/left
+  face or the `R`-marked holes on the F.Cu/right face.
+- Bridge exactly one `JP_HAND` gap: 1-2 (`D4` to `3V3`) on the left assembly or
+  2-3 (`D4` to `GND`) on the right. Never leave both open or bridge both.
+- With power disconnected, confirm left `TP5` (`HAND`) has continuity to `TP3`
+  (`3V3`) but not `TP1` (`GND`); confirm right `TP5` has continuity to `TP1`
+  but not `TP3`.
 - Bridge front `JP1-JP4` on the left and back `JP5-JP8` on the right. The
   selected jumper bank is opposite the OLED face; never bridge both banks.
 

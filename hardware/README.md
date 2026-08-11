@@ -56,12 +56,24 @@ The Helios/Pro-Micro pad mapping used by the PCB and QMK is:
 
 Use these face assignments when the finished keyboard is upright:
 
-| Half | Face toward keycaps | Hotswap/diode/LED underside | Hand jumper | OLED jumper bank |
-| --- | --- | --- | --- | --- |
-| Left | B.Cu / B.SilkS | F.Cu / F.SilkS | `JP_HAND` 1-2 | front `JP1-JP4` |
-| Right | F.Cu / F.SilkS | B.Cu / B.SilkS | `JP_HAND` 2-3 | back `JP5-JP8` |
+| Half | Face toward keycaps | Helios header holes | Hotswap/diode/LED underside | Hand jumper | OLED jumper bank |
+| --- | --- | --- | --- | --- | --- |
+| Left | B.Cu / B.SilkS | `L`-marked B.SilkS holes | F.Cu / F.SilkS | `JP_HAND` 1-2: D4 to 3V3 | front `JP1-JP4` |
+| Right | F.Cu / F.SilkS | `R`-marked F.SilkS holes | B.Cu / B.SilkS | `JP_HAND` 2-3: D4 to GND | back `JP5-JP8` |
 
 Mount the Helios, OLED, encoder, and TRRS jack on the face toward the keycaps.
+For the Helios, solder only the two 12-hole rows marked `L` on the B.Cu/left
+face or `R` on the F.Cu/right face; the offset duplicate holes belong to the
+opposite assembly. Do not fill both header positions.
+
+`JP_HAND` is a separate three-pad solder jumper on F.Cu, not a Helios header
+choice. The center pad is Helios D4 (`HAND`), pad 1 is 3V3, and pad 3 is GND.
+QMK reads high as left and low as right, so bridge exactly one gap: 1-2 for the
+left PCB or 2-3 for the right PCB. Leaving both gaps open makes D4 float;
+bridging both shorts 3V3 to GND. The original Sofle firmware normally infers
+left from the USB/master half, whereas this dedicated pin lets either Arc half
+be the USB master without losing its physical handedness.
+
 Mount each Choc hotswap socket, SOD-123 diode, and reverse-mount RGB LED on the
 opposite/underside face. Populate the fixed F.Cu footprints (`U2`, `R1-R3`,
 `C1-C2`, and `JP_HAND`) on F.Cu on both physical boards. The OLED jumper bank
@@ -88,6 +100,7 @@ Automated checks currently prove:
   the placement transform: B.Cu/left is +10/+30/+50/+70 degrees and F.Cu/right
   is -10/-30/-50/-70 degrees;
 - all required controller, matrix, encoder, OLED, RGB, and TRRS nets;
+- Helios face labels and local high/low handedness-jumper instructions;
 - one 28-LED data chain per assembled half;
 - zero unrouted connections; and
 - zero shorts, crossings, copper/hole/mask/silkscreen clearance violations.
