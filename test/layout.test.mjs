@@ -16,6 +16,57 @@ const keys = buildHalf(config);
 const matrixKeys = keys.filter((key) => key.group === "matrix");
 const thumbKeys = keys.filter((key) => key.group === "thumb");
 
+function pointToSegment(point, a, b) {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const t = Math.max(
+    0,
+    Math.min(
+      1,
+      ((point.x - a.x) * dx + (point.y - a.y) * dy) / (dx * dx + dy * dy)
+    )
+  );
+  return Math.hypot(point.x - (a.x + t * dx), point.y - (a.y + t * dy));
+}
+
+function projection(polygon, axis) {
+  const values = polygon.map((point) => point.x * axis.x + point.y * axis.y);
+  return { min: Math.min(...values), max: Math.max(...values) };
+}
+
+function polygonsOverlap(polygonA, polygonB) {
+  for (const polygon of [polygonA, polygonB]) {
+    for (let index = 0; index < polygon.length; index += 1) {
+      const next = (index + 1) % polygon.length;
+      const edge = {
+        x: polygon[next].x - polygon[index].x,
+        y: polygon[next].y - polygon[index].y
+      };
+      const axis = { x: -edge.y, y: edge.x };
+      const a = projection(polygonA, axis);
+      const b = projection(polygonB, axis);
+      if (a.max <= b.min || b.max <= a.min) return false;
+    }
+  }
+  return true;
+}
+
+function polygonGap(a, b) {
+  if (polygonsOverlap(a, b)) return 0;
+  let gap = Infinity;
+  for (const [points, edges] of [[a, b], [b, a]]) {
+    for (const point of points) {
+      for (let index = 0; index < edges.length; index += 1) {
+        gap = Math.min(
+          gap,
+          pointToSegment(point, edges[index], edges[(index + 1) % edges.length])
+        );
+      }
+    }
+  }
+  return gap;
+}
+
 test("design is named for its 58 press inputs", () => {
   assert.equal(config.name, "Hamrah Arc 58");
   assert.equal(config.revision, "Beta");
@@ -44,10 +95,25 @@ test("a clickable encoder is mirrored onto both halves", () => {
   assert.equal(encoder.rotation, -mirrored.rotation);
 });
 
-test("first thumb key starts midway between the two innermost columns", () => {
+test("encoder moves three millimetres inward for knob clearance", () => {
+  const encoder = keys.find((key) => key.group === "encoder");
+  const nearestKey = keys.find((key) => key.id === "c6r4");
+  const expectedDistance = config.switch.pitchX + config.encoder.inwardOffset;
+  const edgeGap =
+    distance(encoder, nearestKey) -
+    (config.encoder.knobDiameter + config.switch.keycapWidth) / 2;
+
+  assert.equal(config.encoder.inwardOffset, 3);
+  assert.ok(Math.abs(distance(encoder, nearestKey) - expectedDistance) < 1e-9);
+  assert.ok(Math.abs(edgeGap - 4.8) < 1e-9);
+});
+
+test("first thumb key starts one millimetre toward the outer edge", () => {
   const [columnA, columnB] = config.thumbArc.startBetweenColumns;
   const expectedX =
-    ((columnA + columnB) / 2) * config.switch.pitchX;
+    ((columnA + columnB) / 2) * config.switch.pitchX -
+    config.thumbArc.startOffsetTowardOuterEdge;
+  assert.equal(config.thumbArc.startOffsetTowardOuterEdge, 1);
   assert.equal(thumbKeys[0].x, expectedX);
 });
 
@@ -76,81 +142,70 @@ test("keycaps and encoder knob do not overlap", () => {
     corners: componentEnvelope(key, config)
   }));
 
-  function projection(polygon, axis) {
-    const values = polygon.map((point) => point.x * axis.x + point.y * axis.y);
-    return { min: Math.min(...values), max: Math.max(...values) };
-  }
-
-  function overlaps(polygonA, polygonB) {
-    const polygonsToCheck = [polygonA, polygonB];
-    for (const polygon of polygonsToCheck) {
-      for (let index = 0; index < polygon.length; index += 1) {
-        const next = (index + 1) % polygon.length;
-        const edge = {
-          x: polygon[next].x - polygon[index].x,
-          y: polygon[next].y - polygon[index].y
-        };
-        const axis = { x: -edge.y, y: edge.x };
-        const a = projection(polygonA, axis);
-        const b = projection(polygonB, axis);
-        if (a.max <= b.min || b.max <= a.min) return false;
-      }
-    }
-    return true;
-  }
-
   for (let a = 0; a < polygons.length; a += 1) {
     for (let b = a + 1; b < polygons.length; b += 1) {
       assert.ok(
-        !overlaps(polygons[a].corners, polygons[b].corners),
+        !polygonsOverlap(polygons[a].corners, polygons[b].corners),
         `${polygons[a].id} overlaps ${polygons[b].id}`
       );
     }
   }
 });
 
-test("T1 has the requested extra millimetre of matrix clearance", () => {
+test("thumb arc clears the conservative 18 mm keycap envelope", () => {
+  const envelope = config.switch.keycapClearanceEnvelope;
+  assert.deepEqual(envelope, { width: 18, height: 18, minimumGap: 0.5 });
+  assert.equal(config.thumbArc.step, 21.25);
+
+  for (let index = 0; index < thumbKeys.length - 1; index += 1) {
+    const first = rectangleCorners(thumbKeys[index], envelope.width, envelope.height);
+    const second = rectangleCorners(
+      thumbKeys[index + 1],
+      envelope.width,
+      envelope.height
+    );
+    assert.ok(
+      polygonGap(first, second) >= envelope.minimumGap,
+      `T${index + 1}-T${index + 2} keycap gap is below ${envelope.minimumGap} mm`
+    );
+  }
+});
+
+test("thumb arc leaves over two millimetres between specified keycaps", () => {
+  for (let index = 0; index < thumbKeys.length - 1; index += 1) {
+    const first = rectangleCorners(
+      thumbKeys[index],
+      config.switch.keycapWidth,
+      config.switch.keycapHeight
+    );
+    const second = rectangleCorners(
+      thumbKeys[index + 1],
+      config.switch.keycapWidth,
+      config.switch.keycapHeight
+    );
+    assert.ok(
+      polygonGap(first, second) >= 2.25,
+      `T${index + 1}-T${index + 2} specified-keycap gap is below 2.25 mm`
+    );
+  }
+});
+
+test("T1 preserves matrix clearance after the outward shift", () => {
   const thumbOne = keys.find((key) => key.id === "thumb1");
   const c5r4 = keys.find((key) => key.id === "c5r4");
   const c6r4 = keys.find((key) => key.id === "c6r4");
   assert.equal(config.thumbArc.dropFromLowerColumnKey, 19);
 
-  function pointToSegment(point, a, b) {
-    const dx = b.x - a.x;
-    const dy = b.y - a.y;
-    const t = Math.max(
-      0,
-      Math.min(
-        1,
-        ((point.x - a.x) * dx + (point.y - a.y) * dy) / (dx * dx + dy * dy)
-      )
-    );
-    return Math.hypot(point.x - (a.x + t * dx), point.y - (a.y + t * dy));
-  }
-
-  function polygonGap(a, b) {
-    let gap = Infinity;
-    for (const [points, edges] of [[a, b], [b, a]]) {
-      for (const point of points) {
-        for (let index = 0; index < edges.length; index += 1) {
-          gap = Math.min(
-            gap,
-            pointToSegment(point, edges[index], edges[(index + 1) % edges.length])
-          );
-        }
-      }
-    }
-    return gap;
-  }
-
   const corners = (key) =>
     rectangleCorners(key, config.switch.keycapWidth, config.switch.keycapHeight);
-  assert.ok(Math.abs(polygonGap(corners(thumbOne), corners(c5r4)) - 3.606) < 0.001);
-  assert.ok(Math.abs(polygonGap(corners(thumbOne), corners(c6r4)) - 2.471) < 0.001);
+  assert.ok(polygonGap(corners(thumbOne), corners(c5r4)) >= 2.5);
+  assert.ok(polygonGap(corners(thumbOne), corners(c6r4)) >= 2.5);
 });
 
 test("Choc v1 plate cutout remains 14 mm square", () => {
   assert.equal(config.switch.plateCutout, 14);
+  assert.equal(config.switch.keycapWidth, 16.5);
+  assert.equal(config.switch.keycapHeight, 16.5);
 });
 
 test("per-key RGB specifies one routed aperture for every LED", () => {

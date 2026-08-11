@@ -176,7 +176,10 @@ for column in range(matrix["columns"]):
         check_placement(footprints[reference], *pcb_location(x, y))
 
 encoder_config = layout["encoder"]
-encoder_x = (matrix["columns"] - 1 + encoder_config["columnOffset"]) * pitch_x
+encoder_x = (
+    (matrix["columns"] - 1 + encoder_config["columnOffset"]) * pitch_x
+    + encoder_config["inwardOffset"]
+)
 encoder_y = (
     matrix["columnStagger"][encoder_config["alignWithColumn"]]
     + encoder_config["row"] * pitch_y
@@ -184,7 +187,10 @@ encoder_y = (
 check_placement(footprints["SW25"], *pcb_location(encoder_x, encoder_y))
 
 column_a, column_b = layout["thumbArc"]["startBetweenColumns"]
-thumb_x = ((column_a + column_b) / 2) * pitch_x
+thumb_x = (
+    ((column_a + column_b) / 2) * pitch_x
+    - layout["thumbArc"]["startOffsetTowardOuterEdge"]
+)
 thumb_y = max(
     matrix["columnStagger"][column_a] + (matrix["rows"] - 1) * pitch_y,
     matrix["columnStagger"][column_b] + (matrix["rows"] - 1) * pitch_y,

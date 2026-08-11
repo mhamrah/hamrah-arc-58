@@ -66,7 +66,9 @@ export function buildHalf(config) {
     keys.push({
       id: "encoder",
       group: "encoder",
-      x: (matrix.columns - 1 + encoder.columnOffset) * switchConfig.pitchX,
+      x:
+        (matrix.columns - 1 + encoder.columnOffset) * switchConfig.pitchX +
+        encoder.inwardOffset,
       y:
         matrix.columnStagger[alignedColumn] +
         encoder.row * switchConfig.pitchY,
@@ -76,7 +78,8 @@ export function buildHalf(config) {
 
   const [startColumnA, startColumnB] = thumbArc.startBetweenColumns;
   const startX =
-    ((startColumnA + startColumnB) / 2) * switchConfig.pitchX;
+    ((startColumnA + startColumnB) / 2) * switchConfig.pitchX -
+    thumbArc.startOffsetTowardOuterEdge;
   const startY =
     Math.max(
       matrix.columnStagger[startColumnA] +

@@ -6,8 +6,13 @@
     "plateCutout": 14,
     "pitchX": 19.05,
     "pitchY": 19.05,
-    "keycapWidth": 17.5,
-    "keycapHeight": 16.5
+    "keycapWidth": 16.5,
+    "keycapHeight": 16.5,
+    "keycapClearanceEnvelope": {
+      "width": 18,
+      "height": 18,
+      "minimumGap": 0.5
+    }
   },
   "encoder": {
     "enabled": true,
@@ -16,6 +21,7 @@
     "partNumber": "EC11E15244G1",
     "sofleFootprint": "SofleKeyboard-footprint:RotaryEncoder_Alps_EC11E-Switch_Vertical_H20mm-keebio_modified",
     "columnOffset": 1,
+    "inwardOffset": 3,
     "alignWithColumn": 5,
     "row": 3,
     "bodyWidth": 12,
@@ -255,7 +261,7 @@
     {
       "id": "encoder",
       "group": "encoder",
-      "x": 114.3,
+      "x": 117.3,
       "y": 62.15,
       "rotation": 0
     },
@@ -263,7 +269,7 @@
       "id": "thumb1",
       "group": "thumb",
       "index": 0,
-      "x": 85.725,
+      "x": 84.725,
       "y": 81.15,
       "rotation": 10
     },
@@ -271,24 +277,24 @@
       "id": "thumb2",
       "group": "thumb",
       "index": 1,
-      "x": 105.431,
-      "y": 86.801,
+      "x": 105.152,
+      "y": 87.007,
       "rotation": 30
     },
     {
       "id": "thumb3",
       "group": "thumb",
       "index": 2,
-      "x": 122.016,
-      "y": 98.85,
+      "x": 122.343,
+      "y": 99.498,
       "rotation": 50
     },
     {
       "id": "thumb4",
       "group": "thumb",
       "index": 3,
-      "x": 133.479,
-      "y": 115.845,
+      "x": 134.226,
+      "y": 117.115,
       "rotation": 70
     }
   ],
@@ -512,7 +518,7 @@
     {
       "id": "encoder",
       "group": "encoder",
-      "x": 22.616,
+      "x": 19.616,
       "y": 62.15,
       "rotation": 0
     },
@@ -520,7 +526,7 @@
       "id": "thumb1",
       "group": "thumb",
       "index": 0,
-      "x": 51.191,
+      "x": 52.191,
       "y": 81.15,
       "rotation": -10
     },
@@ -528,24 +534,24 @@
       "id": "thumb2",
       "group": "thumb",
       "index": 1,
-      "x": 31.485,
-      "y": 86.801,
+      "x": 31.764,
+      "y": 87.007,
       "rotation": -30
     },
     {
       "id": "thumb3",
       "group": "thumb",
       "index": 2,
-      "x": 14.9,
-      "y": 98.85,
+      "x": 14.573,
+      "y": 99.498,
       "rotation": -50
     },
     {
       "id": "thumb4",
       "group": "thumb",
       "index": 3,
-      "x": 3.437,
-      "y": 115.845,
+      "x": 2.69,
+      "y": 117.115,
       "rotation": -70
     }
   ]

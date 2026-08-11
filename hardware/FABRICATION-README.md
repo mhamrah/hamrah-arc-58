@@ -30,7 +30,14 @@ Zoom into several switch centers and verify that each RGB aperture is visible.
 Also inspect the four thumb switch locator-hole pairs: on the F.Cu/right view
 their physical axes must be -10, -30, -50, and -70 degrees from inner to outer;
 after mirroring for the B.Cu/left assembly they must be +10, +30, +50, and +70
-degrees. Reject any archive whose thumb fan has the opposite handedness.
+degrees. The four centers must be 21.25 mm apart, with T1 only 1 mm outward from
+the C5/C6 midpoint. Reject any archive whose thumb fan has the opposite
+handedness or the former 20.5 mm spacing. Confirm the thumb-bay mounting hole
+is between T2 and T3, matching the regenerated plate and case files.
+
+Confirm each encoder center is 3 mm farther toward the inner split edge than
+the adjacent Sofle-pitch column position and matches the regenerated plate
+opening.
 
 Run `npm run verify` immediately before regenerating or ordering. A passed DRC
 does not replace a physical prototype: order a small first batch and complete

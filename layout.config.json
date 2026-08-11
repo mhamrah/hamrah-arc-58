@@ -7,8 +7,13 @@
     "plateCutout": 14,
     "pitchX": 19.05,
     "pitchY": 19.05,
-    "keycapWidth": 17.5,
-    "keycapHeight": 16.5
+    "keycapWidth": 16.5,
+    "keycapHeight": 16.5,
+    "keycapClearanceEnvelope": {
+      "width": 18,
+      "height": 18,
+      "minimumGap": 0.5
+    }
   },
   "matrix": {
     "columns": 6,
@@ -22,6 +27,7 @@
     "partNumber": "EC11E15244G1",
     "sofleFootprint": "SofleKeyboard-footprint:RotaryEncoder_Alps_EC11E-Switch_Vertical_H20mm-keebio_modified",
     "columnOffset": 1,
+    "inwardOffset": 3,
     "alignWithColumn": 5,
     "row": 3,
     "bodyWidth": 12,
@@ -61,8 +67,9 @@
   "thumbArc": {
     "count": 4,
     "startBetweenColumns": [4, 5],
+    "startOffsetTowardOuterEdge": 1,
     "dropFromLowerColumnKey": 19,
-    "step": 20.5,
+    "step": 21.25,
     "segmentAngles": [16, 36, 56],
     "keyRotations": [10, 30, 50, 70]
   },
@@ -104,7 +111,7 @@
       { "x": 50, "y": -12 },
       { "x": 137, "y": 15 },
       { "x": 130, "y": 56 },
-      { "x": 143, "y": 127 },
+      { "x": 106, "y": 106 },
       { "x": -8, "y": 77 }
     ],
     "resetAccess": { "x": 129.3, "y": 32.5, "diameter": 4 },

@@ -3,9 +3,10 @@ PCB1-PCB2,2,Hamrah Arc 58 Rev Beta reversible PCB,2-layer 1.6 mm FR4,Order two i
 U1,2,KEEBD Helios RP2040 controller,Pro Micro-compatible module,Socketed; install on the face toward keycaps with USB-C facing the board edge; use L-marked B.Cu holes on left and R-marked F.Cu holes on right
 U1_SOCKET,48,2.54 mm low-profile socket pin or header contact,Through-hole,24 contacts per controller; choose mating headers compatible with Helios; do not fill both offset header positions
 SW1-SW56,56,Kailh Choc v1 PG1350 switch,Choc v1,Switches plug into hotswap sockets and are not soldered to the PCB
+KEYCAP1-KEYCAP56,56,Kailh Choc v1-compatible 1u keycap,16.5 x 16.5 mm specified plan size,Thumb arc is conservatively verified with an 18 x 18 mm envelope at 21.25 mm centers; measure substitutions before assembly
 HS1-HS56,56,Kailh CPG135001S30 Choc v1 hotswap socket,SMD,Populate on the underside opposite the keycaps
 D1-D58,58,1N4148W switching diode,SOD-123,Populate on the underside; place cathode band at PCB K/bar mark; 29 per half including encoder press
-SW25,2,Alps Alpine EC11E15244G1,Vertical clickable encoder,30 detents / 15 pulses with integrated push switch
+SW25,2,Alps Alpine EC11E15244G1,Vertical clickable encoder,30 detents / 15 pulses with integrated push switch; center is offset 3 mm inward for 4.8 mm nominal knob-to-C6-cap clearance
 LED1-LED56,56,SK6812MINI-E RGB LED,3.2 x 2.8 mm reverse-mount,Optional; solder to underside pads with emitting face aligned to the 3.6 x 3.1 mm routed aperture; place pin 1 at PCB 1> mark; 28 per half
 U2,2,SN74AHCT1G125 or equivalent 74AHCT1G125,SOT-23-5,5 V RGB data level shifter
 R1,2,330 ohm 1 percent resistor,0603,RGB data series resistor
