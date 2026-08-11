@@ -139,10 +139,10 @@ test("keycaps and encoder knob do not overlap", () => {
   }
 });
 
-test("thumb arc clears an 18 mm Choc v1 keycap envelope", () => {
+test("thumb arc clears the conservative 18 mm keycap envelope", () => {
   const envelope = config.switch.keycapClearanceEnvelope;
-  assert.deepEqual(envelope, { width: 18, height: 18, minimumGap: 1 });
-  assert.equal(config.thumbArc.step, 22);
+  assert.deepEqual(envelope, { width: 18, height: 18, minimumGap: 0.5 });
+  assert.equal(config.thumbArc.step, 21.25);
 
   for (let index = 0; index < thumbKeys.length - 1; index += 1) {
     const first = rectangleCorners(thumbKeys[index], envelope.width, envelope.height);
@@ -154,6 +154,25 @@ test("thumb arc clears an 18 mm Choc v1 keycap envelope", () => {
     assert.ok(
       polygonGap(first, second) >= envelope.minimumGap,
       `T${index + 1}-T${index + 2} keycap gap is below ${envelope.minimumGap} mm`
+    );
+  }
+});
+
+test("thumb arc leaves over two millimetres between specified keycaps", () => {
+  for (let index = 0; index < thumbKeys.length - 1; index += 1) {
+    const first = rectangleCorners(
+      thumbKeys[index],
+      config.switch.keycapWidth,
+      config.switch.keycapHeight
+    );
+    const second = rectangleCorners(
+      thumbKeys[index + 1],
+      config.switch.keycapWidth,
+      config.switch.keycapHeight
+    );
+    assert.ok(
+      polygonGap(first, second) >= 2.25,
+      `T${index + 1}-T${index + 2} specified-keycap gap is below 2.25 mm`
     );
   }
 });

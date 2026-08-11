@@ -181,19 +181,19 @@
       <circle class="center" r="0.6" />
       <text transform="rotate(-10)" y="0.9">L·T1</text>
     </g>
-    <g class="key key--thumb" transform="translate(134.071 127.27) rotate(30)">
+    <g class="key key--thumb" transform="translate(133.35 127.063) rotate(30)">
       <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(-30)" y="0.9">L·T2</text>
     </g>
-    <g class="key key--thumb" transform="translate(151.869 140.201) rotate(50)">
+    <g class="key key--thumb" transform="translate(150.541 139.554) rotate(50)">
       <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(-50)" y="0.9">L·T3</text>
     </g>
-    <g class="key key--thumb" transform="translate(164.171 158.44) rotate(70)">
+    <g class="key key--thumb" transform="translate(162.424 157.171) rotate(70)">
       <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
@@ -357,19 +357,19 @@
       <circle class="center" r="0.6" />
       <text transform="rotate(10)" y="0.9">R·T1</text>
     </g>
-    <g class="key key--thumb" transform="translate(286.552 127.27) rotate(-30)">
+    <g class="key key--thumb" transform="translate(287.273 127.063) rotate(-30)">
       <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(30)" y="0.9">R·T2</text>
     </g>
-    <g class="key key--thumb" transform="translate(268.754 140.201) rotate(-50)">
+    <g class="key key--thumb" transform="translate(270.082 139.554) rotate(-50)">
       <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />
       <text transform="rotate(50)" y="0.9">R·T3</text>
     </g>
-    <g class="key key--thumb" transform="translate(256.452 158.44) rotate(-70)">
+    <g class="key key--thumb" transform="translate(258.199 157.171) rotate(-70)">
       <rect class="keycap" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.6" />
       <rect class="cutout" x="-7" y="-7" width="14" height="14" />
       <circle class="center" r="0.6" />

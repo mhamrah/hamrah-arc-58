@@ -152,17 +152,17 @@
       <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
       <text class="key-label" transform="rotate(-10)" y="0.9">T1</text>
     </g>
-    <g transform="translate(145.365 136.27) rotate(30)">
+    <g transform="translate(144.644 136.063) rotate(30)">
       <rect class="keycap thumb" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.2" />
       <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
       <text class="key-label" transform="rotate(-30)" y="0.9">T2</text>
     </g>
-    <g transform="translate(163.163 149.201) rotate(50)">
+    <g transform="translate(161.835 148.554) rotate(50)">
       <rect class="keycap thumb" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.2" />
       <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
       <text class="key-label" transform="rotate(-50)" y="0.9">T3</text>
     </g>
-    <g transform="translate(175.465 167.44) rotate(70)">
+    <g transform="translate(173.718 166.171) rotate(70)">
       <rect class="keycap thumb" x="-8.25" y="-8.25" width="16.5" height="16.5" rx="1.2" />
       <path class="center" d="M -1.5 0 H 1.5 M 0 -1.5 V 1.5" />
       <text class="key-label" transform="rotate(-70)" y="0.9">T4</text>

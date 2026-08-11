@@ -12,7 +12,7 @@
     "keycapClearanceEnvelope": {
       "width": 18,
       "height": 18,
-      "minimumGap": 1
+      "minimumGap": 0.5
     }
   },
   "matrix": {
@@ -68,7 +68,7 @@
     "startBetweenColumns": [4, 5],
     "startOffsetTowardOuterEdge": 1,
     "dropFromLowerColumnKey": 19,
-    "step": 22,
+    "step": 21.25,
     "segmentAngles": [16, 36, 56],
     "keyRotations": [10, 30, 50, 70]
   },
