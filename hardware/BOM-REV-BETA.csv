@@ -6,7 +6,7 @@ SW1-SW56,56,Kailh Choc v1 PG1350 switch,Choc v1,Switches plug into hotswap socke
 KEYCAP1-KEYCAP56,56,Kailh Choc v1-compatible 1u keycap,16.5 x 16.5 mm specified plan size,Thumb arc is conservatively verified with an 18 x 18 mm envelope at 21.25 mm centers; measure substitutions before assembly
 HS1-HS56,56,Kailh CPG135001S30 Choc v1 hotswap socket,SMD,Populate on the underside opposite the keycaps
 D1-D58,58,1N4148W switching diode,SOD-123,Populate on the underside; place cathode band at PCB K/bar mark; 29 per half including encoder press
-SW25,2,Alps Alpine EC11E15244G1,Vertical clickable encoder,30 detents / 15 pulses with integrated push switch; center is offset 3 mm inward for 4.8 mm nominal knob-to-C6-cap clearance
+SW25,2,Alps Alpine EC11E15244G1,Vertical clickable encoder,30 detents / 15 pulses with integrated push switch; 18 mm knob is centered for 9.17 mm clearance to both C6 cap and curved inner PCB edge
 LED1-LED56,56,SK6812MINI-E RGB LED,3.2 x 2.8 mm reverse-mount,Optional; solder to underside pads with emitting face aligned to the 3.6 x 3.1 mm routed aperture; place pin 1 at PCB 1> mark; 28 per half
 U2,2,SN74AHCT1G125 or equivalent 74AHCT1G125,SOT-23-5,5 V RGB data level shifter
 R1,2,330 ohm 1 percent resistor,0603,RGB data series resistor

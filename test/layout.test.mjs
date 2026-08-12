@@ -6,6 +6,7 @@ import {
   componentEnvelope,
   distance,
   mirrorKey,
+  outlineCrossingsAtY,
   readConfig,
   rectangleCorners,
   sampleClosedCurve
@@ -95,17 +96,38 @@ test("a clickable encoder is mirrored onto both halves", () => {
   assert.equal(encoder.rotation, -mirrored.rotation);
 });
 
-test("encoder moves three millimetres inward for knob clearance", () => {
+test("encoder has equal empty space to C6 and the curved inner edge", () => {
   const encoder = keys.find((key) => key.group === "encoder");
   const nearestKey = keys.find((key) => key.id === "c6r4");
-  const expectedDistance = config.switch.pitchX + config.encoder.inwardOffset;
-  const edgeGap =
-    distance(encoder, nearestKey) -
-    (config.encoder.knobDiameter + config.switch.keycapWidth) / 2;
+  const innerEdgeX = Math.max(
+    ...outlineCrossingsAtY(config.mechanical, encoder.y)
+  );
+  const knobRadius = config.encoder.knobDiameter / 2;
+  const capEdgeX = nearestKey.x + config.switch.keycapWidth / 2;
+  const capGap = encoder.x - knobRadius - capEdgeX;
+  const boardGap = innerEdgeX - encoder.x - knobRadius;
+  const sampledOutline = sampleClosedCurve(
+    closedOutlineSegments(config.mechanical),
+    2048
+  );
+  const curvedBoardGap =
+    Math.min(
+      ...sampledOutline.map((point, index) =>
+        pointToSegment(
+          encoder,
+          point,
+          sampledOutline[(index + 1) % sampledOutline.length]
+        )
+      )
+    ) - knobRadius;
 
-  assert.equal(config.encoder.inwardOffset, 3);
-  assert.ok(Math.abs(distance(encoder, nearestKey) - expectedDistance) < 1e-9);
-  assert.ok(Math.abs(edgeGap - 4.8) < 1e-9);
+  assert.equal(
+    config.encoder.horizontalPlacement,
+    "equal-clearance-between-c6-and-inner-edge"
+  );
+  assert.ok(Math.abs(capGap - boardGap) < 0.001);
+  assert.ok(Math.abs(capGap - curvedBoardGap) < 0.01);
+  assert.ok(capGap > 9);
 });
 
 test("first thumb key starts one millimetre toward the outer edge", () => {
@@ -134,6 +156,31 @@ test("thumb keys form a descending inward arc", () => {
         1e-9
     );
   }
+});
+
+test("T3 and T4 follow the refined outward thumb sweep", () => {
+  assert.deepEqual(config.thumbArc.segmentAngles, [16, 36, 45]);
+  assert.deepEqual(config.thumbArc.keyRotations, [10, 30, 45, 55]);
+
+  const [thumbThree, thumbFour] = thumbKeys.slice(2);
+  assert.ok(Math.abs(thumbFour.x - 137.3694) < 0.0001);
+  assert.ok(Math.abs(thumbFour.y - 114.5237) < 0.0001);
+  assert.ok(thumbFour.x - thumbThree.x > 15);
+  assert.ok(thumbFour.y - thumbThree.y > 15);
+  assert.ok(
+    polygonGap(
+      rectangleCorners(
+        thumbThree,
+        config.switch.keycapWidth,
+        config.switch.keycapHeight
+      ),
+      rectangleCorners(
+        thumbFour,
+        config.switch.keycapWidth,
+        config.switch.keycapHeight
+      )
+    ) >= 3.4
+  );
 });
 
 test("keycaps and encoder knob do not overlap", () => {
@@ -291,6 +338,89 @@ test("the shared mechanical design has a smooth outline and six clear M2 fastene
     const nearest = Math.min(...keys.map((key) => distance(hole, key)));
     assert.ok(nearest > 13, `mounting hole at ${hole.x}, ${hole.y} is too near a key`);
   }
+  const encoder = keys.find((key) => key.group === "encoder");
+  const h4 = config.mechanical.mountingHoles[3];
+  const encoderBossGap =
+    distance(encoder, h4) -
+    config.encoder.knobDiameter / 2 -
+    config.mechanical.cncCase.bossDiameter / 2;
+  const sampledOutline = sampleClosedCurve(
+    closedOutlineSegments(config.mechanical),
+    2048
+  );
+  const h4OutlineGap =
+    Math.min(
+      ...sampledOutline.map((point, index) =>
+        pointToSegment(
+          h4,
+          point,
+          sampledOutline[(index + 1) % sampledOutline.length]
+        )
+      )
+    ) - config.mechanical.cncCase.bossDiameter / 2;
+  assert.ok(encoderBossGap > 3.5, `H4 boss gap is only ${encoderBossGap} mm`);
+  assert.ok(h4OutlineGap > 3, `H4 outline gap is only ${h4OutlineGap} mm`);
+});
+
+test("the lower outline is trimmed while the outer thumb edge is expanded", () => {
+  const sampledOutline = sampleClosedCurve(
+    closedOutlineSegments(config.mechanical),
+    2048
+  );
+  const maxX = Math.max(...sampledOutline.map((point) => point.x));
+  const maxY = Math.max(...sampledOutline.map((point) => point.y));
+
+  assert.ok(maxX > 156.5, `outer thumb edge only reaches ${maxX} mm`);
+  assert.ok(maxY < 132.2, `lower edge still reaches ${maxY} mm`);
+
+  const outlineGap = (key) => {
+    const keycap = rectangleCorners(
+      key,
+      config.switch.keycapWidth,
+      config.switch.keycapHeight
+    );
+    let gap = Infinity;
+    for (const corner of keycap) {
+      for (let index = 0; index < sampledOutline.length; index += 1) {
+        gap = Math.min(
+          gap,
+          pointToSegment(
+            corner,
+            sampledOutline[index],
+            sampledOutline[(index + 1) % sampledOutline.length]
+          )
+        );
+      }
+    }
+    for (const outlinePoint of sampledOutline) {
+      for (let index = 0; index < keycap.length; index += 1) {
+        gap = Math.min(
+          gap,
+          pointToSegment(
+            outlinePoint,
+            keycap[index],
+            keycap[(index + 1) % keycap.length]
+          )
+        );
+      }
+    }
+    return gap;
+  };
+  assert.ok(outlineGap(thumbKeys[0]) > 6, "T1 has less than 6 mm of edge clearance");
+  assert.ok(outlineGap(thumbKeys[3]) > 5.7, "T4 has less than 5.7 mm of edge clearance");
+
+  const h5 = config.mechanical.mountingHoles[4];
+  const h5BossEdgeGap =
+    Math.min(
+      ...sampledOutline.map((point, index) =>
+        pointToSegment(
+          h5,
+          point,
+          sampledOutline[(index + 1) % sampledOutline.length]
+        )
+      )
+    ) - config.mechanical.cncCase.bossDiameter / 2;
+  assert.ok(h5BossEdgeGap > 2.75, `H5 boss edge gap is only ${h5BossEdgeGap} mm`);
 });
 
 test("acrylic plates use prototype-safe dimensions and preserve the electronics bay", () => {

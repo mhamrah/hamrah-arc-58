@@ -29,11 +29,11 @@ All dimensions live in `layout.config.json`.
 | Specified Choc v1 keycap | 16.5 x 16.5 mm |
 | Choc keys per half | 28 |
 | Clickable encoders per half | 1 |
-| Encoder inward offset / nearest knob-to-cap gap | 3.0 mm / 4.8 mm |
+| Encoder knob-to-C6 / knob-to-inner-edge gap | 9.17 mm / 9.17 mm |
 | Thumb center spacing | 21.25 mm |
 | T1 outward offset from C5/C6 midpoint | 1.0 mm |
 | Conservative thumb envelope / minimum gap | 18 x 18 mm / 0.5 mm |
-| Thumb key rotations | 10, 30, 50, 70 degrees |
+| Thumb key rotations | 10, 30, 45, 55 degrees |
 | Mounting holes per half | 6 x 2.2 mm |
 
 ## Generate and verify
@@ -88,11 +88,14 @@ zero unrouted connections and zero shorts, crossings, or fabrication-clearance
 violations. Its Edge.Cuts layer contains 28 closed 3.6 x 3.1 mm RGB apertures
 per half, and the inner-edge TRRS jack/plate geometry provides a 10 mm cable
 opening. The switch locator holes independently verify the assembled thumb
-axes: +10, +30, +50, and +70 degrees on the B.Cu/left half, mirrored to -10,
--30, -50, and -70 degrees on the F.Cu/right half. The thumb centers are 21.25
-mm apart and preserve more than 0.5 mm nominal clearance for a conservative 18
-x 18 mm keycap envelope. The specified 16.5 x 16.5 mm caps retain approximately
-2.3 mm minimum clearance. QMK is configured for
+axes: +10, +30, +45, and +55 degrees on the B.Cu/left half, mirrored to -10,
+-30, -45, and -55 degrees on the F.Cu/right half. T3 eases five degrees outward;
+T4 eases fifteen degrees outward and its center moves 3.14 mm toward the side
+and 2.59 mm upward from the former 70-degree position. The thumb centers remain
+21.25 mm apart and preserve more than 0.5 mm nominal clearance for a
+conservative 18 x 18 mm keycap envelope. The specified 16.5 x 16.5 mm caps
+retain approximately 2.3 mm minimum clearance, with the T3-T4 gap increased to
+approximately 3.44 mm. QMK is configured for
 Helios, a one-wire TRRS split, OLED, encoder, and a 28+28 RGB Matrix. The
 default firmware also compiles successfully against current upstream QMK; the
 ignored local UF2 is generated at

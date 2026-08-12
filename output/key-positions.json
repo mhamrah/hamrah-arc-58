@@ -20,8 +20,7 @@
     "manufacturer": "Alps Alpine",
     "partNumber": "EC11E15244G1",
     "sofleFootprint": "SofleKeyboard-footprint:RotaryEncoder_Alps_EC11E-Switch_Vertical_H20mm-keebio_modified",
-    "columnOffset": 1,
-    "inwardOffset": 3,
+    "horizontalPlacement": "equal-clearance-between-c6-and-inner-edge",
     "alignWithColumn": 5,
     "row": 3,
     "bodyWidth": 12,
@@ -261,7 +260,7 @@
     {
       "id": "encoder",
       "group": "encoder",
-      "x": 117.3,
+      "x": 121.668,
       "y": 62.15,
       "rotation": 0
     },
@@ -287,15 +286,15 @@
       "index": 2,
       "x": 122.343,
       "y": 99.498,
-      "rotation": 50
+      "rotation": 45
     },
     {
       "id": "thumb4",
       "group": "thumb",
       "index": 3,
-      "x": 134.226,
-      "y": 117.115,
-      "rotation": 70
+      "x": 137.369,
+      "y": 114.524,
+      "rotation": 55
     }
   ],
   "right": [
@@ -304,7 +303,7 @@
       "group": "matrix",
       "column": 0,
       "row": 0,
-      "x": 136.916,
+      "x": 140.403,
       "y": 7.4,
       "rotation": 0
     },
@@ -313,7 +312,7 @@
       "group": "matrix",
       "column": 0,
       "row": 1,
-      "x": 136.916,
+      "x": 140.403,
       "y": 26.45,
       "rotation": 0
     },
@@ -322,7 +321,7 @@
       "group": "matrix",
       "column": 0,
       "row": 2,
-      "x": 136.916,
+      "x": 140.403,
       "y": 45.5,
       "rotation": 0
     },
@@ -331,7 +330,7 @@
       "group": "matrix",
       "column": 0,
       "row": 3,
-      "x": 136.916,
+      "x": 140.403,
       "y": 64.55,
       "rotation": 0
     },
@@ -340,7 +339,7 @@
       "group": "matrix",
       "column": 1,
       "row": 0,
-      "x": 117.866,
+      "x": 121.353,
       "y": 7.4,
       "rotation": 0
     },
@@ -349,7 +348,7 @@
       "group": "matrix",
       "column": 1,
       "row": 1,
-      "x": 117.866,
+      "x": 121.353,
       "y": 26.45,
       "rotation": 0
     },
@@ -358,7 +357,7 @@
       "group": "matrix",
       "column": 1,
       "row": 2,
-      "x": 117.866,
+      "x": 121.353,
       "y": 45.5,
       "rotation": 0
     },
@@ -367,7 +366,7 @@
       "group": "matrix",
       "column": 1,
       "row": 3,
-      "x": 117.866,
+      "x": 121.353,
       "y": 64.55,
       "rotation": 0
     },
@@ -376,7 +375,7 @@
       "group": "matrix",
       "column": 2,
       "row": 0,
-      "x": 98.816,
+      "x": 102.303,
       "y": 2.5,
       "rotation": 0
     },
@@ -385,7 +384,7 @@
       "group": "matrix",
       "column": 2,
       "row": 1,
-      "x": 98.816,
+      "x": 102.303,
       "y": 21.55,
       "rotation": 0
     },
@@ -394,7 +393,7 @@
       "group": "matrix",
       "column": 2,
       "row": 2,
-      "x": 98.816,
+      "x": 102.303,
       "y": 40.6,
       "rotation": 0
     },
@@ -403,7 +402,7 @@
       "group": "matrix",
       "column": 2,
       "row": 3,
-      "x": 98.816,
+      "x": 102.303,
       "y": 59.65,
       "rotation": 0
     },
@@ -412,7 +411,7 @@
       "group": "matrix",
       "column": 3,
       "row": 0,
-      "x": 79.766,
+      "x": 83.253,
       "y": 0,
       "rotation": 0
     },
@@ -421,7 +420,7 @@
       "group": "matrix",
       "column": 3,
       "row": 1,
-      "x": 79.766,
+      "x": 83.253,
       "y": 19.05,
       "rotation": 0
     },
@@ -430,7 +429,7 @@
       "group": "matrix",
       "column": 3,
       "row": 2,
-      "x": 79.766,
+      "x": 83.253,
       "y": 38.1,
       "rotation": 0
     },
@@ -439,7 +438,7 @@
       "group": "matrix",
       "column": 3,
       "row": 3,
-      "x": 79.766,
+      "x": 83.253,
       "y": 57.15,
       "rotation": 0
     },
@@ -448,7 +447,7 @@
       "group": "matrix",
       "column": 4,
       "row": 0,
-      "x": 60.716,
+      "x": 64.203,
       "y": 2.5,
       "rotation": 0
     },
@@ -457,7 +456,7 @@
       "group": "matrix",
       "column": 4,
       "row": 1,
-      "x": 60.716,
+      "x": 64.203,
       "y": 21.55,
       "rotation": 0
     },
@@ -466,7 +465,7 @@
       "group": "matrix",
       "column": 4,
       "row": 2,
-      "x": 60.716,
+      "x": 64.203,
       "y": 40.6,
       "rotation": 0
     },
@@ -475,7 +474,7 @@
       "group": "matrix",
       "column": 4,
       "row": 3,
-      "x": 60.716,
+      "x": 64.203,
       "y": 59.65,
       "rotation": 0
     },
@@ -484,7 +483,7 @@
       "group": "matrix",
       "column": 5,
       "row": 0,
-      "x": 41.666,
+      "x": 45.153,
       "y": 5,
       "rotation": 0
     },
@@ -493,7 +492,7 @@
       "group": "matrix",
       "column": 5,
       "row": 1,
-      "x": 41.666,
+      "x": 45.153,
       "y": 24.05,
       "rotation": 0
     },
@@ -502,7 +501,7 @@
       "group": "matrix",
       "column": 5,
       "row": 2,
-      "x": 41.666,
+      "x": 45.153,
       "y": 43.1,
       "rotation": 0
     },
@@ -511,14 +510,14 @@
       "group": "matrix",
       "column": 5,
       "row": 3,
-      "x": 41.666,
+      "x": 45.153,
       "y": 62.15,
       "rotation": 0
     },
     {
       "id": "encoder",
       "group": "encoder",
-      "x": 19.616,
+      "x": 18.735,
       "y": 62.15,
       "rotation": 0
     },
@@ -526,7 +525,7 @@
       "id": "thumb1",
       "group": "thumb",
       "index": 0,
-      "x": 52.191,
+      "x": 55.678,
       "y": 81.15,
       "rotation": -10
     },
@@ -534,7 +533,7 @@
       "id": "thumb2",
       "group": "thumb",
       "index": 1,
-      "x": 31.764,
+      "x": 35.251,
       "y": 87.007,
       "rotation": -30
     },
@@ -542,17 +541,17 @@
       "id": "thumb3",
       "group": "thumb",
       "index": 2,
-      "x": 14.573,
+      "x": 18.06,
       "y": 99.498,
-      "rotation": -50
+      "rotation": -45
     },
     {
       "id": "thumb4",
       "group": "thumb",
       "index": 3,
-      "x": 2.69,
-      "y": 117.115,
-      "rotation": -70
+      "x": 3.034,
+      "y": 114.524,
+      "rotation": -55
     }
   ]
 }

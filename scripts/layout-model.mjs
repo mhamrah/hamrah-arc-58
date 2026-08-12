@@ -63,15 +63,26 @@ export function buildHalf(config) {
 
   if (encoder.enabled) {
     const alignedColumn = encoder.alignWithColumn;
+    if (
+      encoder.horizontalPlacement !==
+      "equal-clearance-between-c6-and-inner-edge"
+    ) {
+      throw new Error(
+        `Unsupported encoder placement: ${encoder.horizontalPlacement}`
+      );
+    }
+    const y =
+      matrix.columnStagger[alignedColumn] +
+      encoder.row * switchConfig.pitchY;
+    const innerEdgeX = Math.max(...outlineCrossingsAtY(config.mechanical, y));
+    const columnEdgeX =
+      (matrix.columns - 1) * switchConfig.pitchX +
+      switchConfig.keycapWidth / 2;
     keys.push({
       id: "encoder",
       group: "encoder",
-      x:
-        (matrix.columns - 1 + encoder.columnOffset) * switchConfig.pitchX +
-        encoder.inwardOffset,
-      y:
-        matrix.columnStagger[alignedColumn] +
-        encoder.row * switchConfig.pitchY,
+      x: (columnEdgeX + innerEdgeX) / 2,
+      y,
       rotation: 0
     });
   }
@@ -233,6 +244,26 @@ export function sampleCubicBezier(segment, steps = 24) {
 
 export function sampleClosedCurve(segments, steps = 24) {
   return segments.flatMap((segment) => sampleCubicBezier(segment, steps));
+}
+
+export function outlineCrossingsAtY(mechanical, y, steps = 2048) {
+  const outline = sampleClosedCurve(closedOutlineSegments(mechanical), steps);
+  const crossings = [];
+  for (let index = 0; index < outline.length; index += 1) {
+    const start = outline[index];
+    const end = outline[(index + 1) % outline.length];
+    if (
+      (start.y <= y && end.y > y) ||
+      (end.y <= y && start.y > y)
+    ) {
+      const amount = (y - start.y) / (end.y - start.y);
+      crossings.push(start.x + amount * (end.x - start.x));
+    }
+  }
+  if (crossings.length < 2) {
+    throw new Error(`Board outline does not cross y=${y} twice`);
+  }
+  return crossings;
 }
 
 export function boundsForPoints(points) {
