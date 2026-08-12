@@ -53,7 +53,8 @@ SK6812MINI-E LEDs, Helios socket, OLED header/jumpers, and TRRS jack.
 - one 74AHCT1G125 3.3-to-5 V RGB data buffer;
 - one 0.91-inch SSD1306 128x32 I2C OLED;
 - one reversible MJ-4PP-9-compatible TRRS jack; and
-- reset, handedness, OLED-side jumpers, and eight labeled test pads.
+- reset, automatic header-position handedness, OLED-side jumpers, and seven
+  labeled test pads.
 
 The Helios/Pro-Micro pad mapping used by the PCB and QMK is:
 
@@ -62,7 +63,7 @@ The Helios/Pro-Micro pad mapping used by the PCB and QMK is:
 | RGB buffer input | `D3` |
 | One-wire split data | `D2` |
 | OLED SDA / SCL | `D1` / `D0` |
-| Hand-select jumper | `D4` |
+| Automatic hand detect | `D4` (high = left, low = right) |
 | Rows 0-4 | `C6`, `D7`, `E6`, `B4`, `B5` |
 | Columns 0-5 | `F6`, `F7`, `B1`, `B3`, `B2`, `B6` |
 | Encoder A / B | `F4` / `F5` |
@@ -71,29 +72,35 @@ The Helios/Pro-Micro pad mapping used by the PCB and QMK is:
 
 Use these face assignments when the finished keyboard is upright:
 
-| Half | Face toward keycaps | Helios header holes | Hotswap/diode/LED underside | Hand jumper | OLED jumper bank |
+| Half | Face toward keycaps | Helios header holes | Hotswap/diode/LED underside | Hand detection | OLED jumper bank |
 | --- | --- | --- | --- | --- | --- |
-| Left | B.Cu / B.SilkS | `L`-marked B.SilkS holes | F.Cu / F.SilkS | `JP_HAND` 1-2: D4 to 3V3 | front `JP1-JP4` |
-| Right | F.Cu / F.SilkS | `R`-marked F.SilkS holes | B.Cu / B.SilkS | `JP_HAND` 2-3: D4 to GND | back `JP5-JP8` |
+| Left | B.Cu / B.SilkS | `L`-marked B.SilkS holes | F.Cu / F.SilkS | automatic: D4 pulled to 3V3 | front `JP1-JP4` |
+| Right | F.Cu / F.SilkS | `R`-marked F.SilkS holes | B.Cu / B.SilkS | automatic: D4 pulled to GND | back `JP5-JP8` |
 
 Mount the Helios, OLED, encoder, and TRRS jack on the face toward the keycaps.
 For the Helios, solder only the two 12-hole rows marked `L` on the B.Cu/left
 face or `R` on the F.Cu/right face; the offset duplicate holes belong to the
 opposite assembly. Do not fill both header positions.
 
-`JP_HAND` is a separate three-pad solder jumper on F.Cu, not a Helios header
-choice. The center pad is Helios D4 (`HAND`), pad 1 is 3V3, and pad 3 is GND.
-QMK reads high as left and low as right, so bridge exactly one gap: 1-2 for the
-left PCB or 2-3 for the right PCB. Leaving both gaps open makes D4 float;
-bridging both shorts 3V3 to GND. The original Sofle firmware normally infers
-left from the USB/master half, whereas this dedicated pin lets either Arc half
-be the USB master without losing its physical handedness.
+The two physical D4 header holes are intentionally isolated. The `L`-position
+D4 hole is `HAND_L` and R4 pulls it to 3V3; the `R`-position D4 hole is
+`HAND_R` and R5 pulls it to GND. Populate both 10 kohm resistors on every PCB.
+The installed Helios only contacts the D4 hole belonging to its selected
+header position, so QMK reads high on the physical left half and low on the
+physical right half. There is no hand-select jumper, both controllers use the
+same UF2, and either half can be the USB master. Do not electrically join the
+two alternative D4 holes.
 
 Mount each Choc hotswap socket, SOD-123 diode, and reverse-mount RGB LED on the
-opposite/underside face. Populate the fixed F.Cu footprints (`U2`, `R1-R3`,
-`C1-C2`, and `JP_HAND`) on F.Cu on both physical boards. The OLED jumper bank
+opposite/underside face. Populate the fixed F.Cu footprints (`U2`, `R1-R5`,
+and `C1-C2`) on F.Cu on both physical boards. The OLED jumper bank
 is deliberately on the face opposite its OLED: front `JP1-JP4` for the left
 half and back `JP5-JP8` for the right. Never bridge both OLED banks.
+
+The assembly silkscreen intentionally omits individual diode and LED numbers
+to keep both faces legible. Align each diode's cathode band with the nearby
+silkscreen bar, and align LED pin 1 with the nearby silkscreen triangle.
+Reference designators remain available in KiCad and the BOM.
 
 The RGB LED stays soldered to the underside SMD pads; its emitting face aligns
 with the routed aperture beneath the switch. The package is not placed loose
@@ -119,7 +126,7 @@ Automated checks currently prove:
 - the refined final center step and T3/T4 rotations, including more than 3.4 mm
   nominal clearance between the specified 16.5 mm T3 and T4 keycaps;
 - all required controller, matrix, encoder, OLED, RGB, and TRRS nets;
-- Helios face labels and local high/low handedness-jumper instructions;
+- Helios face labels and isolated high/low D4 header-position detection;
 - one 28-LED data chain per assembled half;
 - zero unrouted connections; and
 - zero shorts, crossings, copper/hole/mask/silkscreen clearance violations.

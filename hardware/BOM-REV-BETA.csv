@@ -1,16 +1,17 @@
 designator,quantity,part,footprint_or_form,notes
-PCB1-PCB2,2,Hamrah Arc 58 Rev Beta reversible PCB,2-layer 1.6 mm FR4,Order two identical copies; B.Cu faces keycaps on left with +10/+30/+50/+70 degree thumb axes and F.Cu faces keycaps on right with mirrored axes
+PCB1-PCB2,2,Hamrah Arc 58 Rev Beta reversible PCB,2-layer 1.6 mm FR4,Order two identical copies; B.Cu faces keycaps on left with +10/+30/+45/+55 degree thumb axes and F.Cu faces keycaps on right with mirrored axes
 U1,2,KEEBD Helios RP2040 controller,Pro Micro-compatible module,Socketed; install on the face toward keycaps with USB-C facing the board edge; use L-marked B.Cu holes on left and R-marked F.Cu holes on right
 U1_SOCKET,48,2.54 mm low-profile socket pin or header contact,Through-hole,24 contacts per controller; choose mating headers compatible with Helios; do not fill both offset header positions
 SW1-SW56,56,Kailh Choc v1 PG1350 switch,Choc v1,Switches plug into hotswap sockets and are not soldered to the PCB
 KEYCAP1-KEYCAP56,56,Kailh Choc v1-compatible 1u keycap,16.5 x 16.5 mm specified plan size,Thumb arc is conservatively verified with an 18 x 18 mm envelope at 21.25 mm centers; measure substitutions before assembly
 HS1-HS56,56,Kailh CPG135001S30 Choc v1 hotswap socket,SMD,Populate on the underside opposite the keycaps
-D1-D58,58,1N4148W switching diode,SOD-123,Populate on the underside; place cathode band at PCB K/bar mark; 29 per half including encoder press
+D1-D58,58,1N4148W switching diode,SOD-123,Populate on the underside; align the package cathode band with the nearby PCB silkscreen bar; 29 per half including encoder press
 SW25,2,Alps Alpine EC11E15244G1,Vertical clickable encoder,30 detents / 15 pulses with integrated push switch; 18 mm knob is centered for 9.17 mm clearance to both C6 cap and curved inner PCB edge
-LED1-LED56,56,SK6812MINI-E RGB LED,3.2 x 2.8 mm reverse-mount,Optional; solder to underside pads with emitting face aligned to the 3.6 x 3.1 mm routed aperture; place pin 1 at PCB 1> mark; 28 per half
+LED1-LED56,56,SK6812MINI-E RGB LED,3.2 x 2.8 mm reverse-mount,Optional; solder to underside pads with emitting face aligned to the 3.6 x 3.1 mm routed aperture; align pin 1 with the nearby PCB silkscreen triangle; 28 per half
 U2,2,SN74AHCT1G125 or equivalent 74AHCT1G125,SOT-23-5,5 V RGB data level shifter
 R1,2,330 ohm 1 percent resistor,0603,RGB data series resistor
 R2-R3,4,4.7 kohm 1 percent resistor,0603,OLED SDA/SCL pull-ups; two per half
+R4-R5,4,10 kohm 1 percent resistor,0603,Automatic handedness pulls; R4 pulls the L-position D4 high and R5 pulls the R-position D4 low; populate both per half
 C1,2,100 nF 16 V X7R capacitor,0603,Local 74AHCT1G125 decoupling
 C2,2,47 uF 10 V X5R or X7R capacitor,1206,Local RGB rail bulk capacitance; verify actual capacitance under 5 V bias
 J1,2,MJ-4PP-9 compatible 3.5 mm TRRS jack,Reversible horizontal SMD,Mount on the face toward keycaps with the cable mouth facing the inner split edge and 10 mm enclosure opening; use the exact jack matching the embedded reversible footprint

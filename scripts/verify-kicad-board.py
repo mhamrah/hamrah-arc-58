@@ -4,6 +4,7 @@
 from pathlib import Path
 import json
 import math
+import re
 import pcbnew
 
 
@@ -69,17 +70,88 @@ if board.GetCopperLayerCount() != 2:
 
 footprints = {fp.GetReference(): fp for fp in board.GetFootprints()}
 required = {
-    "U1", "U2", "R1", "R2", "R3", "C1", "C2", "J1", "J2", "RST1",
-    "JP_HAND", "SW25",
+    "U1", "U2", "R1", "R2", "R3", "R4", "R5", "C1", "C2", "J1", "J2",
+    "RST1", "SW25",
 }
 required.update(f"H{i}" for i in range(1, 7))
-required.update(f"TP{i}" for i in range(1, 9))
+required.update(f"TP{i}" for i in (1, 2, 3, 4, 6, 7, 8))
 required.update(f"JP{i}" for i in range(1, 9))
 required.update(f"SW{i}" for i in KEY_SWITCHES)
 required.update(f"D{i}" for i in range(1, 30))
 missing = sorted(required - footprints.keys())
 if missing:
     fail(f"missing footprints: {', '.join(missing)}")
+obsolete = sorted({"JP_HAND", "TP5"} & footprints.keys())
+if obsolete:
+    fail(f"obsolete manual-handedness footprints remain: {', '.join(obsolete)}")
+
+
+def item_distance(first, second):
+    return math.hypot(first.x - second.x, first.y - second.y)
+
+
+def pad_on_layer(footprint, number, layer):
+    return next(
+        (
+            item for item in footprint.Pads()
+            if item.GetNumber() == str(number) and item.IsOnLayer(layer)
+        ),
+        None,
+    )
+
+
+# Keep the reversible assembly silkscreen useful without covering the board in
+# designators. Each diode gets only a cathode bar; each RGB LED gets only a
+# local triangle beside pin 1. Reference numbers remain available in KiCad and
+# the BOM but are intentionally absent from both visible silkscreen faces.
+for drawing in board.GetDrawings():
+    if not isinstance(drawing, pcbnew.PCB_TEXT):
+        continue
+    text = drawing.GetText()
+    if re.fullmatch(r"D\d+", text) or re.fullmatch(r"LED\d+ 1>", text):
+        fail(f"busy component designator remains on silkscreen: {text}")
+
+for diode_number in range(1, 30):
+    diode = footprints[f"D{diode_number}"]
+    markers = [
+        item for item in diode.GraphicalItems()
+        if item.GetLayer() in (pcbnew.F_SilkS, pcbnew.B_SilkS)
+    ]
+    if len(markers) != 2 or any(item.GetShapeStr() != "Line" for item in markers):
+        fail(f"D{diode_number}: expected one cathode bar on each silkscreen face")
+    for marker in markers:
+        copper_layer = pcbnew.F_Cu if marker.GetLayer() == pcbnew.F_SilkS else pcbnew.B_Cu
+        cathode = pad_on_layer(diode, "1", copper_layer)
+        anode = pad_on_layer(diode, "2", copper_layer)
+        if cathode is None or anode is None:
+            fail(f"D{diode_number}: reversible diode pads are incomplete")
+        center = marker.GetCenter()
+        if item_distance(center, cathode.GetPosition()) >= item_distance(center, anode.GetPosition()):
+            fail(f"D{diode_number}: cathode bar is not on the pad-1 side")
+
+for switch_number in KEY_SWITCHES:
+    switch = footprints[f"SW{switch_number}"]
+    markers = [
+        item for item in switch.GraphicalItems()
+        if item.GetLayer() in (pcbnew.F_SilkS, pcbnew.B_SilkS)
+    ]
+    if len(markers) != 2 or any(item.GetShapeStr() != "Polygon" for item in markers):
+        fail(f"SW{switch_number}: expected one LED pin-1 triangle on each silkscreen face")
+    if any(
+        isinstance(item, pcbnew.PCB_TEXT) and item.GetText() == "LED PIN 1"
+        for item in switch.GraphicalItems()
+    ):
+        fail(f"SW{switch_number}: ambiguous LED Fab-layer text remains")
+    for marker in markers:
+        copper_layer = pcbnew.F_Cu if marker.GetLayer() == pcbnew.F_SilkS else pcbnew.B_Cu
+        pin_one = pad_on_layer(switch, "1", copper_layer)
+        other_pads = [pad_on_layer(switch, number, copper_layer) for number in (2, 3, 4)]
+        if pin_one is None or any(item is None for item in other_pads):
+            fail(f"SW{switch_number}: reversible RGB pads are incomplete")
+        center = marker.GetCenter()
+        pin_one_distance = item_distance(center, pin_one.GetPosition())
+        if any(pin_one_distance >= item_distance(center, item.GetPosition()) for item in other_pads):
+            fail(f"SW{switch_number}: LED triangle is not closest to pin 1")
 
 rgb = layout["rgb"]
 if len(KEY_SWITCHES) != rgb["ledsPerHalf"]:
@@ -366,8 +438,6 @@ required_assembly_labels = [
     ("R", "F.Silkscreen", 107.42, 38.9),
     ("L", "B.Silkscreen", 93.479, 40.1),
     ("L", "B.Silkscreen", 108.719, 40.1),
-    ("L 1-2", "F.Silkscreen", 79.5, 69.3),
-    ("R 2-3", "F.Silkscreen", 79.5, 70.7),
 ]
 board_text = [
     drawing for drawing in board.GetDrawings()
@@ -382,6 +452,12 @@ for label, layer, expected_x, expected_y in required_assembly_labels:
         for drawing in board_text
     ):
         fail(f"missing local assembly label {label!r} on {layer}")
+if any(
+    "JP_HAND" in drawing.GetText()
+    or drawing.GetText() in {"HAND", "L 1-2", "R 2-3"}
+    for drawing in board_text
+):
+    fail("obsolete manual handedness instructions remain on the board")
 
 for index in range(1, 7):
     hole = pad(footprints[f"H{index}"], "")
@@ -389,7 +465,7 @@ for index in range(1, 7):
         fail(f"H{index}: expected 2.2 mm M2 clearance hole")
 
 required_nets = {
-    "VBUS", "VCC3V3", "GND", "RESET", "SPLIT_DATA", "HAND",
+    "VBUS", "VCC3V3", "GND", "RESET", "SPLIT_DATA", "HAND_L", "HAND_R",
     "OLED_SDA", "OLED_SCL", "RGB_MCU", "RGB_5V", "RGB_LED_IN",
     "ENC_A", "ENC_B", "KEY_ENC",
 }
@@ -401,7 +477,7 @@ if missing_nets:
 
 expected_helios = {
     "1": "RGB_MCU", "2": "SPLIT_DATA", "3": "GND", "4": "GND",
-    "5": "OLED_SDA", "6": "OLED_SCL", "7": "HAND",
+    "5": "OLED_SDA", "6": "OLED_SCL",
     "8": "ROW0", "9": "ROW1", "10": "ROW2", "11": "ROW3",
     "12": "ROW4", "13": "COL5", "14": "COL4", "15": "COL3",
     "16": "COL2", "17": "COL1", "18": "COL0", "19": "ENC_B",
@@ -411,6 +487,13 @@ expected_helios = {
 for number, expected in expected_helios.items():
     if net(footprints["U1"], number) != expected:
         fail(f"U1 pad {number}: expected {expected}")
+
+right_d4 = pad_on_layer(footprints["U1"], "7", pcbnew.F_SilkS)
+left_d4 = pad_on_layer(footprints["U1"], "L7", pcbnew.B_SilkS)
+if right_d4 is None or right_d4.GetNetname() != "HAND_R":
+    fail("U1 R-position D4 must use isolated HAND_R")
+if left_d4 is None or left_d4.GetNetname() != "HAND_L":
+    fail("U1 L-position D4 must use isolated HAND_L")
 
 # Keep the checked-in QMK definition tied to those same PCB nets and the
 # ProMicro-compatible aliases used by QMK's Helios converter.
@@ -427,7 +510,7 @@ if split.get("serial") != {"driver": "vendor", "pin": "D2"}:
 if split.get("transport", {}).get("protocol") != "serial":
     fail("QMK split transport must be serial")
 if split.get("handedness", {}).get("pin") != "D4":
-    fail("QMK handedness pin must match U1 HAND on D4")
+    fail("QMK handedness pin must match the isolated U1 D4 header positions")
 if keyboard.get("ws2812", {}).get("pin") != "D3":
     fail("QMK WS2812 pin must match U1 RGB_MCU on D3")
 if keyboard.get("rgb_matrix", {}).get("split_count") != [28, 28]:
@@ -473,14 +556,15 @@ if not (
         f"{trrs['pcbCenter']['y']:.3f} @ {trrs['pcbRotation']:.1f} degrees"
     )
 
-if [net(footprints["JP_HAND"], number) for number in ("1", "2", "3")] != ["VCC3V3", "HAND", "GND"]:
-    fail("JP_HAND must select VCC3V3/HAND/GND")
+if footprints["R4"].GetValue() != "10k" or [net(footprints["R4"], number) for number in ("1", "2")] != ["HAND_L", "VCC3V3"]:
+    fail("R4 must pull the L-position D4 high through 10k")
+if footprints["R5"].GetValue() != "10k" or [net(footprints["R5"], number) for number in ("1", "2")] != ["HAND_R", "GND"]:
+    fail("R5 must pull the R-position D4 low through 10k")
 expected_test_points = {
     "TP1": "GND",
     "TP2": "VBUS",
     "TP3": "VCC3V3",
     "TP4": "SPLIT_DATA",
-    "TP5": "HAND",
     "TP6": "RGB_LED_IN",
     "TP7": "OLED_SDA",
     "TP8": "OLED_SCL",
