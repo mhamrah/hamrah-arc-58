@@ -5,9 +5,11 @@ import {
   boundsForPoints,
   buildHalf,
   closedOutlineSegments,
+  mergedTopPlateOutline,
   mirrorKey,
   readConfig,
   rectangleCorners,
+  roundedRectanglePoints,
   sampleClosedCurve
 } from "./layout-model.mjs";
 
@@ -22,6 +24,11 @@ const halfBounds = boundsForPoints(leftOutline);
 const halfWidth = halfBounds.maxX - halfBounds.minX;
 const halfHeight = halfBounds.maxY - halfBounds.minY;
 const manufacturingBounds = halfBounds;
+const leftTopPlateOutline = mergedTopPlateOutline(
+  leftOutline,
+  config.mechanical.acrylic.electronicsWindow,
+  config.trrs.plateSlot
+);
 
 fs.mkdirSync(outputDirectory, { recursive: true });
 
@@ -31,26 +38,6 @@ function format(value) {
 
 function pointsAttribute(points) {
   return points.map((point) => `${format(point.x)},${format(point.y)}`).join(" ");
-}
-
-function roundedRectanglePoints(center, width, height, radius, stepsPerCorner = 8) {
-  const halfWidth = width / 2;
-  const halfHeight = height / 2;
-  const corners = [
-    { x: center.x + halfWidth - radius, y: center.y - halfHeight + radius, start: -90 },
-    { x: center.x + halfWidth - radius, y: center.y + halfHeight - radius, start: 0 },
-    { x: center.x - halfWidth + radius, y: center.y + halfHeight - radius, start: 90 },
-    { x: center.x - halfWidth + radius, y: center.y - halfHeight + radius, start: 180 }
-  ];
-  return corners.flatMap((corner) =>
-    Array.from({ length: stepsPerCorner + 1 }, (_, index) => {
-      const angle = ((corner.start + (90 * index) / stepsPerCorner) * Math.PI) / 180;
-      return {
-        x: corner.x + radius * Math.cos(angle),
-        y: corner.y + radius * Math.sin(angle)
-      };
-    })
-  );
 }
 
 function transformCurve(segments, transform) {
@@ -193,7 +180,7 @@ function halfMechanical(side) {
   const segments = mirror
     ? transformCurve(outlineSegments, mirroredPoint)
     : outlineSegments;
-  return {
+  const half = {
     label: mirror ? "right" : "left",
     keys: mirror
       ? leftKeys.map((key) => mirrorKey(key, halfBounds.minX + halfBounds.maxX))
@@ -217,6 +204,12 @@ function halfMechanical(side) {
         : {})
     }
   };
+  return {
+    ...half,
+    topPlateOutline: mirror
+      ? leftTopPlateOutline.map(mirroredPoint)
+      : leftTopPlateOutline
+  };
 }
 
 function makePlateSvg(side = "left") {
@@ -227,7 +220,7 @@ function makePlateSvg(side = "left") {
   const offsetY = margin - bounds.minY;
   const width = bounds.maxX - bounds.minX + margin * 2;
   const height = bounds.maxY - bounds.minY + margin * 2;
-  const outline = transformCurve(half.segments, (point) => ({
+  const outline = half.topPlateOutline.map((point) => ({
     x: point.x + offsetX,
     y: point.y + offsetY
   }));
@@ -248,21 +241,16 @@ function makePlateSvg(side = "left") {
   const holes = half.holes
     .map((hole, index) => `  <circle class="cut" data-hole="H${index + 1}" cx="${format(hole.x + offsetX)}" cy="${format(hole.y + offsetY)}" r="${format(config.mechanical.acrylic.mountingHoleDiameter / 2)}" />`)
     .join("\n");
-  const electronics = half.electronicsWindow;
-  const trrsSlot = half.trrsSlot;
-
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${format(width)}mm" height="${format(height)}mm" viewBox="0 0 ${format(width)} ${format(height)}">
   <title>${config.name} ${half.label} acrylic top plate</title>
-  <desc>One-to-one millimetre ${config.mechanical.acrylic.topThickness} mm cast-acrylic plate with electronics access, aligned to the Rev ${config.revision} reversible PCB.</desc>
+  <desc>One-to-one millimetre ${config.mechanical.acrylic.topThickness} mm cast-acrylic plate with one integrated controller, OLED, and TRRS edge notch, aligned to the Rev ${config.revision} reversible PCB.</desc>
   <style>
     .outline, .cut { fill: none; stroke: #000; stroke-width: 0.2; vector-effect: non-scaling-stroke; }
   </style>
-  <path class="outline" d="${curvePath(outline)}" />
+  <polygon class="outline" data-profile="plate-with-controller-oled-trrs-notch" points="${pointsAttribute(outline)}" />
 ${cutouts}
 ${holes}
-  <rect class="cut" data-cutout="controller-oled-trrs" x="${format(electronics.centerX - electronics.width / 2 + offsetX)}" y="${format(electronics.centerY - electronics.height / 2 + offsetY)}" width="${format(electronics.width)}" height="${format(electronics.height)}" rx="${format(electronics.cornerRadius)}" />
-  <rect class="cut" data-cutout="trrs-cable-clearance" x="${format(trrsSlot.centerX - trrsSlot.width / 2 + offsetX)}" y="${format(trrsSlot.centerY - trrsSlot.height / 2 + offsetY)}" width="${format(trrsSlot.width)}" height="${format(trrsSlot.height)}" rx="${format(trrsSlot.cornerRadius)}" />
 </svg>
 `;
 }
@@ -403,7 +391,7 @@ function dxfCircle(center, radius, layer) {
 
 function makeDxf(side = "left") {
   const half = halfMechanical(side);
-  const entities = [dxfPolyline(half.outline, "PLATE_OUTLINE")];
+  const entities = [dxfPolyline(half.topPlateOutline, "PLATE_OUTLINE")];
   for (const key of half.keys) {
     if (key.group === "encoder") {
       entities.push(
@@ -425,30 +413,6 @@ function makeDxf(side = "left") {
   for (const hole of half.holes) {
     entities.push(dxfCircle(hole, config.mechanical.acrylic.mountingHoleDiameter / 2, "MOUNTING_HOLES"));
   }
-  const electronics = half.electronicsWindow;
-  entities.push(
-    dxfPolyline(
-      roundedRectanglePoints(
-        { x: electronics.centerX, y: electronics.centerY },
-        electronics.width,
-        electronics.height,
-        electronics.cornerRadius
-      ),
-      "ELECTRONICS_WINDOW"
-    )
-  );
-  const trrsSlot = half.trrsSlot;
-  entities.push(
-    dxfPolyline(
-      roundedRectanglePoints(
-        { x: trrsSlot.centerX, y: trrsSlot.centerY },
-        trrsSlot.width,
-        trrsSlot.height,
-        trrsSlot.cornerRadius
-      ),
-      "TRRS_CABLE_CLEARANCE"
-    )
-  );
   return [
     "0",
     "SECTION",

@@ -44,7 +44,10 @@ Connect USB to the left half only, with no TRRS cable attached.
 - Verify the Helios enumerates as a USB keyboard after flashing.
 - Hold/reset the Helios to enter UF2 boot mode and copy the compiled firmware.
 - Check all 29 inputs with a keyboard tester: 28 Choc switches plus encoder
-  press. Check encoder clockwise/counter-clockwise events separately.
+  press. Check encoder clockwise/counter-clockwise events separately and
+  confirm each physical detent produces exactly one firmware event; adjust
+  QMK encoder resolution if the selected EC11 produces skipped or doubled
+  events.
 - Start RGB Matrix at the supplied brightness limit of 32. Verify all 28 local
   LEDs in sequence, then measure USB current with white enabled. Do not raise
   the brightness until the measured current is safe for the cable and USB port.

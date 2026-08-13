@@ -2,7 +2,7 @@
 /** Run KiCad DRC and reject everything except reviewed reversible-route stubs. */
 
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -20,15 +20,21 @@ function fail(message) {
 }
 
 try {
-  try {
-    execFileSync(
-      'kicad-cli',
-      ['pcb', 'drc', '--format', 'json', '--output', report, boardPath],
-      { stdio: 'pipe' },
-    );
-  } catch (error) {
-    // KiCad exits nonzero for warnings too; parse its report below.
-    if (!error.status && !error.signal) throw error;
+  for (let attempt = 1; attempt <= 5 && !existsSync(report); attempt += 1) {
+    try {
+      execFileSync(
+        'kicad-cli',
+        ['pcb', 'drc', '--format', 'json', '--output', report, boardPath],
+        { stdio: 'pipe' },
+      );
+    } catch (error) {
+      // KiCad exits nonzero for warnings too. It also intermittently crashes
+      // on macOS before writing JSON, so retry only when no report exists.
+      if (!error.status && !error.signal) throw error;
+    }
+  }
+  if (!existsSync(report)) {
+    fail('KiCad did not produce a DRC report after five attempts');
   }
 
   const result = JSON.parse(readFileSync(report, 'utf8'));
@@ -37,13 +43,16 @@ try {
   }
 
   const counts = new Map();
+  const unexpected = [];
   for (const violation of result.violations) {
     if (!reviewedWarnings.has(violation.type) || violation.severity !== 'warning') {
       const items = violation.items.map((item) => item.description).join(' | ');
-      fail(`DRC ${violation.type}: ${violation.description}; ${items}`);
+      unexpected.push(`DRC ${violation.type}: ${violation.description}; ${items}`);
+      continue;
     }
     counts.set(violation.type, (counts.get(violation.type) ?? 0) + 1);
   }
+  if (unexpected.length) fail(unexpected.join('\n'));
   for (const [type, expected] of reviewedWarnings) {
     const actual = counts.get(type) ?? 0;
     if (actual !== expected) {

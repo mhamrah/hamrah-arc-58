@@ -12,6 +12,13 @@ ROOT = Path(__file__).resolve().parents[1]
 BOARD = ROOT / "hardware" / "kicad" / "arc58-reversible.kicad_pcb"
 LAYOUT = ROOT / "layout.config.json"
 FIRMWARE = ROOT / "firmware" / "qmk" / "arc58"
+SWITCH_FOOTPRINT = (
+    ROOT
+    / "hardware"
+    / "kicad"
+    / "arc58-reversible.pretty"
+    / "Sofle_Choc_Hotswap_SK6812MINI-E_Reversible.kicad_mod"
+)
 KEY_SWITCHES = list(range(1, 25)) + list(range(26, 30))
 
 
@@ -111,6 +118,27 @@ for drawing in board.GetDrawings():
     if re.fullmatch(r"D\d+", text) or re.fullmatch(r"LED\d+ 1>", text):
         fail(f"busy component designator remains on silkscreen: {text}")
 
+for drawing in board.GetDrawings():
+    if (
+        type(drawing).__name__ != "PCB_SHAPE"
+        or drawing.GetLayer() not in (pcbnew.F_SilkS, pcbnew.B_SilkS)
+        or drawing.GetShapeStr() != "Line"
+    ):
+        continue
+    start, end = drawing.GetStart(), drawing.GetEnd()
+    dimensions = (
+        round(
+            math.hypot(
+                pcbnew.ToMM(end.x - start.x),
+                pcbnew.ToMM(end.y - start.y),
+            ),
+            3,
+        ),
+        round(pcbnew.ToMM(drawing.GetWidth()), 3),
+    )
+    if dimensions in {(1.0, 0.22), (1.4, 0.18)}:
+        fail("legacy board-level diode/LED silkscreen bar remains")
+
 for diode_number in range(1, 30):
     diode = footprints[f"D{diode_number}"]
     markers = [
@@ -150,8 +178,14 @@ for switch_number in KEY_SWITCHES:
             fail(f"SW{switch_number}: reversible RGB pads are incomplete")
         center = marker.GetCenter()
         pin_one_distance = item_distance(center, pin_one.GetPosition())
+        if pcbnew.ToMM(pin_one_distance) > 1.6:
+            fail(f"SW{switch_number}: LED triangle is not adjacent to pin 1")
         if any(pin_one_distance >= item_distance(center, item.GetPosition()) for item in other_pads):
             fail(f"SW{switch_number}: LED triangle is not closest to pin 1")
+
+switch_footprint_source = SWITCH_FOOTPRINT.read_text()
+if "LED PIN 1" in switch_footprint_source or switch_footprint_source.count("(fp_poly") != 2:
+    fail("switch footprint library is not synchronized with the board's pin-1 triangles")
 
 rgb = layout["rgb"]
 if len(KEY_SWITCHES) != rgb["ledsPerHalf"]:
@@ -310,7 +344,15 @@ column_edge_x = (
     + layout["switch"]["keycapWidth"] / 2
 )
 encoder_x = (column_edge_x + inner_edge_x) / 2
-check_placement(footprints["SW25"], *pcb_location(encoder_x, encoder_y))
+encoder = footprints["SW25"]
+check_placement(encoder, *pcb_location(encoder_x, encoder_y))
+expected_encoder_footprint = encoder_config["sofleFootprint"].split(":")[-1]
+actual_encoder_footprint = str(encoder.GetFPID().GetLibItemName())
+if actual_encoder_footprint != expected_encoder_footprint:
+    fail(
+        f"SW25: expected EC11 footprint {expected_encoder_footprint}, got "
+        f"{actual_encoder_footprint}"
+    )
 
 column_a, column_b = layout["thumbArc"]["startBetweenColumns"]
 thumb_x = (
@@ -463,6 +505,43 @@ for index in range(1, 7):
     hole = pad(footprints[f"H{index}"], "")
     if hole is None or hole.GetDrillSize().x != pcbnew.FromMM(2.2):
         fail(f"H{index}: expected 2.2 mm M2 clearance hole")
+
+# Keep every plated component hole at or above the fabricator's recommended
+# 0.25 mm annular ring.  This includes the EC11's two oval mechanical tabs;
+# their former 3.2 x 2.0 mm pads left only 0.20 mm beside a 2.8 x 1.5 mm slot.
+for footprint in board.GetFootprints():
+    for item in footprint.Pads():
+        if item.GetAttribute() != pcbnew.PAD_ATTRIB_PTH:
+            continue
+        drill = item.GetDrillSize()
+        size = item.GetSize()
+        annular_ring = min(size.x - drill.x, size.y - drill.y) / 2
+        if annular_ring < pcbnew.FromMM(0.25):
+            fail(
+                f"{footprint.GetReference()} pad {item.GetNumber()}: "
+                f"plated-hole annular ring is only "
+                f"{pcbnew.ToMM(annular_ring):.3f} mm"
+            )
+
+# Use the larger profile by default. The compact profile is retained only for
+# the dense reversible escape routing; enlarging those vias creates clearance
+# violations. Both profiles remain comfortably within the target fab's rules.
+allowed_vias = {(0.4, 0.2), (0.6, 0.3)}
+for item in board.GetTracks():
+    if type(item).__name__ == "PCB_TRACK":
+        if item.GetWidth() < pcbnew.FromMM(0.20):
+            fail(f"{item.GetNetname()}: track width is below 0.20 mm")
+        continue
+    if type(item).__name__ != "PCB_VIA":
+        continue
+    via_profile = (
+        round(pcbnew.ToMM(item.GetWidth(pcbnew.F_Cu)), 3),
+        round(pcbnew.ToMM(item.GetDrillValue()), 3),
+    )
+    if via_profile not in allowed_vias:
+        fail(f"{item.GetNetname()}: unapproved via diameter/drill {via_profile}")
+    if not item.IsTented(pcbnew.F_Cu) or not item.IsTented(pcbnew.B_Cu):
+        fail(f"{item.GetNetname()}: untented via remains")
 
 required_nets = {
     "VBUS", "VCC3V3", "GND", "RESET", "SPLIT_DATA", "HAND_L", "HAND_R",
@@ -635,6 +714,76 @@ if any(
     for track in switch_route
 ):
     fail("SW19-to-SW26 B.Cu route extends below the approved thumb sweep")
+
+# The old VBUS route below the encoder ran left to an unconnected waypoint and
+# immediately doubled back.  It added copper length and a visible U-turn but no
+# connectivity, so keep that legacy waypoint out of the canonical board.
+legacy_vbus_u_turn = (91.581931, 118.5)
+if any(
+    track.GetNetname() == "VBUS"
+    and track.GetLayer() == pcbnew.F_Cu
+    and any(
+        close(pcbnew.ToMM(endpoint.x), legacy_vbus_u_turn[0])
+        and close(pcbnew.ToMM(endpoint.y), legacy_vbus_u_turn[1])
+        for endpoint in (track.GetStart(), track.GetEnd())
+    )
+    for track in board.GetTracks()
+):
+    fail("legacy VBUS U-turn remains below the encoder")
+
+# Pin the two other pad-free route overshoots found by the whole-board copper
+# topology audit.  Intentional reversible-pad escapes make short local jogs,
+# but neither of these old turnaround points had a pad, via, or branch.
+legacy_route_turnarounds = {
+    ("COL4", pcbnew.B_Cu): (138.625, 114.275),
+    ("Net-(SW20-Pad4)", pcbnew.B_Cu): (136.6, 112.8),
+    ("COL3", pcbnew.B_Cu): (84.0, 122.6),
+    ("ENC_A", pcbnew.B_Cu): (109.0, 109.65),
+}
+for (net_name, layer), turnaround in legacy_route_turnarounds.items():
+    if any(
+        track.GetNetname() == net_name
+        and track.GetLayer() == layer
+        and any(
+            close(pcbnew.ToMM(endpoint.x), turnaround[0])
+            and close(pcbnew.ToMM(endpoint.y), turnaround[1])
+            for endpoint in (track.GetStart(), track.GetEnd())
+        )
+        for track in board.GetTracks()
+    ):
+        fail(f"legacy {net_name} route turnaround remains at {turnaround}")
+
+# Prevent the dense legacy stair-step polylines from returning. This region
+# includes the four thumb switches and their routes back toward the matrix.
+thumb_tracks = []
+duplicate_tracks = set()
+seen_tracks = set()
+for track in board.GetTracks():
+    if type(track).__name__ != "PCB_TRACK":
+        continue
+    start = track.GetStart()
+    end = track.GetEnd()
+    start_point = (start.x, start.y)
+    end_point = (end.x, end.y)
+    if start_point != end_point:
+        identity = (
+            track.GetNetCode(),
+            track.GetLayer(),
+            track.GetWidth(),
+            min(start_point, end_point),
+            max(start_point, end_point),
+        )
+        if identity in seen_tracks:
+            duplicate_tracks.add(identity)
+        seen_tracks.add(identity)
+    midpoint_x = pcbnew.ToMM(start.x + end.x) / 2
+    midpoint_y = pcbnew.ToMM(start.y + end.y) / 2
+    if 65 <= midpoint_x <= 150 and 110 <= midpoint_y <= 180:
+        thumb_tracks.append(track)
+if duplicate_tracks:
+    fail(f"{len(duplicate_tracks)} duplicate non-zero copper segments remain")
+if len(thumb_tracks) > 500:
+    fail(f"thumb routing regressed to {len(thumb_tracks)} fragmented segments")
 board.BuildConnectivity()
 unconnected = board.GetConnectivity().GetUnconnectedCount(False)
 if unconnected:

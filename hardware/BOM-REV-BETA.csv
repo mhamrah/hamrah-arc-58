@@ -6,8 +6,8 @@ SW1-SW56,56,Kailh Choc v1 PG1350 switch,Choc v1,Switches plug into hotswap socke
 KEYCAP1-KEYCAP56,56,Kailh Choc v1-compatible 1u keycap,16.5 x 16.5 mm specified plan size,Thumb arc is conservatively verified with an 18 x 18 mm envelope at 21.25 mm centers; measure substitutions before assembly
 HS1-HS56,56,Kailh CPG135001S30 Choc v1 hotswap socket,SMD,Populate on the underside opposite the keycaps
 D1-D58,58,1N4148W switching diode,SOD-123,Populate on the underside; align the package cathode band with the nearby PCB silkscreen bar; 29 per half including encoder press
-SW25,2,Alps Alpine EC11E15244G1,Vertical clickable encoder,30 detents / 15 pulses with integrated push switch; 18 mm knob is centered for 9.17 mm clearance to both C6 cap and curved inner PCB edge
-LED1-LED56,56,SK6812MINI-E RGB LED,3.2 x 2.8 mm reverse-mount,Optional; solder to underside pads with emitting face aligned to the 3.6 x 3.1 mm routed aperture; align pin 1 with the nearby PCB silkscreen triangle; 28 per half
+SW25,2,EC11 clickable rotary encoder (Keebio 20 mm T18-shaft version or dimensionally equivalent),Vertical EC11 with push switch,20 detents and 20 mm shaft; embedded footprint is RotaryEncoder_Alps_EC11E-Switch_Vertical_H20mm-keebio_modified; verify the exact supplier part against the footprint before soldering; 18 mm knob is centered for 9.17 mm clearance to both C6 cap and curved inner PCB edge
+LED1-LED56,56,SK6812MINI-E RGB LED,3.2 x 2.8 mm reverse-mount,Optional prototype population; solder to underside pads with emitting face aligned to the 3.6 x 3.1 mm routed aperture; align pin 1 with the nearby PCB silkscreen triangle; 28 per half; board has bulk capacitance but no per-LED bypass capacitors so keep firmware brightness limited and qualify a populated prototype before a larger run
 U2,2,SN74AHCT1G125 or equivalent 74AHCT1G125,SOT-23-5,5 V RGB data level shifter
 R1,2,330 ohm 1 percent resistor,0603,RGB data series resistor
 R2-R3,4,4.7 kohm 1 percent resistor,0603,OLED SDA/SCL pull-ups; two per half

@@ -9,8 +9,10 @@ Requested baseline:
 
 - 1.6 mm FR4, two copper layers;
 - 1 oz finished copper;
-- 0.15 mm minimum track/space;
-- 0.40/0.20 mm finished via diameter/drill;
+- 0.20 mm minimum track and 0.15 mm minimum spacing;
+- mixed 0.40/0.20 mm and 0.60/0.30 mm via diameter/drill, tented on both
+  sides;
+- at least 0.25 mm annular ring on every plated component hole;
 - 0.25 mm copper-to-edge clearance;
 - 0.05 mm solder-mask expansion;
 - plated through holes plus a separate non-plated drill file; and
@@ -27,6 +29,11 @@ netlist; and a board statistics report. Upload the archive without renaming or
 mirroring individual files, inspect every layer in the fabricator's viewer,
 and confirm the outline and drill files are recognized before ordering.
 Zoom into several switch centers and verify that each RGB aperture is visible.
+The 0.60/0.30 mm profile is the default. Compact 0.40/0.20 mm vias are retained
+only in dense reversible escape routing where enlarging them causes clearance
+violations. The intended fabricator supports this profile but may apply its
+small-via surcharge. Do not let the fabricator shrink annular rings without
+engineering review.
 Also inspect the four thumb switch locator-hole pairs: on the F.Cu/right view
 their physical axes must be -10, -30, -45, and -55 degrees from inner to outer;
 after mirroring for the B.Cu/left assembly they must be +10, +30, +45, and +55

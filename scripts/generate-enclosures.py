@@ -326,7 +326,7 @@ All geometry is 1:1 in millimetres. Order one left and one right file for each
 layer; do not mirror files at the laser cutter.
 
 - Top plates: {ACRYLIC['topThickness']} mm cast acrylic, with 14.0 mm Choc v1 cutouts,
-  a controller/OLED service window, a {TRRS['plugClearanceDiameter']} mm-high TRRS cable-exit slot,
+  one boolean-merged controller/OLED and {TRRS['plugClearanceDiameter']} mm-high TRRS edge notch,
   an encoder opening, and 2.4 mm M2 clearance holes.
 - Bottom plates: {ACRYLIC['bottomThickness']} mm cast acrylic, with 2.4 mm M2 clearance holes
   and a {ACRYLIC['resetAccessDiameter']} mm reset opening.
@@ -363,8 +363,8 @@ Nominal construction:
 - Boss holes: drill {CASE['tapDrillDiameter']} mm and tap {CASE['thread']} to {CASE['threadDepth']} mm depth.
 - Reset access: {CASE['resetAccessDiameter']} mm through the floor.
 - Switch plate: {CASE['topPlateThickness']} mm, 14.0 mm Choc v1 openings,
-  2.4 mm M2 clearance holes, the controller/OLED service window, and a
-  {TRRS['plugClearanceDiameter']} mm-high TRRS cable-exit slot.
+  2.4 mm M2 clearance holes, and one boolean-merged controller/OLED and
+  {TRRS['plugClearanceDiameter']} mm-high TRRS edge notch.
 - Plate underside: Z={CASE['pcbUndersideHeight'] + 1.6 + CASE['pcbToPlateGap']:.3f} mm in the reference assembly.
 
 Manufacturing notes:

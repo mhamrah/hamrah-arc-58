@@ -2,9 +2,11 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   buildHalf,
+  boundsForPoints,
   closedOutlineSegments,
   componentEnvelope,
   distance,
+  mergedTopPlateOutline,
   mirrorKey,
   outlineCrossingsAtY,
   readConfig,
@@ -68,6 +70,68 @@ function polygonGap(a, b) {
   return gap;
 }
 
+function polygonArea(polygon) {
+  return Math.abs(
+    polygon.reduce((area, point, index) => {
+      const next = polygon[(index + 1) % polygon.length];
+      return area + point.x * next.y - next.x * point.y;
+    }, 0) / 2
+  );
+}
+
+function pointInsidePolygon(point, polygon) {
+  let inside = false;
+  for (let index = 0; index < polygon.length; index += 1) {
+    const start = polygon[index];
+    const end = polygon[(index + 1) % polygon.length];
+    if (
+      (start.y > point.y) !== (end.y > point.y) &&
+      point.x <
+        ((end.x - start.x) * (point.y - start.y)) / (end.y - start.y) +
+          start.x
+    ) {
+      inside = !inside;
+    }
+  }
+  return inside;
+}
+
+function properSegmentsIntersect(a, b, c, d) {
+  const orientation = (first, second, third) =>
+    (second.x - first.x) * (third.y - first.y) -
+    (second.y - first.y) * (third.x - first.x);
+  const first = orientation(a, b, c);
+  const second = orientation(a, b, d);
+  const third = orientation(c, d, a);
+  const fourth = orientation(c, d, b);
+  return first * second < -1e-12 && third * fourth < -1e-12;
+}
+
+function assertSimplePolygon(polygon, label) {
+  for (let first = 0; first < polygon.length; first += 1) {
+    const firstNext = (first + 1) % polygon.length;
+    for (let second = first + 1; second < polygon.length; second += 1) {
+      const secondNext = (second + 1) % polygon.length;
+      if (
+        first === second ||
+        firstNext === second ||
+        secondNext === first
+      ) {
+        continue;
+      }
+      assert.ok(
+        !properSegmentsIntersect(
+          polygon[first],
+          polygon[firstNext],
+          polygon[second],
+          polygon[secondNext]
+        ),
+        `${label} profile self-intersects at segments ${first} and ${second}`
+      );
+    }
+  }
+}
+
 test("design is named for its 58 press inputs", () => {
   assert.equal(config.name, "Hamrah Arc 58");
   assert.equal(config.revision, "Beta");
@@ -86,7 +150,10 @@ test("a clickable encoder is mirrored onto both halves", () => {
   const axisX = 57.15;
   const mirrored = mirrorKey(encoder, axisX);
   assert.equal(config.encoder.click, true);
-  assert.equal(config.encoder.partNumber, "EC11E15244G1");
+  assert.equal(config.encoder.partNumber, "EC11");
+  assert.equal(config.encoder.shaftLength, 20);
+  assert.equal(config.encoder.shaftProfile, "T18 knurled");
+  assert.equal(config.encoder.detents, 20);
   assert.equal(
     config.encoder.sofleFootprint,
     "SofleKeyboard-footprint:RotaryEncoder_Alps_EC11E-Switch_Vertical_H20mm-keebio_modified"
@@ -303,6 +370,42 @@ test("TRRS jack and ten-millimetre plug envelope exit through the inner edge", (
     trrs.plugClearanceDiameter / 2;
   assert.ok(trrs.caseNotchBottom <= plugBottom);
   assert.ok(trrs.caseNotchBottom >= config.mechanical.cncCase.floorThickness);
+});
+
+test("top plates merge controller and TRRS access into one clean exterior notch", () => {
+  const outline = sampleClosedCurve(closedOutlineSegments(config.mechanical));
+  const bounds = boundsForPoints(outline);
+  const mirrorAxis = bounds.minX + bounds.maxX;
+  const window = config.mechanical.acrylic.electronicsWindow;
+  const slot = config.trrs.plateSlot;
+  const left = mergedTopPlateOutline(outline, window, slot);
+  const right = left.map((point) => ({ x: mirrorAxis - point.x, y: point.y }));
+
+  assertSimplePolygon(left, "left top plate");
+  assertSimplePolygon(right, "right top plate");
+  assert.equal(left.length, right.length);
+  assert.ok(Math.abs(polygonArea(left) - polygonArea(right)) < 1e-8);
+  assert.ok(!pointInsidePolygon(
+    { x: window.centerX, y: window.centerY },
+    left
+  ));
+  assert.ok(!pointInsidePolygon(
+    { x: slot.centerX, y: slot.centerY },
+    left
+  ));
+  assert.ok(
+    left.some(
+      (point, index) => {
+        const next = left[(index + 1) % left.length];
+        return (
+          Math.abs(point.x - (window.centerX - window.width / 2)) < 0.01 &&
+          Math.abs(next.x - (window.centerX - window.width / 2)) < 0.01 &&
+          Math.abs(point.y - next.y) > window.height - 2 * window.cornerRadius - 0.01
+        );
+      }
+    ),
+    "merged notch does not retain the controller-window depth"
+  );
 });
 
 test("the shared mechanical design has a smooth outline and six clear M2 fasteners", () => {

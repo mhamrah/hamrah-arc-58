@@ -28,6 +28,194 @@ export function rectangleCorners(key, width, height) {
   return corners.map((point) => rotatePoint(point, key, key.rotation));
 }
 
+export function roundedRectanglePoints(
+  center,
+  width,
+  height,
+  radius,
+  stepsPerCorner = 8
+) {
+  const halfWidth = width / 2;
+  const halfHeight = height / 2;
+  const corners = [
+    { x: center.x + halfWidth - radius, y: center.y - halfHeight + radius, start: -90 },
+    { x: center.x + halfWidth - radius, y: center.y + halfHeight - radius, start: 0 },
+    { x: center.x - halfWidth + radius, y: center.y + halfHeight - radius, start: 90 },
+    { x: center.x - halfWidth + radius, y: center.y - halfHeight + radius, start: 180 }
+  ];
+  return corners.flatMap((corner) =>
+    Array.from({ length: stepsPerCorner + 1 }, (_, index) => {
+      const angle = ((corner.start + (90 * index) / stepsPerCorner) * Math.PI) / 180;
+      return {
+        x: corner.x + radius * Math.cos(angle),
+        y: corner.y + radius * Math.sin(angle)
+      };
+    })
+  );
+}
+
+function pointInPolygon(point, polygon) {
+  let inside = false;
+  for (let index = 0; index < polygon.length; index += 1) {
+    const start = polygon[index];
+    const end = polygon[(index + 1) % polygon.length];
+    if (
+      (start.y > point.y) !== (end.y > point.y) &&
+      point.x <
+        ((end.x - start.x) * (point.y - start.y)) / (end.y - start.y) +
+          start.x
+    ) {
+      inside = !inside;
+    }
+  }
+  return inside;
+}
+
+function segmentIntersection(firstStart, firstEnd, secondStart, secondEnd) {
+  const first = {
+    x: firstEnd.x - firstStart.x,
+    y: firstEnd.y - firstStart.y
+  };
+  const second = {
+    x: secondEnd.x - secondStart.x,
+    y: secondEnd.y - secondStart.y
+  };
+  const denominator = first.x * second.y - first.y * second.x;
+  if (Math.abs(denominator) < 1e-12) return null;
+
+  const offset = {
+    x: secondStart.x - firstStart.x,
+    y: secondStart.y - firstStart.y
+  };
+  const firstAmount =
+    (offset.x * second.y - offset.y * second.x) / denominator;
+  const secondAmount =
+    (offset.x * first.y - offset.y * first.x) / denominator;
+  const epsilon = 1e-9;
+  if (
+    firstAmount <= epsilon ||
+    firstAmount >= 1 - epsilon ||
+    secondAmount <= epsilon ||
+    secondAmount >= 1 - epsilon
+  ) {
+    return null;
+  }
+  return {
+    firstAmount,
+    secondAmount,
+    point: {
+      x: firstStart.x + firstAmount * first.x,
+      y: firstStart.y + firstAmount * first.y
+    }
+  };
+}
+
+function splitPolygonSegments(polygon, other) {
+  const segments = [];
+  for (let index = 0; index < polygon.length; index += 1) {
+    const start = polygon[index];
+    const end = polygon[(index + 1) % polygon.length];
+    const intersections = [];
+    for (let otherIndex = 0; otherIndex < other.length; otherIndex += 1) {
+      const intersection = segmentIntersection(
+        start,
+        end,
+        other[otherIndex],
+        other[(otherIndex + 1) % other.length]
+      );
+      if (intersection !== null) intersections.push(intersection);
+    }
+    intersections.sort((a, b) => a.firstAmount - b.firstAmount);
+    const points = [start, ...intersections.map((item) => item.point), end];
+    for (let pointIndex = 0; pointIndex < points.length - 1; pointIndex += 1) {
+      const segmentStart = points[pointIndex];
+      const segmentEnd = points[pointIndex + 1];
+      segments.push({
+        start: segmentStart,
+        end: segmentEnd,
+        midpoint: {
+          x: (segmentStart.x + segmentEnd.x) / 2,
+          y: (segmentStart.y + segmentEnd.y) / 2
+        }
+      });
+    }
+  }
+  return segments;
+}
+
+function samePoint(first, second, tolerance = 1e-7) {
+  return Math.hypot(first.x - second.x, first.y - second.y) <= tolerance;
+}
+
+function assembleSingleLoop(segments) {
+  if (segments.length === 0) throw new Error("No boundary segments remain");
+  const remaining = [...segments];
+  const first = remaining.shift();
+  const result = [first.start, first.end];
+
+  while (remaining.length > 0) {
+    const current = result.at(-1);
+    const nextIndex = remaining.findIndex(
+      (segment) =>
+        samePoint(segment.start, current) || samePoint(segment.end, current)
+    );
+    if (nextIndex === -1) {
+      throw new Error("Boolean boundary contains a disconnected contour");
+    }
+    const [next] = remaining.splice(nextIndex, 1);
+    result.push(
+      samePoint(next.start, current) ? next.end : next.start
+    );
+  }
+
+  if (!samePoint(result[0], result.at(-1))) {
+    throw new Error("Boolean boundary is not closed");
+  }
+  result.pop();
+  return result;
+}
+
+function combineBoundaries(first, second, operation) {
+  const firstSegments = splitPolygonSegments(first, second);
+  const secondSegments = splitPolygonSegments(second, first);
+  const kept = [];
+  if (operation === "union") {
+    kept.push(
+      ...firstSegments.filter((segment) => !pointInPolygon(segment.midpoint, second)),
+      ...secondSegments.filter((segment) => !pointInPolygon(segment.midpoint, first))
+    );
+  } else if (operation === "difference") {
+    kept.push(
+      ...firstSegments.filter((segment) => !pointInPolygon(segment.midpoint, second)),
+      ...secondSegments.filter((segment) => pointInPolygon(segment.midpoint, first))
+    );
+  } else {
+    throw new Error(`Unsupported polygon operation: ${operation}`);
+  }
+  return assembleSingleLoop(kept);
+}
+
+export function mergedTopPlateOutline(
+  outline,
+  electronicsWindow,
+  trrsSlot
+) {
+  const electronics = roundedRectanglePoints(
+    { x: electronicsWindow.centerX, y: electronicsWindow.centerY },
+    electronicsWindow.width,
+    electronicsWindow.height,
+    electronicsWindow.cornerRadius
+  );
+  const slot = roundedRectanglePoints(
+    { x: trrsSlot.centerX, y: trrsSlot.centerY },
+    trrsSlot.width,
+    trrsSlot.height,
+    trrsSlot.cornerRadius
+  );
+  const combinedOpening = combineBoundaries(electronics, slot, "union");
+  return combineBoundaries(outline, combinedOpening, "difference");
+}
+
 export function componentEnvelope(component, config) {
   if (component.group === "encoder") {
     return rectangleCorners(

@@ -28,10 +28,11 @@ acrylic thickness and laser kerf materially affect Choc switch retention. Do
 not release the full decorative plate until the actual switch batch fits the
 coupon.
 
-The large rounded top opening provides access to the Helios, OLED, and reset
-area. A separate rounded 17 x 10 mm slot opens through the inner plate edge at
-the TRRS mouth so a molded cable can be inserted after assembly. Six 2.4 mm
-holes clear M2 fasteners. The 4.5 mm bottom opening provides reset access.
+The large rounded Helios/OLED service area and the 17 x 10 mm TRRS cable path
+are boolean-merged into one continuous notch through the inner plate edge.
+This leaves one unambiguous cut contour and allows a molded cable to be
+inserted after assembly. Six 2.4 mm holes clear M2 fasteners. The 4.5 mm bottom
+opening provides reset access.
 
 ## CNC aluminum case
 

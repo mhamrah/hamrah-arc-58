@@ -100,7 +100,11 @@ half and back `JP5-JP8` for the right. Never bridge both OLED banks.
 The assembly silkscreen intentionally omits individual diode and LED numbers
 to keep both faces legible. Align each diode's cathode band with the nearby
 silkscreen bar, and align LED pin 1 with the nearby silkscreen triangle.
-Reference designators remain available in KiCad and the BOM.
+The LED triangle sits immediately outside the offset pin-1 solder pad; it does
+not point at the central routed light aperture. The aperture only lets the
+reverse-mounted LED shine through the PCB, while the triangle identifies the
+electrical package orientation during soldering. Reference designators remain
+available in KiCad and the BOM.
 
 The RGB LED stays soldered to the underside SMD pads; its emitting face aligns
 with the routed aperture beneath the switch. The package is not placed loose
@@ -134,6 +138,33 @@ Automated checks currently prove:
 KiCad reports six reviewed reversible-pad endpoint warnings and no dangling-via
 warnings. The verifier pins their exact count so a change fails CI-style
 verification; connectivity analysis still reports zero unrouted nets.
+
+The fabrication audit additionally pins 0.20 mm minimum tracks, approved
+0.40/0.20 mm and 0.60/0.30 mm tented-via profiles, and at least 0.25 mm of
+annular ring around every plated component hole. The encoder's two mechanical
+slot pads were widened from 3.20 to 3.30 mm so they meet that annular-ring
+target instead of relying on a 0.20 mm ring.
+
+Two component-level risks remain outside what KiCad DRC can prove:
+
+- The PCB has a 47 uF RGB bulk capacitor and local 100 nF bypassing for the
+  level shifter, but no bypass capacitor at each SK6812MINI-E. The LED
+  manufacturer's application circuit calls inter-LED capacitance essential.
+  Treat RGB as prototype-only, keep the firmware brightness limit at 32, and
+  qualify a fully populated half before a larger order. Eliminating this risk
+  requires a material footprint/routing revision to add 28 capacitors per
+  half.
+- The specified encoder is now a generic clickable EC11 matching Keebio's
+  20-detent, 20 mm T18-shaft part. The PCB uses the corresponding
+  `RotaryEncoder_Alps_EC11E-Switch_Vertical_H20mm-keebio_modified` footprint.
+  Because EC11 variants differ, dry-fit the exact supplier part and verify one
+  firmware event per detent before soldering both boards.
+
+The custom reversible footprints do not all carry complete courtyard data, so
+the first pair must still be dry-fitted with the exact Helios headers, OLED,
+TRRS jack, hotswap sockets, LEDs, encoder, plate, and case. The repository's
+explicit geometry checks cover the known Alpha failures but cannot validate a
+supplier substitution's plastic body or connector mouth.
 
 Run:
 
