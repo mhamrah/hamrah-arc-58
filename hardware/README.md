@@ -135,9 +135,9 @@ Automated checks currently prove:
 - zero unrouted connections; and
 - zero shorts, crossings, copper/hole/mask/silkscreen clearance violations.
 
-KiCad reports six reviewed reversible-pad endpoint warnings and no dangling-via
-warnings. The verifier pins their exact count so a change fails CI-style
-verification; connectivity analysis still reports zero unrouted nets.
+KiCad reports no DRC warnings, including no dangling tracks or vias. The
+verifier rejects any new warning and connectivity analysis reports zero
+unrouted nets.
 
 The fabrication audit additionally pins 0.20 mm minimum tracks, approved
 0.40/0.20 mm and 0.60/0.30 mm tented-via profiles, and at least 0.25 mm of

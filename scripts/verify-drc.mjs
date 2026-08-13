@@ -11,9 +11,7 @@ const board = 'arc58-reversible.kicad_pcb';
 const boardPath = join(root, 'hardware', 'kicad', board);
 const reportDir = mkdtempSync(join(tmpdir(), 'arc58-drc-'));
 const report = join(reportDir, `${board}.json`);
-const reviewedWarnings = new Map([
-  ['track_dangling', 6],
-]);
+const reviewedWarnings = new Map();
 
 function fail(message) {
   throw new Error(`FAIL: ${message}`);
@@ -62,7 +60,7 @@ try {
 
   console.log(
     `PASS: ${board} — zero unrouted/electrical/clearance/mask/silkscreen violations; ` +
-    '6 reviewed reversible-pad endpoint warnings match the pinned baseline.',
+    'zero KiCad DRC warnings.',
   );
 } finally {
   rmSync(reportDir, { recursive: true, force: true });

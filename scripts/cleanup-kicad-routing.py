@@ -15,6 +15,26 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_BOARD = ROOT / "hardware" / "kicad" / "arc58-reversible.kicad_pcb"
 THUMB_BOUNDS = (65.0, 150.0, 110.0, 180.0)
 DEFAULT_TOLERANCE_MM = 0.20
+LEGACY_DANGLING_TRACK_REPLACEMENTS = {
+    "00000000-0000-0000-0000-000060136188": (
+        (157.533, 47.464),
+        (160.457, 47.464),
+    ),
+    "2f3245e9-a5be-48ea-ab72-9c50b6b5320f": None,
+    "44506592-aaa0-4a51-bf8d-733d28b023c4": (
+        (133.04201, 81.93253),
+        (133.042, 77.4153),
+    ),
+    "8b5b10a8-dbaf-42e2-823b-3b749261eed6": None,
+    "f5de7c28-3e94-4542-93ee-229029dc3eb4": (
+        (156.49862, 99.194106),
+        (156.499, 99.8748),
+    ),
+    "fb26f3a8-1cba-4c44-8e25-ca31d82a04b5": (
+        (126.689, 99.473),
+        (127.46186, 98.699989),
+    ),
+}
 
 # These routes pass close to existing pads, holes, or vias. Smaller tolerances
 # retain their reviewed clearance while still collapsing collinear fragments.
@@ -161,10 +181,28 @@ def replace_exact_u_turn(
 
 def simplify_routes(
     board: pcbnew.BOARD, tolerance_mm: float
-) -> tuple[int, int, int, int, int, int, int, int, int, int]:
+) -> tuple[int, int, int, int, int, int, int, int, int, int, int]:
     all_items = list(board.GetTracks())
     tracks = [item for item in all_items if type(item).__name__ == "PCB_TRACK"]
     vias = [item for item in all_items if type(item).__name__ == "PCB_VIA"]
+    dangling_tracks = [
+        track
+        for track in tracks
+        if track.m_Uuid.AsString() in LEGACY_DANGLING_TRACK_REPLACEMENTS
+    ]
+    for track in dangling_tracks:
+        replacement = LEGACY_DANGLING_TRACK_REPLACEMENTS[track.m_Uuid.AsString()]
+        board.Remove(track)
+        if replacement is not None:
+            add_track(
+                board,
+                tuple(int(round(value * 1_000_000)) for value in replacement[0]),
+                tuple(int(round(value * 1_000_000)) for value in replacement[1]),
+                track.GetWidth(),
+                track.GetLayer(),
+                track.GetNetCode(),
+            )
+    tracks = [track for track in tracks if track not in dangling_tracks]
     legacy_silkscreen = []
     for drawing in board.GetDrawings():
         if (
@@ -289,9 +327,8 @@ def simplify_routes(
         ],
     )
 
-    # Exact non-zero duplicates do not add connectivity and can create narrow
-    # rendering artifacts. Zero-length endpoint records are retained because
-    # KiCad uses several of them on the reversible pads.
+    # Exact duplicates and zero-length records add no connectivity and can
+    # create rendering artifacts or false dangling-track warnings.
     unique: dict[tuple[object, ...], object] = {}
     duplicates = []
     for track in tracks:
@@ -303,7 +340,7 @@ def simplify_routes(
             min(start, end),
             max(start, end),
         )
-        if start != end and key in unique:
+        if start == end or key in unique:
             duplicates.append(track)
         else:
             unique[key] = track
@@ -415,6 +452,7 @@ def simplify_routes(
         sw20_u_turn,
         col3_detour,
         enc_a_detour,
+        len(dangling_tracks),
         len(legacy_silkscreen),
     )
 
@@ -437,6 +475,7 @@ def main() -> None:
         sw20_u_turn,
         col3_detour,
         enc_a_detour,
+        dangling_tracks,
         silkscreen,
     ) = simplify_routes(board, args.tolerance)
     pcbnew.SaveBoard(str(args.output), board)
@@ -449,6 +488,7 @@ def main() -> None:
         f"{sw20_u_turn} SW20 U-turn segments replaced, "
         f"{col3_detour} COL3 detour segments replaced, "
         f"{enc_a_detour} ENC_A detour segments replaced, "
+        f"{dangling_tracks} dangling legacy tracks removed, "
         f"{silkscreen} legacy silkscreen bars removed"
     )
 

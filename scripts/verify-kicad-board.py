@@ -529,6 +529,8 @@ for footprint in board.GetFootprints():
 allowed_vias = {(0.4, 0.2), (0.6, 0.3)}
 for item in board.GetTracks():
     if type(item).__name__ == "PCB_TRACK":
+        if item.GetStart() == item.GetEnd():
+            fail(f"{item.GetNetname()}: zero-length copper segment remains")
         if item.GetWidth() < pcbnew.FromMM(0.20):
             fail(f"{item.GetNetname()}: track width is below 0.20 mm")
         continue
