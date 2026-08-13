@@ -35,6 +35,13 @@ LEGACY_DANGLING_TRACK_REPLACEMENTS = {
         (127.46186, 98.699989),
     ),
 }
+LEGACY_REDUNDANT_TRACK_UUIDS = {
+    "113bd33c-d0ed-477b-b3bc-8dc0355b94fd",
+    "6f424081-cc9d-4925-923c-727dfa0ebb3c",
+    "ace78415-9750-4525-a875-0b8619327613",
+    "b7b15ec5-1e71-45c5-bd05-66c008ebae8f",
+    "f9117c44-164c-4637-a58b-b1d391c4ecd3",
+}
 
 # These routes pass close to existing pads, holes, or vias. Smaller tolerances
 # retain their reviewed clearance while still collapsing collinear fragments.
@@ -115,6 +122,7 @@ def replace_exact_chain(
     net_name: str,
     layer: int,
     points_mm: list[tuple[float, float]],
+    replacement_points_mm: list[tuple[float, float]] | None = None,
 ) -> int:
     """Replace one exact, unbranched detour with its direct connection."""
     # Round explicitly to KiCad's integer-nanometre grid. pcbnew.FromMM()
@@ -123,7 +131,10 @@ def replace_exact_chain(
         int(round(value * 1_000_000)) for value in coordinates
     )
     points = [to_internal(coordinates) for coordinates in points_mm]
-    entry, exit_point = points[0], points[-1]
+    replacement_points = [
+        to_internal(coordinates)
+        for coordinates in (replacement_points_mm or [points_mm[0], points_mm[-1]])
+    ]
     old_geometry = {
         (min(start, end), max(start, end))
         for start, end in zip(points, points[1:])
@@ -148,16 +159,10 @@ def replace_exact_chain(
     for track in old_tracks:
         board.Remove(track)
         tracks.remove(track)
-    tracks.append(
-        add_track(
-            board,
-            entry,
-            exit_point,
-            widths.pop(),
-            layer,
-            net_codes.pop(),
-        )
-    )
+    width = widths.pop()
+    net_code = net_codes.pop()
+    for start, end in zip(replacement_points, replacement_points[1:]):
+        tracks.append(add_track(board, start, end, width, layer, net_code))
     return len(old_tracks)
 
 
@@ -181,7 +186,7 @@ def replace_exact_u_turn(
 
 def simplify_routes(
     board: pcbnew.BOARD, tolerance_mm: float
-) -> tuple[int, int, int, int, int, int, int, int, int, int, int]:
+) -> tuple[int, int, int, int, int, int, int, int, int, int, int, int, int]:
     all_items = list(board.GetTracks())
     tracks = [item for item in all_items if type(item).__name__ == "PCB_TRACK"]
     vias = [item for item in all_items if type(item).__name__ == "PCB_VIA"]
@@ -203,6 +208,14 @@ def simplify_routes(
                 track.GetNetCode(),
             )
     tracks = [track for track in tracks if track not in dangling_tracks]
+    redundant_tracks = [
+        track
+        for track in tracks
+        if track.m_Uuid.AsString() in LEGACY_REDUNDANT_TRACK_UUIDS
+    ]
+    for track in redundant_tracks:
+        board.Remove(track)
+    tracks = [track for track in tracks if track not in redundant_tracks]
     legacy_silkscreen = []
     for drawing in board.GetDrawings():
         if (
@@ -324,6 +337,25 @@ def simplify_routes(
             (107.7172, 108.3672),
             (109.0, 109.65),
             (106.0, 109.65),
+        ],
+    )
+    col3_corner = replace_exact_chain(
+        board,
+        tracks,
+        "COL3",
+        pcbnew.B_Cu,
+        [
+            (86.0, 124.6),
+            (86.0, 131.6),
+            (85.672577, 132.64773),
+            (85.672577, 135.04773),
+            (86.75, 134.5),
+            (93.0, 134.5),
+        ],
+        [
+            (86.0, 124.6),
+            (86.0, 134.5),
+            (93.0, 134.5),
         ],
     )
 
@@ -452,7 +484,9 @@ def simplify_routes(
         sw20_u_turn,
         col3_detour,
         enc_a_detour,
+        col3_corner,
         len(dangling_tracks),
+        len(redundant_tracks),
         len(legacy_silkscreen),
     )
 
@@ -475,7 +509,9 @@ def main() -> None:
         sw20_u_turn,
         col3_detour,
         enc_a_detour,
+        col3_corner,
         dangling_tracks,
+        redundant_tracks,
         silkscreen,
     ) = simplify_routes(board, args.tolerance)
     pcbnew.SaveBoard(str(args.output), board)
@@ -488,7 +524,9 @@ def main() -> None:
         f"{sw20_u_turn} SW20 U-turn segments replaced, "
         f"{col3_detour} COL3 detour segments replaced, "
         f"{enc_a_detour} ENC_A detour segments replaced, "
+        f"{col3_corner} COL3 corner segments replaced, "
         f"{dangling_tracks} dangling legacy tracks removed, "
+        f"{redundant_tracks} redundant legacy tracks removed, "
         f"{silkscreen} legacy silkscreen bars removed"
     )
 

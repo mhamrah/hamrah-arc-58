@@ -755,6 +755,64 @@ for (net_name, layer), turnaround in legacy_route_turnarounds.items():
     ):
         fail(f"legacy {net_name} route turnaround remains at {turnaround}")
 
+# The SW26 COL4 route already reaches its layer-change via through the inward
+# branch. This endpoint belonged to a second branch that looped toward the
+# board edge and touched same-net copper without serving a pad or via.
+legacy_col4_tail_endpoint = (80.720728, 170.104978)
+if any(
+    track.GetNetname() == "COL4"
+    and track.GetLayer() == pcbnew.B_Cu
+    and any(
+        close(pcbnew.ToMM(endpoint.x), legacy_col4_tail_endpoint[0])
+        and close(pcbnew.ToMM(endpoint.y), legacy_col4_tail_endpoint[1])
+        for endpoint in (track.GetStart(), track.GetEnd())
+    )
+    for track in board.GetTracks()
+):
+    fail("legacy redundant COL4 tail remains beside SW26")
+
+# Keep the COL3 run beside the thumb cluster as a simple right-angle route.
+# The former five-piece kink stepped left and then doubled back to the same
+# horizontal run without clearing any copper, pad, via, or board feature.
+legacy_col3_corner_points = {
+    (86.0, 131.6),
+    (85.672577, 132.64773),
+    (85.672577, 135.04773),
+    (86.75, 134.5),
+}
+if any(
+    track.GetNetname() == "COL3"
+    and track.GetLayer() == pcbnew.B_Cu
+    and any(
+        any(
+            close(pcbnew.ToMM(endpoint.x), point[0])
+            and close(pcbnew.ToMM(endpoint.y), point[1])
+            for point in legacy_col3_corner_points
+        )
+        for endpoint in (track.GetStart(), track.GetEnd())
+    )
+    for track in board.GetTracks()
+):
+    fail("legacy COL3 kink remains beside the thumb cluster")
+expected_col3_corner_segments = {
+    tuple(sorted(((86.0, 124.6), (86.0, 134.5)))),
+    tuple(sorted(((86.0, 134.5), (93.0, 134.5)))),
+}
+actual_col3_corner_segments = {
+    tuple(
+        sorted(
+            (
+                (round(pcbnew.ToMM(track.GetStart().x), 6), round(pcbnew.ToMM(track.GetStart().y), 6)),
+                (round(pcbnew.ToMM(track.GetEnd().x), 6), round(pcbnew.ToMM(track.GetEnd().y), 6)),
+            )
+        )
+    )
+    for track in board.GetTracks()
+    if track.GetNetname() == "COL3" and track.GetLayer() == pcbnew.B_Cu
+}
+if not expected_col3_corner_segments.issubset(actual_col3_corner_segments):
+    fail("simple COL3 right-angle route is missing beside the thumb cluster")
+
 # Prevent the dense legacy stair-step polylines from returning. This region
 # includes the four thumb switches and their routes back toward the matrix.
 thumb_tracks = []
