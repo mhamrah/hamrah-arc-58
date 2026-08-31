@@ -1,3 +1,3 @@
-CONVERT_TO = helios
+CONVERT_TO = elite_pi
 OLED_DRIVER = ssd1306
 OLED_TRANSPORT = i2c

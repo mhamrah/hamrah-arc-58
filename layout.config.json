@@ -1,6 +1,6 @@
 {
   "name": "Hamrah Arc 58",
-  "revision": "Beta",
+  "revision": "Gamma",
   "units": "mm",
   "switch": {
     "type": "Kailh Choc v1 (PG1350)",
@@ -71,7 +71,22 @@
     "dropFromLowerColumnKey": 19,
     "step": 21.25,
     "segmentAngles": [16, 36, 45],
-    "keyRotations": [10, 30, 45, 55]
+    "keyRotations": [10, 30, 45, 55],
+    "diodePlacement": {
+      "package": "SOD-123",
+      "localOffsetX": 0,
+      "localOffsetY": -10.5,
+      "perSwitchLocalOffsetY": {
+        "27": -11.5,
+        "29": -14.5
+      },
+      "perSwitchOrientationDelta": {
+        "29": 180
+      },
+      "bodyWidth": 5.4,
+      "bodyHeight": 1.5,
+      "nominalSocketBodyGap": 1.675
+    }
   },
   "preview": {
     "splitGap": 58,

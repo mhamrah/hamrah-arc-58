@@ -587,7 +587,7 @@ if keyboard.get("matrix_pins") != {
     fail("QMK matrix pins do not match U1 row/column nets")
 split = keyboard.get("split", {})
 if split.get("serial") != {"driver": "vendor", "pin": "D2"}:
-    fail("QMK split serial must use Helios D2 vendor transport")
+    fail("QMK split serial must use controller D2 vendor transport")
 if split.get("transport", {}).get("protocol") != "serial":
     fail("QMK split transport must be serial")
 if split.get("handedness", {}).get("pin") != "D4":
@@ -612,8 +612,8 @@ if "#define I2C1_SDA_PIN D1" not in config_h or "#define I2C1_SCL_PIN D0" not in
     fail("QMK OLED I2C pins do not match U1 OLED_SDA/OLED_SCL")
 if "SPLIT_HAND_PIN_LOW_IS_LEFT" in config_h:
     fail("QMK handedness polarity must remain high=left and low=right")
-if "CONVERT_TO = helios" not in (FIRMWARE / "rules.mk").read_text():
-    fail("QMK build must target the KEEBD Helios converter")
+if "CONVERT_TO = elite_pi" not in (FIRMWARE / "rules.mk").read_text():
+    fail("QMK build must target the Keebio Elite-Pi converter")
 
 expected_buffer = {"1": "GND", "2": "RGB_MCU", "3": "GND", "4": "RGB_5V", "5": "VBUS"}
 for number, expected in expected_buffer.items():
@@ -665,6 +665,43 @@ for switch_number in KEY_SWITCHES:
         fail(f"D{switch_number}: cathode pad 1 must connect to a row")
     if not net(switch, "6").startswith("COL"):
         fail(f"SW{switch_number}: matrix pad must connect to a column")
+
+# Rev Gamma moves the four thumb diodes from the irregular Rev Beta offsets
+# to reviewed, solderable positions behind their sockets.  D27 stays another
+# millimetre out to clear COL4, while D29 gets the largest gap and flips 180
+# degrees so its two routed nets do not cross on either reversible face.
+thumb_diode = layout["thumbArc"]["diodePlacement"]
+if thumb_diode["nominalSocketBodyGap"] < 1.5:
+    fail("thumb-diode nominal socket-body gap must remain at least 1.5 mm")
+for switch_number in range(26, 30):
+    switch = footprints[f"SW{switch_number}"]
+    diode = footprints[f"D{switch_number}"]
+    switch_x, switch_y = position_mm(switch)
+    local_x = thumb_diode["localOffsetX"]
+    local_y = thumb_diode.get("perSwitchLocalOffsetY", {}).get(
+        str(switch_number), thumb_diode["localOffsetY"]
+    )
+    angle = math.radians(-switch.GetOrientationDegrees())
+    expected_x = switch_x + local_x * math.cos(angle) - local_y * math.sin(angle)
+    expected_y = switch_y + local_x * math.sin(angle) + local_y * math.cos(angle)
+    actual_x, actual_y = position_mm(diode)
+    if not close(actual_x, expected_x, 0.002) or not close(actual_y, expected_y, 0.002):
+        fail(
+            f"D{switch_number}: Gamma placement {actual_x:.3f},{actual_y:.3f} "
+            f"does not match {expected_x:.3f},{expected_y:.3f}"
+        )
+    orientation_delta = thumb_diode.get("perSwitchOrientationDelta", {}).get(
+        str(switch_number), 0
+    )
+    expected_orientation = (
+        switch.GetOrientationDegrees() + orientation_delta
+    ) % 360
+    actual_orientation = diode.GetOrientationDegrees() % 360
+    if abs((actual_orientation - expected_orientation + 180) % 360 - 180) > 0.01:
+        fail(
+            f"D{switch_number}: Gamma orientation {actual_orientation:.1f} "
+            f"does not match {expected_orientation:.1f}"
+        )
 
 # Follow data by net name rather than reference order; Sofle snakes its RGB
 # path through columns and the Arc thumb cluster.
@@ -854,7 +891,7 @@ if not list(board.GetTracks()):
 print(
     f"PASS: {BOARD.name} — {len(footprints)} footprints, "
     f"{len(list(board.GetTracks()))} copper items, 28-key RGB chain, "
-    f"rounded Rev {layout['revision']} geometry and Helios QMK mapping matched, "
+    f"rounded Rev {layout['revision']} geometry and controller QMK mapping matched, "
     "matrix/controller/OLED/TRRS "
     "nets present, zero unrouted connections"
 )

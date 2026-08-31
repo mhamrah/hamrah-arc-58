@@ -134,7 +134,7 @@ function assertSimplePolygon(polygon, label) {
 
 test("design is named for its 58 press inputs", () => {
   assert.equal(config.name, "Hamrah Arc 58");
-  assert.equal(config.revision, "Beta");
+  assert.equal(config.revision, "Gamma");
   assert.equal(keys.length * 2, 58);
 });
 

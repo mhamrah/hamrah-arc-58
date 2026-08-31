@@ -1,5 +1,5 @@
 designator,quantity,part,footprint_or_form,notes
-PCB1-PCB2,2,Hamrah Arc 58 Rev Beta reversible PCB,2-layer 1.6 mm FR4,Order two identical copies; B.Cu faces keycaps on left with +10/+30/+45/+55 degree thumb axes and F.Cu faces keycaps on right with mirrored axes
+PCB1-PCB2,2,Hamrah Arc 58 Rev Gamma reversible PCB,2-layer 1.6 mm FR4,Order two identical copies; B.Cu faces keycaps on left with +10/+30/+45/+55 degree thumb axes and F.Cu faces keycaps on right with mirrored axes
 U1,2,KEEBD Helios RP2040 controller,Pro Micro-compatible module,Socketed; install on the face toward keycaps with USB-C facing the board edge; use L-marked B.Cu holes on left and R-marked F.Cu holes on right
 U1_SOCKET,48,2.54 mm low-profile socket pin or header contact,Through-hole,24 contacts per controller; choose mating headers compatible with Helios; do not fill both offset header positions
 SW1-SW56,56,Kailh Choc v1 PG1350 switch,Choc v1,Switches plug into hotswap sockets and are not soldered to the PCB
