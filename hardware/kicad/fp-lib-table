@@ -1,4 +1,4 @@
 (fp_lib_table
   (version 7)
-  (lib (name "arc58-reversible")(type "KiCad")(uri "${KIPRJMOD}/arc58-reversible.pretty")(options "")(descr "Arc 58 Rev Beta reversible Choc hotswap and RGB footprints"))
+  (lib (name "arc58-reversible")(type "KiCad")(uri "${KIPRJMOD}/arc58-reversible.pretty")(options "")(descr "Arc 58 Rev Gamma reversible Choc hotswap and RGB footprints"))
 )

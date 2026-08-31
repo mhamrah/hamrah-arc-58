@@ -1,6 +1,6 @@
-# Arc 58 Rev Beta fabrication notes
+# Arc 58 Rev Gamma fabrication notes
 
-`arc58-reversible-pcb-rev-beta.zip` contains one two-layer reversible PCB. Order
+`arc58-reversible-pcb-rev-gamma.zip` contains one two-layer reversible PCB. Order
 quantity two; do not mirror the Gerbers at the fabricator. In the assembled
 keyboard, B.Cu faces the keycaps on the left half and F.Cu faces the keycaps on
 the right half. Follow `hardware/README.md` for the component-side table.
@@ -48,6 +48,12 @@ files.
 Confirm each 18 mm encoder knob has equal 9.17 mm clearance to the nearest C6
 keycap edge and the curved inner PCB edge. Confirm the relocated inner H4
 mounting point matches the regenerated PCB, plate, and case files.
+
+Inspect D26-D29 on both assembly faces. Their bodies must sit tangent to the
+thumb fan with clear space between each SOD-123 package and the Choc hotswap
+socket. D27 and D29 intentionally sit farther behind their switches where the
+reversible COL4 route requires extra assembly clearance; D29's cathode is on
+the opposite tangent end from D26-D28. Always follow the local cathode bar.
 
 Run `npm run verify` immediately before regenerating or ordering. A passed DRC
 does not replace a physical prototype: order a small first batch and complete

@@ -1,4 +1,4 @@
-# Arc 58 Rev Beta bring-up checklist
+# Arc 58 Rev Gamma bring-up checklist
 
 Do not connect the two halves together or connect a computer until the first
 three inspections pass. This checklist is the acceptance gate for calling the
@@ -10,6 +10,9 @@ hardware prototype working.
 - Confirm all 28 routed RGB apertures are open and centered under their switch;
   reject any panel with a missing aperture or an unremoved routing tab.
 - Confirm every diode has its cathode band aligned with the PCB cathode mark.
+- Dry-fit all four thumb hotswap sockets before soldering D26-D29. Confirm no
+  socket body touches a diode package and that both diode pads remain easy to
+  reach with a normal iron tip.
 - Confirm the 74AHCT1G125 orientation and that its `/OE` pad is tied to GND.
 - With a meter, verify `VCC` to `GND` is not shorted on each unpowered half.
 - Verify the TRRS cable straight through: sleeve is `GND`, ring 2 is `VBUS`,

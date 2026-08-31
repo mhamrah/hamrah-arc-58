@@ -3,6 +3,7 @@
   "keyboard_name": "Hamrah Arc 58",
   "maintainer": "mhamrah",
   "url": "https://github.com/mhamrah/hamrah-arc-58",
+  "pin_compatible": "promicro",
   "development_board": "promicro",
   "diode_direction": "COL2ROW",
   "matrix_pins": {
@@ -66,6 +67,14 @@
   },
   "rgb_matrix": {
     "driver": "ws2812",
+    "animations": {
+      "cycle_up_down": true,
+      "cycle_out_in": true,
+      "cycle_pinwheel": true,
+      "dual_beacon": true,
+      "rainbow_pinwheels": true,
+      "hue_breathing": true
+    },
     "split_count": [
       28,
       28

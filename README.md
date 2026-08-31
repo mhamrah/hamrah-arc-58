@@ -14,7 +14,7 @@ Each half has 29 press inputs:
 
 ## Layout preview
 
-[![Hamrah Arc 58 Rev Beta rounded layout](output/keyboard-layout.svg)](output/keyboard-layout.svg)
+[![Hamrah Arc 58 Rev Gamma rounded layout](output/keyboard-layout.svg)](output/keyboard-layout.svg)
 
 [Open the full-size SVG](output/keyboard-layout.svg)
 
@@ -65,21 +65,26 @@ hardware/kicad/arc58-reversible.kicad_pro
 hardware/kicad/arc58-reversible.kicad_pcb
 ```
 
-Order two copies of the same Rev Beta PCB. In the assembled keyboard, the B.Cu
+Order two copies of the same Rev Gamma PCB. In the assembled keyboard, the B.Cu
 face points toward the keycaps on the left half and the F.Cu face points toward
 the keycaps on the right half. Detailed component-side selection, verified pin
 mapping, DRC status, and safety notes are in `hardware/README.md`; the pair BOM is
-`hardware/BOM-REV-BETA.csv`.
+`hardware/BOM-REV-GAMMA.csv`.
 
-Rev Beta replaces the original Rev Alpha fabrication files. Do not build or
-reorder Rev Alpha: it has no routed optical/package apertures for per-key RGB,
-its TRRS jack points toward the encoder instead of the cable exit, and its
-four thumb-switch axes are mirrored to the wrong physical angles. Its 20.5 mm
-thumb centers also fail the conservative 18 x 18 mm clearance requirement. Rev
-Alpha may be electrically bench-tested with every RGB LED omitted and without
-an enclosure, but it does not implement the intended keyboard. Do not hand-cut
-a populated PCB; use Rev Beta for the corrected thumb fan, per-key RGB, and
-unobstructed TRRS cable access.
+Rev Gamma supersedes Rev Beta without changing any switch center, plate, or
+case geometry. It moves D26-D29 into solder-friendly positions beside the four
+thumb sockets, gives the inner D29 extra socket-body clearance, and reroutes
+the affected reversible copper with no jumper. Rev Beta can be electrically
+prototyped, but its inner thumb diode crowds the Choc socket and its outer
+thumb diodes require awkward long reaches; do not reorder it.
+
+Do not build or reorder Rev Alpha: it has no routed optical/package apertures
+for per-key RGB, its TRRS jack points toward the encoder instead of the cable
+exit, and its four thumb-switch axes are mirrored to the wrong physical
+angles. Its 20.5 mm thumb centers also fail the conservative 18 x 18 mm
+clearance requirement. Rev Alpha may be electrically bench-tested with every
+RGB LED omitted and without an enclosure, but it does not implement the
+intended keyboard.
 
 ## Prototype status
 
@@ -99,7 +104,7 @@ approximately 3.44 mm. QMK is configured for
 Helios, a one-wire TRRS split, OLED, encoder, and a 28+28 RGB Matrix. The
 default firmware also compiles successfully against current upstream QMK; the
 ignored local UF2 is generated at
-`output/firmware/arc58-rev-beta-default.uf2`.
+`output/firmware/arc58-rev-gamma-default.uf2`.
 
 This is still a prototype until a fabricated pair passes
 `hardware/BRING-UP-CHECKLIST.md`. Choc switches plug into soldered hotswap

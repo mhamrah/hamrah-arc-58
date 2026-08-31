@@ -1,7 +1,7 @@
-# Rev Beta plates and enclosure
+# Rev Gamma plates and enclosure
 
 The repository generates two vendor-ready manufacturing packages. They share
-the exact Rev Beta PCB outline and six M2 mounting positions, but the left and
+the exact Rev Gamma PCB outline and six M2 mounting positions, but the left and
 right parts are separate because the physical halves are mirrored. Do not ask a
 vendor to mirror any supplied file.
 
@@ -10,7 +10,7 @@ vendor to mirror any supplied file.
 Run `npm run generate:enclosures`, then upload:
 
 ```text
-output/manufacturing/arc58-acrylic-plates-rev-beta.zip
+output/manufacturing/arc58-acrylic-plates-rev-gamma.zip
 ```
 
 The package contains left/right DXF cut files, SVG previews, an order README,
@@ -39,7 +39,7 @@ opening provides reset access.
 Upload this package to a CNC shop:
 
 ```text
-output/manufacturing/arc58-cnc-aluminum-case-rev-beta.zip
+output/manufacturing/arc58-cnc-aluminum-case-rev-gamma.zip
 ```
 
 The selected architecture is a low-profile machined bottom chassis with a
@@ -81,7 +81,7 @@ not prescribe a decorative external screw head or rubber-foot system.
 ## Prototype requirement
 
 These packages are mechanically checked and the STEP files are re-imported as
-valid solids during generation. They remain Rev Beta: first order one
+valid solids during generation. They remain Rev Gamma: first order one
 prototype pair, dry-fit the PCB and switches, and complete
 `BRING-UP-CHECKLIST.md` before ordering finished cases in quantity.
 
