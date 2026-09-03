@@ -18,7 +18,9 @@ Each EC11 encoder is centered in the empty bay between the nearest 16.5 mm C6
 keycap edge and the curved inner PCB edge. With the specified 18 mm knob, this
 leaves 9.17 mm nominal clearance on both sides. H4 moves farther down the inner
 edge so its CNC boss retains 3.5 mm clearance from the knob envelope and 3.1
-mm from the case outline.
+mm from the case outline. The top plate uses a 12.5 x 12.5 mm square opening
+around the encoder's 12.0 x 11.6 mm body rather than a shaft-only round hole,
+so the plate can sit at its intended height above the PCB.
 
 Rev Gamma retains the five fabrication corrections introduced in Rev Beta:
 every reverse-mount
@@ -36,8 +38,8 @@ Rev Beta. D29 was too close to the inner Choc hotswap socket, while D26-D28
 drifted progressively farther from their switches. Gamma places D26-D29 from
 reviewed switch-local offsets, gives D27 and D29 extra clearance for the
 reversible COL4 route, flips D29's pad order along the same tangent, and uses
-local vias instead of a jumper. No switch, mounting-hole, plate, or enclosure
-geometry changed from Beta. A Beta board may be bench-tested with careful
+local vias instead of a jumper. No switch-center, mounting-hole, PCB-outline,
+or enclosure-perimeter geometry changed from Beta. A Beta board may be bench-tested with careful
 diode rework, but it should not be reordered.
 
 Do not build or reorder Rev Alpha. It can only be electrically bench-tested

@@ -171,7 +171,7 @@
     <g class="key key--encoder" transform="translate(149.866 102.206)">
       <circle class="encoder-knob" r="9" />
       <rect class="encoder-body" x="-6" y="-5.8" width="12" height="11.6" rx="1" />
-      <circle class="cutout" r="3.6" />
+      <rect class="cutout" x="-6.25" y="-6.25" width="12.5" height="12.5" />
       <circle class="center" r="0.6" />
       <text y="0.9">L·ENC</text>
     </g>
@@ -347,7 +347,7 @@
     <g class="key key--encoder" transform="translate(277.732 102.206)">
       <circle class="encoder-knob" r="9" />
       <rect class="encoder-body" x="-6" y="-5.8" width="12" height="11.6" rx="1" />
-      <circle class="cutout" r="3.6" />
+      <rect class="cutout" x="-6.25" y="-6.25" width="12.5" height="12.5" />
       <circle class="center" r="0.6" />
       <text y="0.9">R·ENC</text>
     </g>

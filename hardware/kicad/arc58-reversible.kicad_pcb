@@ -10238,13 +10238,13 @@
 	(footprint "Reversible_Diode_SOD123"
 		(layer "F.Cu")
 		(uuid "7683dbd4-cb59-45b6-950f-c8780643a7be")
-		(at 133.592898 140.429712 10)
+		(at 130.83912 137.60264 10)
 		(descr "One diode, mountable on either board side; pad geometry follows the Sofle Choc reversible diode")
 		(property "Reference" "D29"
 			(at 0 -1.35 10)
 			(layer "F.SilkS")
 			(hide yes)
-			(uuid "f06fb108-1ee1-47e0-b16a-5c24001115b9")
+			(uuid "de425053-2053-41ba-92d4-ecdf013c54da")
 			(effects
 				(font
 					(size 0.65 0.65)
@@ -10256,7 +10256,7 @@
 			(at 0 1.35 10)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "6b904bad-048b-45da-a591-42a02a5c5618")
+			(uuid "284dc41d-ce47-4d04-90ac-0a4452523dde")
 			(effects
 				(font
 					(size 0.8 0.8)
@@ -10268,7 +10268,7 @@
 			(at 0 0 10)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "a1f9be1c-c2ce-4fc8-ab2f-0a699efc3320")
+			(uuid "75f55093-9aa4-4dc0-9cf2-b32caa6ee6fe")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10279,7 +10279,7 @@
 			(at 0 0 10)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "fb9ef2f3-124e-491b-b590-c952e2c5b750")
+			(uuid "260ff82e-1e1e-4336-b4c8-5e67de38f408")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -35114,8 +35114,8 @@
 		(uuid "04c1187f-ae0b-467c-adda-f47a5bae7500")
 	)
 	(segment
-		(start 131.844864 140.737937)
-		(end 130.860056 140.911585)
+		(start 129.091086 137.910865)
+		(end 128.204759 138.067148)
 		(width 0.25)
 		(layer "F.Cu")
 		(net "ROW4")
@@ -35147,7 +35147,7 @@
 	)
 	(segment
 		(start 118.734421 139.46306)
-		(end 130.860056 140.911585)
+		(end 129.091086 137.910865)
 		(width 0.25)
 		(layer "F.Cu")
 		(net "ROW4")
@@ -35266,12 +35266,12 @@
 		(uuid "69609915-6b3d-4180-8c4c-e2550ae14220")
 	)
 	(via
-		(at 130.860056 140.911585)
+		(at 128.204759 138.067148)
 		(size 0.4)
 		(drill 0.2)
 		(layers "F.Cu" "B.Cu")
 		(net "ROW4")
-		(uuid "713501fe-0dd2-4e63-b4c5-5e493a86dc0a")
+		(uuid "29cceb15-0cac-45f8-adc4-4a5d933ed659")
 	)
 	(via
 		(at 103.90408 150.313683)
@@ -35426,8 +35426,8 @@
 		(uuid "59111f51-a166-40b9-9ce8-1eafce8d8296")
 	)
 	(segment
-		(start 131.844864 140.737937)
-		(end 130.860056 140.911585)
+		(start 129.091086 137.910865)
+		(end 128.204759 138.067148)
 		(width 0.25)
 		(layer "B.Cu")
 		(net "ROW4")
@@ -40134,7 +40134,7 @@
 		(uuid "323ac90f-a4f7-41a9-9b05-e7029f397018")
 	)
 	(segment
-		(start 107.205188 118.068293)
+		(start 100.905512 117)
 		(end 99.837219 118.068293)
 		(width 0.25)
 		(layer "F.Cu")
@@ -40250,8 +40250,8 @@
 		(uuid "7442231e-eccc-4bcf-aa0c-333d50cfdca8")
 	)
 	(segment
-		(start 111.842 112.946)
-		(end 107.205188 118.068293)
+		(start 111.842 117)
+		(end 100.905512 117)
 		(width 0.25)
 		(layer "F.Cu")
 		(net "COL2")
@@ -40373,14 +40373,6 @@
 		(layer "F.Cu")
 		(net "COL2")
 		(uuid "d21eb987-bd4e-446a-8eaa-186a06fe55c7")
-	)
-	(segment
-		(start 111.842 117)
-		(end 111.842 112.946)
-		(width 0.25)
-		(layer "F.Cu")
-		(net "COL2")
-		(uuid "d28625ac-b328-4e9e-873f-8a56e0a15fb2")
 	)
 	(segment
 		(start 185.6 50.6835)
@@ -66626,12 +66618,20 @@
 		(uuid "a6361c54-15b5-42b4-9e87-6813e14e0a63")
 	)
 	(segment
-		(start 135.340932 140.121487)
+		(start 132.587154 137.294415)
 		(end 135.427756 140.613891)
 		(width 0.25)
 		(layer "F.Cu")
 		(net "Net-(D29-Pad2)")
 		(uuid "bdd785bc-355c-40a7-b731-7d2a78184ac1")
+	)
+	(segment
+		(start 132.587154 137.294415)
+		(end 133.473481 137.138132)
+		(width 0.25)
+		(layer "F.Cu")
+		(net "Net-(D29-Pad2)")
+		(uuid "4d5c76fa-a937-46d6-a098-f2a1dc23c50b")
 	)
 	(via
 		(at 134.912862 132.472589)
@@ -66642,16 +66642,16 @@
 		(uuid "2723979d-b3e1-4ad1-8d0d-ecb4bff8eb60")
 	)
 	(via
-		(at 135.427756 140.613891)
+		(at 133.473481 137.138132)
 		(size 0.4)
 		(drill 0.2)
 		(layers "F.Cu" "B.Cu")
 		(net "Net-(D29-Pad2)")
-		(uuid "f6815cbf-0926-4cb1-8d5f-871171ceb0f6")
+		(uuid "d3a338d5-5786-477f-85ed-934a2e7db0dd")
 	)
 	(segment
-		(start 135.340932 140.121487)
-		(end 135.427756 140.613891)
+		(start 132.587154 137.294415)
+		(end 133.473481 137.138132)
 		(width 0.25)
 		(layer "B.Cu")
 		(net "Net-(D29-Pad2)")

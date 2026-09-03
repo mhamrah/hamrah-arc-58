@@ -28,7 +28,9 @@ hardware prototype working.
   centers leave visible clearance between all four installed Choc v1 keycaps.
 - Fit the 18 mm encoder knob and confirm it leaves approximately 9.17 mm of
   free space to both the nearest C6 cap and the curved inner PCB edge. Confirm
-  the relocated H4 fastener and boss do not obstruct finger access.
+  the relocated H4 fastener and boss do not obstruct finger access. Confirm
+  the top plate's 12.5 x 12.5 mm square opening passes over the EC11 body and
+  lets the plate sit flat at all six mounting points.
 - Confirm the Helios uses only the `L`-marked header holes on the B.Cu/left
   face or the `R`-marked holes on the F.Cu/right face.
 - Confirm R4 and R5 are populated on both PCBs; there is no hand-select jumper.

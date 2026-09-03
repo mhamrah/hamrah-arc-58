@@ -80,7 +80,7 @@ function svgComponent(key, side, offsetX, mirrorAxis = null) {
     <g class="${className}" transform="translate(${format(x)} ${format(y)})">
       <circle class="encoder-knob" r="${format(config.encoder.knobDiameter / 2)}" />
       <rect class="encoder-body" x="${format(-config.encoder.bodyWidth / 2)}" y="${format(-config.encoder.bodyHeight / 2)}" width="${config.encoder.bodyWidth}" height="${config.encoder.bodyHeight}" rx="1" />
-      <circle class="cutout" r="${format(config.encoder.plateHoleDiameter / 2)}" />
+      <rect class="cutout" x="${format(-config.encoder.plateCutout / 2)}" y="${format(-config.encoder.plateCutout / 2)}" width="${config.encoder.plateCutout}" height="${config.encoder.plateCutout}" />
       <circle class="center" r="0.6" />
       <text y="0.9">${side}${label}</text>
     </g>`;
@@ -228,7 +228,12 @@ function makePlateSvg(side = "left") {
   const cutouts = half.keys
     .map((key) => {
       if (key.group === "encoder") {
-        return `  <circle class="cut" data-key="${key.id}" cx="${format(key.x + offsetX)}" cy="${format(key.y + offsetY)}" r="${format(config.encoder.plateHoleDiameter / 2)}" />`;
+        const points = rectangleCorners(
+          key,
+          config.encoder.plateCutout,
+          config.encoder.plateCutout
+        ).map((point) => ({ x: point.x + offsetX, y: point.y + offsetY }));
+        return `  <polygon class="cut" data-key="${key.id}" points="${pointsAttribute(points)}" />`;
       }
       const points = rectangleCorners(
         key,
@@ -395,7 +400,14 @@ function makeDxf(side = "left") {
   for (const key of half.keys) {
     if (key.group === "encoder") {
       entities.push(
-        dxfCircle(key, config.encoder.plateHoleDiameter / 2, "ENCODER_CUTOUTS")
+        dxfPolyline(
+          rectangleCorners(
+            key,
+            config.encoder.plateCutout,
+            config.encoder.plateCutout
+          ),
+          "ENCODER_CUTOUTS"
+        )
       );
       continue;
     }

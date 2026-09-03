@@ -38,7 +38,7 @@
     "shaftProfile": "T18 knurled",
     "detents": 20,
     "knobDiameter": 18,
-    "plateHoleDiameter": 7.2,
+    "plateCutout": 12.5,
     "click": true
   },
   "rgb": {

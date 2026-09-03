@@ -158,7 +158,10 @@ test("a clickable encoder is mirrored onto both halves", () => {
     config.encoder.sofleFootprint,
     "SofleKeyboard-footprint:RotaryEncoder_Alps_EC11E-Switch_Vertical_H20mm-keebio_modified"
   );
-  assert.equal(config.encoder.plateHoleDiameter, 7.2);
+  assert.equal(config.encoder.plateCutout, 12.5);
+  assert.ok(config.encoder.plateCutout - config.encoder.bodyWidth >= 0.5);
+  assert.ok(config.encoder.plateCutout - config.encoder.bodyHeight >= 0.5);
+  assert.ok(config.encoder.plateCutout * Math.SQRT2 < config.encoder.knobDiameter);
   assert.equal(encoder.y, mirrored.y);
   assert.equal(encoder.rotation, -mirrored.rotation);
 });

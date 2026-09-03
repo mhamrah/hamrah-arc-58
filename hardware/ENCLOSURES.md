@@ -31,8 +31,10 @@ coupon.
 The large rounded Helios/OLED service area and the 17 x 10 mm TRRS cable path
 are boolean-merged into one continuous notch through the inner plate edge.
 This leaves one unambiguous cut contour and allows a molded cable to be
-inserted after assembly. Six 2.4 mm holes clear M2 fasteners. The 4.5 mm bottom
-opening provides reset access.
+inserted after assembly. A 12.5 x 12.5 mm square encoder opening clears the
+EC11 metal body so the plate can lie flat; the former 7.2 mm round opening
+cleared only the threaded shaft. Six 2.4 mm holes clear M2 fasteners. The 4.5
+mm bottom opening provides reset access.
 
 ## CNC aluminum case
 

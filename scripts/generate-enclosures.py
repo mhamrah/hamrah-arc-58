@@ -138,7 +138,12 @@ def make_switch_plate(geometry: dict) -> cq.Workplane:
     cut_depth = thickness + 2
     for key in geometry["keys"]:
         if key["group"] == "encoder":
-            cutter = cylinder((key["x"], key["y"]), CONFIG["encoder"]["plateHoleDiameter"], cut_depth, -1)
+            cutter = (
+                cq.Workplane("XY")
+                .transformed(offset=(key["x"], key["y"], -1), rotate=(0, 0, key["rotation"]))
+                .rect(CONFIG["encoder"]["plateCutout"], CONFIG["encoder"]["plateCutout"])
+                .extrude(cut_depth)
+            )
         else:
             cutter = (
                 cq.Workplane("XY")
@@ -327,7 +332,8 @@ layer; do not mirror files at the laser cutter.
 
 - Top plates: {ACRYLIC['topThickness']} mm cast acrylic, with 14.0 mm Choc v1 cutouts,
   one boolean-merged controller/OLED and {TRRS['plugClearanceDiameter']} mm-high TRRS edge notch,
-  an encoder opening, and 2.4 mm M2 clearance holes.
+  a {CONFIG['encoder']['plateCutout']} x {CONFIG['encoder']['plateCutout']} mm square EC11 body opening,
+  and 2.4 mm M2 clearance holes.
 - Bottom plates: {ACRYLIC['bottomThickness']} mm cast acrylic, with 2.4 mm M2 clearance holes
   and a {ACRYLIC['resetAccessDiameter']} mm reset opening.
 - Use the supplied 13.8/14.0/14.2 mm fit coupon in the exact stock, color, and
@@ -363,6 +369,7 @@ Nominal construction:
 - Boss holes: drill {CASE['tapDrillDiameter']} mm and tap {CASE['thread']} to {CASE['threadDepth']} mm depth.
 - Reset access: {CASE['resetAccessDiameter']} mm through the floor.
 - Switch plate: {CASE['topPlateThickness']} mm, 14.0 mm Choc v1 openings,
+  one {CONFIG['encoder']['plateCutout']} x {CONFIG['encoder']['plateCutout']} mm square EC11 body opening,
   2.4 mm M2 clearance holes, and one boolean-merged controller/OLED and
   {TRRS['plugClearanceDiameter']} mm-high TRRS edge notch.
 - Plate underside: Z={CASE['pcbUndersideHeight'] + 1.6 + CASE['pcbToPlateGap']:.3f} mm in the reference assembly.

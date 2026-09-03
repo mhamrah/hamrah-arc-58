@@ -15,6 +15,12 @@ enum custom_keycodes { RGB_NEXT = SAFE_RANGE };
 #define RGB_SPI  QK_RGB_MATRIX_SPEED_UP
 #define RGB_SPD  QK_RGB_MATRIX_SPEED_DOWN
 
+void keyboard_post_init_user(void) {
+    // Always provide a visible power-on indication, even if RGB was previously
+    // turned off and that state was saved in EEPROM.
+    rgb_matrix_enable_noeeprom();
+}
+
 /*
  * Rows 0-4 are the left half and rows 5-9 are the right half. The right
  * half is electrical matrix order, matching QMK's Sofle LAYOUT macro.
