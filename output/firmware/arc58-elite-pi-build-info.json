@@ -1,0 +1,27 @@
+{
+  "date": "2026-09-26",
+  "repository_base": "7bbec0d5c7ef8be4d38d5aac7883c1ed734ec7c1",
+  "source_state": "Uncommitted optional split diagnostic changes; normal serial configuration unchanged.",
+  "qmk_commit": "b09ac060caee7c2d22959114854a910a08dd9a41",
+  "builds": [
+    {
+      "file": "arc58-elite-pi-split-debug.uf2",
+      "command": "qmk compile -j 4 -kb hamrah/arc58 -km default -e ARC58_SPLIT_DEBUG=yes",
+      "size": 109056,
+      "sha256": "52e8daca477e245884504b6809c2e6983c1527ea761aff121bd3fb5c04c4f54d"
+    },
+    {
+      "file": "arc58-elite-pi-default.uf2",
+      "command": "qmk compile -j 4 -kb hamrah/arc58 -km default",
+      "size": 108032,
+      "sha256": "47e2f6e96942e9f7da00531a163a88175a3c9f93718836b3038a99c34764377f"
+    }
+  ],
+  "source_sha256": {
+    "firmware/qmk/arc58/config.h": "6ceacb7768502fbacaaf66932258ae5329890a76b73ef51fa8669118550f8fad",
+    "firmware/qmk/arc58/keyboard.json": "59d273591c296a3932f3f0a1a12250a5b5fd2e4af4728c8c17b02fa766f34673",
+    "firmware/qmk/arc58/keymaps/default/keymap.c": "e6ab7003f9c3d0729fdced562cc3ff59ed3f00d58af6daa0aa41fb04e7bed903",
+    "firmware/qmk/arc58/readme.md": "f19d9e6db09fcab4fd9664c5d350aa5c34bc3f782e0d9378ac4686109fb1e9b3",
+    "firmware/qmk/arc58/rules.mk": "00b6e2c28a92333290006b05624e897569bb5c45225b22c13f9c096bcb7ccffa"
+  }
+}

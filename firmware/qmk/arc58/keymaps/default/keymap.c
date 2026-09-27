@@ -2,6 +2,12 @@
 
 #include QMK_KEYBOARD_H
 
+#ifdef ARC58_SPLIT_DEBUG
+#    include "split_util.h"
+#    include "print.h"
+#    include "debug.h"
+#endif
+
 enum layers { MAC_DEFAULT, MAC_SYMBOLS, MAC_UTIL };
 enum custom_keycodes { RGB_NEXT = SAFE_RANGE };
 
@@ -16,10 +22,37 @@ enum custom_keycodes { RGB_NEXT = SAFE_RANGE };
 #define RGB_SPD  QK_RGB_MATRIX_SPEED_DOWN
 
 void keyboard_post_init_user(void) {
+#ifdef ARC58_SPLIT_DEBUG
+    debug_enable = true;
+    debug_matrix = false;
+    debug_keyboard = false;
+    debug_mouse = false;
+    // Reduce load while checking remote power; do not change saved RGB state.
+    rgb_matrix_disable_noeeprom();
+#else
     // Always provide a visible power-on indication, even if RGB was previously
     // turned off and that state was saved in EEPROM.
     rgb_matrix_enable_noeeprom();
+#endif
 }
+
+#ifdef ARC58_SPLIT_DEBUG
+void housekeeping_task_user(void) {
+    static uint32_t last_report;
+    if (timer_elapsed32(last_report) < 2000) {
+        return;
+    }
+    last_report = timer_read32();
+    // Only the initiator tracks connection errors. A target must not report
+    // is_transport_connected() as proof of a working link.
+    uprintf("ARC58 hand=%s role=%s hand_pin=%u vbus_sense=%u link=%s\n",
+            is_keyboard_left() ? "left" : "right",
+            is_keyboard_master() ? "initiator" : "target",
+            (unsigned)gpio_read_pin(SPLIT_HAND_PIN),
+            (unsigned)gpio_read_pin(USB_VBUS_PIN),
+            is_keyboard_master() ? (is_transport_connected() ? "up" : "down") : "check-initiator");
+}
+#endif
 
 /*
  * Rows 0-4 are the left half and rows 5-9 are the right half. The right
@@ -100,10 +133,20 @@ oled_rotation_t oled_init_user(oled_rotation_t rotation) {
 }
 
 bool oled_task_user(void) {
+#ifdef ARC58_SPLIT_DEBUG
+    oled_set_cursor(0, 0);
+    oled_write_ln_P(PSTR("ARC58 SPLIT DEBUG"), false);
+    oled_write_ln_P(is_keyboard_left() ? PSTR("LEFT ") : PSTR("RIGHT"), false);
+    oled_write_ln_P(is_keyboard_master() ? PSTR("ROLE: INITIATOR") : PSTR("ROLE: TARGET   "), false);
+    oled_write_ln_P(is_keyboard_master()
+                       ? (is_transport_connected() ? PSTR("LINK: UP           ") : PSTR("LINK: DOWN         "))
+                       : PSTR("LINK: SEE INITIATOR"), false);
+#else
     oled_write_ln_P(PSTR("HAMRAH ARC58"), false);
     oled_write_ln_P(is_keyboard_left() ? PSTR("LEFT") : PSTR("RIGHT"), false);
     uint8_t layer = get_highest_layer(layer_state);
     oled_write_ln_P(layer == MAC_UTIL ? PSTR("UTIL") : layer == MAC_SYMBOLS ? PSTR("SYMS") : PSTR("MAIN"), false);
+#endif
     return false;
 }
 #endif
