@@ -6,10 +6,16 @@ import json
 import math
 import re
 import pcbnew
+import argparse
 
 
 ROOT = Path(__file__).resolve().parents[1]
 BOARD = ROOT / "hardware" / "kicad" / "arc58-reversible.kicad_pcb"
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--board", type=Path, default=BOARD)
+parser.add_argument("--direct-rgb", action="store_true", help="Check the Gamma-D direct RGB prototype")
+args = parser.parse_args()
+BOARD = args.board
 LAYOUT = ROOT / "layout.config.json"
 FIRMWARE = ROOT / "firmware" / "qmk" / "arc58"
 SWITCH_FOOTPRINT = (
@@ -80,6 +86,10 @@ required = {
     "U1", "U2", "R1", "R2", "R3", "R4", "R5", "C1", "C2", "J1", "J2",
     "RST1", "SW25",
 }
+if args.direct_rgb:
+    required.discard("U2")
+    if "U2" in footprints:
+        fail("direct RGB variant must not contain U2")
 required.update(f"H{i}" for i in range(1, 7))
 required.update(f"TP{i}" for i in (1, 2, 3, 4, 6, 7, 8))
 required.update(f"JP{i}" for i in range(1, 9))
@@ -465,6 +475,8 @@ if comment_drawings:
     fail(f"obsolete User.Comments board guides remain: {len(comment_drawings)}")
 
 revision_mark = f"REV {layout['revision'].upper()} • REVERSIBLE LEFT / RIGHT"
+if args.direct_rgb:
+    revision_mark = revision_mark.replace("REV GAMMA", "GAMMA-D")
 revision_layers = {
     drawing.GetLayerName()
     for drawing in board.GetDrawings()
@@ -550,6 +562,8 @@ required_nets = {
     "OLED_SDA", "OLED_SCL", "RGB_MCU", "RGB_5V", "RGB_LED_IN",
     "ENC_A", "ENC_B", "KEY_ENC",
 }
+if args.direct_rgb:
+    required_nets.discard("RGB_5V")
 required_nets.update(f"ROW{i}" for i in range(5))
 required_nets.update(f"COL{i}" for i in range(6))
 missing_nets = sorted(name for name in required_nets if board.FindNet(name) is None)
@@ -615,10 +629,16 @@ if "SPLIT_HAND_PIN_LOW_IS_LEFT" in config_h:
 if "CONVERT_TO = elite_pi" not in (FIRMWARE / "rules.mk").read_text():
     fail("QMK build must target the Keebio Elite-Pi converter")
 
-expected_buffer = {"1": "GND", "2": "RGB_MCU", "3": "GND", "4": "RGB_5V", "5": "VBUS"}
-for number, expected in expected_buffer.items():
-    if net(footprints["U2"], number) != expected:
-        fail(f"U2 pad {number}: expected {expected}")
+if args.direct_rgb:
+    if net(footprints["R1"], "1") != "RGB_MCU" or net(footprints["R1"], "2") != "RGB_LED_IN":
+        fail("direct RGB must route GPIO through R1 to LED DIN")
+    if footprints["R1"].GetValue() != "330R":
+        fail("direct RGB R1 must retain the nominal 330 ohm series resistor")
+else:
+    expected_buffer = {"1": "GND", "2": "RGB_MCU", "3": "GND", "4": "RGB_5V", "5": "VBUS"}
+    for number, expected in expected_buffer.items():
+        if net(footprints["U2"], number) != expected:
+            fail(f"U2 pad {number}: expected {expected}")
 
 expected_trrs = {"S": "GND", "R2": "VBUS", "R1": "TRRS_SPARE", "T": "SPLIT_DATA"}
 for number, expected in expected_trrs.items():
